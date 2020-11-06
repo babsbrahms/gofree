@@ -1,0 +1,265 @@
+{
+    "user": {
+        "uid": "id",
+        "surname": "",
+        "given": "",
+        "email": "",
+        "photoUrl": "",
+        "createdAt": "Date"
+    },
+    "workspace": {
+        "id": "",
+        "name": "",
+        "createdBy": "user.id",
+        "owner": "user.id",
+        "createdAt": "Date",
+        "userCount": 0,
+        "trialEndDate": "timestamp",
+        "affiliateId" : "affiliate.id",
+        "subscription": {
+            "email": "",
+            "plan": "basic",
+            "quantity": 0,
+            "status": "active",
+            "next_payment_date": "date",
+            "current_payment_date": "date",
+            "past_payment_date": "date",
+            "subaccount_code": "affiliate.subaccount_code",
+            "payment_count": 0,
+            "authorization": {
+                "authorization_code":"AUTH_8dfhjjdt",
+                "card_type":"visa",
+                "last4":"1381",
+                "exp_month":"08",
+                "exp_year":"2018",
+                "bin":"412345",
+                "bank":"TEST BANK",
+                "channel":"card",
+                "signature": "SIG_idyuhgd87dUYSHO92D",
+                "reusable":true,
+                "country_code":"NG"
+            }
+        }
+    },
+    "invoice": {
+        "transactionRef": "",
+        "amount": 0,
+        "settlement": 0,
+        "payout": 0,
+        "quantity": 0,
+        "currency": "",
+        "provider": "paystack",
+        "card": {},
+        "next_payment_date": "date",
+        "reason": "subscription || Update",
+        "plan": "basic",
+        "affiliateId": "",
+        "workspaceId": "workspace.id",
+        "createdAt":"Date",
+        "subscription_count": 0
+    },
+    "role": {
+        "id": "",
+        "title": "",
+        "permission": {},
+        "workspaceId": "workspace.id",
+        "createdBy": "user.id",
+        "createdAt": "Date"
+    },
+    "department": {
+        "id": "",
+        "name": "",
+        "workspaceId": "workspace.id",
+        "createdBy": "user.id",
+        "createdAt": "Date"
+    },
+    "team": {
+        "id": "",
+        "userId": "user.id",
+        "name": "user.name",
+        "photoUrl": "user.photoUrl",
+        "email": "",
+        "roleId": "",
+        "roleTitle": "role.title",
+        "departmentId": "",
+        "departmentName": "department.name",
+        "workspaceId": "workspace.id",
+        "workspaceName": "workspace.title",
+        "createdAt": "Date",
+        "owner": false,
+        "accepted": true
+    },
+    "note": {
+        "id": "",
+       "title": "",
+        "message": "",
+        "createdAt": "Date",
+        "workspaceId": "workspace.id",
+        "userId": "user.id"
+    },
+    "announcement": {
+        "id": "",
+        "departmentIds": ["department.id"],
+        "subject": "",
+        "message": "",
+        "user": {
+            "uid": "user.uid",
+            "name": "user.name",
+            "roleTitle": "role.title"
+        },
+        "workspaceId": "workspace.id",
+        "createdAt": "Date",
+        "postedOn": "Date"
+    },
+    "poll": {
+        "id": "",
+        "question": "",
+        "options": {
+
+        },
+        "deadline": "Date",
+        "workspaceId": "workspace.id",
+        "createdAt": "Date"
+    },
+    "vote": {
+        "id": "",
+        "pollId": "poll.id",
+        "option": "",
+        "userId": "user.id",
+        "createdAt": "Date",
+        "workspaceId": "workspace.id"
+    },
+    "suggestion": {
+        "id": "",
+        "userId": "user.id",
+        "recipient": "department || management",
+        "departmentId": "department.id",
+        "departmentName": "department.name",
+        "message": "",
+        "action": " '' || approve || decline",
+        "anonymous": true,
+        "workspaceId": "workspace.id",
+        "createdAt": "Date"
+    },
+    "project": {
+        "id": "",
+        "name": "",
+        "description": "",
+        "departmentIds": ["department.id"],
+        "createdAt": "Date",
+        "createdBy": "user.id",
+        "workspaceId": "workspace.id"
+    },
+    "task": {
+        "id": "",
+        "title": "",
+        "description": "",
+        "deadline": "Date",
+        "teamIds": ["user.id"],
+        "teamRef": ["2 array of taskTeamsRef"],
+        "tags": ["string"],
+        "checklist": ["checkListRef"],
+        "teamLead": "",
+        "attachment": ["attachmentRef"],
+        "priority": "",
+        "projectId": "project.id",
+        "projectName": "project.name",
+        "projectDeptIds": "project.departmentIds",
+        "status": "",
+        "submittedOn": "",
+        "createdAt": "Date",
+        "createdBy": "user.id",
+        "workspaceId": "workspace.id",
+        "schedule": { "user.id": "Date" }
+    },
+    "taskLog": {
+        "id": "",
+        "action": "",
+        "taskId": "task.id",
+        "taskTitle": "task.title",
+        "userId": "user.id",
+        "statusChange": false,
+        "teamIds": ["user.id"],
+        "projectId": "project.id",
+        "projectName": "project.name",
+        "createdAt": "Date",
+        "workspaceId": "workspace.id",
+        "key": "",
+        "value": "any"
+    },
+    "taskComment": {
+        "id": "",
+        "message": "",
+        "taskId": "task.id",
+        "user": {},
+        "projectId": "project.id",
+        "createdAt": "Date",
+        "workspaceId": "workspace.id"
+    },
+    "taskChecklist": {
+        "id": "",
+        "text": "",
+        "checked": false,
+        "taskId": "task.id",
+        "userId": "user.id",
+        "projectId": "project.id",
+        "createdAt": "Date",
+        "workspaceId": "workspace.id"
+    },
+    "taskTeamRef": {
+        "name": "user.name",
+        "userId": "user.id",
+        "photoUrl": "user.photoUrl"
+    },
+    "taskTags": {
+        "text": ""
+    },
+    "TaskAttachment": {
+        "id":"",
+        "name": "",
+        "url": "https://...",
+        "gsUrl": "gs://...",
+        "type": "",
+        "size": "",
+        "taskId": "task.id",
+        "userId": "user.id",
+        "projectId": "project.id",
+        "createdAt": "Date",
+        "workspaceId": "workspace.id"
+    },
+    "notification": {
+        "userId": "user.id",
+        "message": "",
+        "createdAt": "Date",
+        "workspaceId": "workspace.id"
+    },
+    "affiliate": {
+        "userId": "user.id",
+        "bank_code": "",
+        "bank_name": "",
+        "account_number": "",
+        "account_name": "",
+        "subaccount_code": "",
+        "currency": "",
+        "state": "",
+        "country": ""
+    },
+    "teamlog": {
+        "action": "add || remove",
+        "count": 0,
+        "userId": "team.id",
+        "userName": "team.name",
+        "userEmail": "team.email",
+        "workspaceId": "team.workspaceId",
+        "createdAt": "Date"
+    },
+    "teamcount": {
+        "action": "add || remove",
+        "count": 0,
+        "userId": "team.id",
+        "userName": "team.name",
+        "userEmail": "team.email",
+        "workspaceId": "team.workspaceId",
+        "createdAt": "Date"
+    }
+}
