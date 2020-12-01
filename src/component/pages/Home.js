@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Segment, Card, Button, Image, Tab, Step, Breadcrumb, Icon } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import Quote from "../container/Quote"
-import wallpaper from "../../utils/images/wallpaper.svg"
 import air from "../../utils/images/air-freight-transport-2.jpg"
 import truck from "../../utils/images/cargo-gofree-truck.jpg"
 import road from "../../utils/images/road-trucking_2.jpg"
@@ -20,7 +19,7 @@ const adsWords = [
         small: "With A trusted International Courier Service."
     },
     {
-        lead: "add lead word 1",
+        lead: "We connect the world with ease",
         small: "add small word"
     },
     {

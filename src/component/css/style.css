@@ -12,6 +12,10 @@ body {
     background-color: #7dc4da;
 }
 
+#gofree-content {
+    background-color: steelblue;
+}
+
 
 #gofree-home-showcase {
     background-image: url("../../utils/images/wallpaper.svg");
@@ -35,6 +39,7 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    margin-bottom: 50px;
 }
 
 #gofree-topbar h1 {
