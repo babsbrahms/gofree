@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 
 const Footer = () => {
     return (
-        <Segment attached='bottom' style={{ backgroundColor: "#333"}} color="pink">
+        <Segment attached='bottom' style={{ backgroundColor: "#111"}} color="pink">
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center'}}>
             <List inverted >
                 <List.Item>

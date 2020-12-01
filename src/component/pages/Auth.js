@@ -4,7 +4,7 @@ import Authentication from "../container/Authentication"
 
 const Auth = () =>{
     return (
-        <Segment>
+        <Segment id="gofree-bg">
             <Authentication />
         </Segment>
     )

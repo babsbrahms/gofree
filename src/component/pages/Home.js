@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
-import { Segment, Card, Button, Image, Form, Tab, Input, Step, Breadcrumb, Icon, List, Label } from "semantic-ui-react";
+import React, { useState, useEffect, useRef } from 'react'
+import { Segment, Card, Button, Image, Tab, Step, Breadcrumb, Icon } from "semantic-ui-react";
 import { Link } from "react-router-dom";
+import Quote from "../container/Quote"
 import wallpaper from "../../utils/images/wallpaper.svg"
 import air from "../../utils/images/air-freight-transport-2.jpg"
 import truck from "../../utils/images/cargo-gofree-truck.jpg"
@@ -11,155 +12,64 @@ import dpd from "../../utils/images/dpd.svg";
 import parcelforce from "../../utils/images/parcelforce.svg";
 import ups from "../../utils/images/ups.svg";
 import fedex from "../../utils/images/fedex.svg";
+import "../css/style.css"
 
-const deliveryOptions = [
-    { key: 'Nigeria', text: 'Nigeria', value: 'Nigeria' },
-    { key: 'UK', text: 'UK', value: 'UK' },
-    { key: 'Australia', text: 'Australia', value: 'Australia' },
-  ]
-const Home = (props) => {
-    const [packages, SetPackages] = useState([{ weight: "", height: "", length: "", width: "" }])
-
-    const addPackage = () => SetPackages([...packages, { weight: "", height: "", length: "", width: "" }])
-
-    const removePackage = (index) => {
-        packages.splice(index, 1);
-        SetPackages([ ...packages ])
+const adsWords = [
+    {
+        lead: "Get Your Parcel Delivered",
+        small: "With A trusted International Courier Service."
+    },
+    {
+        lead: "add lead word 1",
+        small: "add small word"
+    },
+    {
+        lead: "add lead word 2",
+        small: "add small word"
+    },
+    {
+        lead: "add lead word 3",
+        small: "add small word"
     }
-    const panes = [
-        { menuItem: 'Parcel', render: () => <Tab.Pane>
-            <Form>
-                <Form.Field>
-                    <Form.Dropdown
-                        label="Collect From"
-                        fluid
-                        search
-                        selection
-                        options={deliveryOptions}
-                        placeholder="Collect From"
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <Form.Dropdown
-                        label="Deliver To"
-                        fluid
-                        search
-                        selection
-                        options={deliveryOptions}
-                        placeholder="Deliver To"
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>Quantity</label>
-                    <input placeholder={"quantity"} type="number" />
-                </Form.Field>
-                <Form.Field>
-                    <label>Weight</label>
-                    <Input
-                        label={{ basic: true, content: 'kg' }}
-                        labelPosition='right'
-                        placeholder='Enter weight...'
-                    />
-                </Form.Field>
-
-                <Button color="black" type='submit'>GET QUOTE</Button>
-            </Form>
-        </Tab.Pane> },
-        { menuItem: 'Package', render: () => <Tab.Pane>
-            <Form>
-                <Form.Field>
-                    <Form.Dropdown
-                        label="Collect From"
-                        fluid
-                        search
-                        selection
-                        options={deliveryOptions}
-                        placeholder="Collect From"
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <Form.Dropdown
-                        label="Deliver To"
-                        fluid
-                        search
-                        selection
-                        options={deliveryOptions}
-                        placeholder="Deliver To"
-                    />
-                </Form.Field>
-
-                <List divided relaxed>
-                    {packages.map((pack, index) => (
-                    <List.Item key={`package-${index}`}>
-                        <List.Icon name="remove circle" onClick={() => removePackage(index)} color="red" size='large' verticalAlign='middle' />
-                        <List.Content>
-                            <Form.Group widths='equal'>
-                                <Form.Field>
-                                    <label>Weight</label>
-                                    <Input
-                                        label={{ basic: true, content: 'kg' }}
-                                        labelPosition='right'
-                                        placeholder='Enter weight...'
-                                        
-                                    />
-                                </Form.Field>
-                                <Form.Field>
-                                    <label>Length</label>
-                                    <Input
-                                        label={{ basic: true, content: 'cm' }}
-                                        labelPosition='right'
-                                        placeholder='Enter Length...'
-                                    />
-                                </Form.Field>
-                                <Form.Field>
-                                    <label>Width</label>
-                                    <Input
-                                        label={{ basic: true, content: 'cm' }}
-                                        labelPosition='right'
-                                        placeholder='Enter Width...'
-                                    />
-                                </Form.Field>
-                                <Form.Field>
-                                    <label>Height</label>
-                                    <Input
-                                        label={{ basic: true, content: 'cm' }}
-                                        labelPosition='right'
-                                        placeholder='Enter Height...'
-                                    />
-                                </Form.Field>
-                            </Form.Group>
-                        </List.Content>
-                    </List.Item>))}
+]
 
 
-                    <List.Item>
-                        <Label onClick={() => addPackage()} color="green" as="a" ><Icon name="add circle" /> Add Package</Label>
-                        {/* <List.Icon onClick={() => addPackage()} name="add circle" color="green" size='large' verticalAlign='middle' />
-                        <List.Content>
-                        </List.Content> */}
-                    </List.Item>
-                </List>
+const Home = () => {
+    const [current, setCurrent] = useState(0);
+    let timer = useRef(null)
 
-                <Button color="black" type='submit'>GET QUOTE</Button>
-            </Form>
-        </Tab.Pane> },
-      ]
+    useEffect(() => {
+        timer.current = setInterval(() => {
+            console.log(current);
+            if (current === (adsWords.length - 1)) {
+                setCurrent(0)
+            } else {
+                setCurrent(current + 1)
+            }
+        }, 5000);
+
+        return() => {
+            clearInterval(timer.current)
+            
+        }
+    })
+
     return (
         <div>
-            <Segment style={{ backgroundColor: "#111"}}>
+            <Segment id="gofree-bg">
                 <img width="100%" height="auto" src={wallpaper} style={{backgroundColor: "#fff", borderRadius: 5, marginBottom: 12, borderBottomWidth: 5, borderBottomColor: "#f03c96", borderBottomStyle: "solid" }} />
                 <div style={{ position: "absolute", top: "3%", left: "2%"}}>
-                    <h2 style={{ marginTop: 10, color: "black", opacity: 0.8, padding: 5, borderRadius: 5 }}>
-                        Get Your Parcel Delivered
-                    </h2>
-                    <h2 style={{ marginTop: 10, color: "black", opacity: 0.8, padding: 5, borderRadius: 5 }}>
-                        With A trusted International Courier Service.
-                    </h2>
+                    {(!!adsWords[current].lead) && (<h2 style={{ marginTop: 10, color: "black", opacity: 0.8, padding: 5, borderRadius: 5 }}>
+                        {adsWords[current].lead}
+                    </h2>)}
+                    {(!!adsWords[current].small) && (<h2 style={{ marginTop: 10, color: "black", opacity: 0.8, padding: 5, borderRadius: 5 }}>
+                        {adsWords[current].small}
+                    </h2>)}
 
                 </div>
                 <Segment raised stacked style={{ paddingBottom: 20, backgroundColor: "#fff",borderRadius: 5, marginBottom: 10, padding: 10 }}>
                     <h2>GET QUOTE</h2>
-                    <Tab panes={panes} />
+                    <Quote />
                 </Segment>
                 <div style={{ paddingBottom: 30 }}>
                     <h2>SERVICES</h2>
@@ -211,7 +121,8 @@ const Home = (props) => {
                 </div>
                 <div style={{ paddingBottom: 30 }}>
                     <h2>STEPS</h2>
-                    <Step.Group>
+                    <p>Get your parcel or package delivered in 5 easy steps.</p>
+                    <Step.Group stackable>
                         <Step>
                         <Icon name='shopping cart' />
                         <Step.Content>
@@ -229,16 +140,34 @@ const Home = (props) => {
                         </Step>
 
                         <Step>
+                        <Icon name="dolly" />
+                        <Step.Content>
+                            <Step.Title>Collection</Step.Title>
+                            <Step.Description>We collect the package(s)</Step.Description>
+                        </Step.Content>
+                        </Step>
+
+                        <Step>
+                        <Icon name="plane" />
+                        <Step.Content>
+                            <Step.Title>Shipping</Step.Title>
+                            <Step.Description>We transport the package(s) to your destination</Step.Description>
+                        </Step.Content>
+                        </Step>
+
+
+                        <Step>
                         <Icon name='truck' />
                         <Step.Content>
                             <Step.Title>Delivery</Step.Title>
-                            <Step.Description>We deliver your package</Step.Description>
+                            <Step.Description>We deliver your package(s)</Step.Description>
                         </Step.Content>
                         </Step>
                     </Step.Group>
                 </div>
                 <div style={{ paddingBottom: 30 }}>
                     <h2>COURIERS</h2>
+                    <p>We use the services of the courier companies listed below. We are not their official agent.</p>
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", flexWrap: "wrap"}}>
                        <Image.Group size="medium">
                             <Image src={dhl} alt="dhl" />
