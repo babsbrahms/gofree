@@ -14,7 +14,7 @@ const Header = () => {
     const [activeItem, setActiveItem] = useState(part)
     // console.log(window.location.origin);
     return (
-        <Menu pointing secondary>
+        <Menu id="gofree-menu" color="blue" pointing secondary>
             <Menu.Item
                 name='home'
                 active={activeItem === 'home'}

@@ -34,7 +34,7 @@ const Quote = () => {
     const addData = ({ name, value}) => setData({ ...data, [name]: value })
 
     return (
-        <Segment>
+        <Segment style={{ padding: 20 }}>
             <Form>
                 <Form.Field>
                     <Form.Dropdown

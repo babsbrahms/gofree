@@ -1,15 +1,33 @@
+body { 
+    background-color: #7dc4da;
+}
+
 #gofree-bg {
     min-height: 80vh;
     background-color: #7dc4da;
     /* "#95C8D8" */
 }
+
+#gofree-menu {
+    background-color: #7dc4da;
+}
+
+
 #gofree-home-showcase {
     background-image: url("../../utils/images/wallpaper.svg");
-    background-position: center;
+    background-position: right center;
     background-repeat: no-repeat;
     background-size: cover;
-
-    /* backgroundColor: "#fff", borderRadius: 5, marginBottom: 12, borderBottomWidth: 5, borderBottomColor: "#f03c96", borderBottomStyle: "solid" */
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 50px;
+    border-bottom-style: solid;
+    border-bottom-color: #f03c96;
+    border-bottom-width: 5px;
 }
 
 #gofree-topbar {

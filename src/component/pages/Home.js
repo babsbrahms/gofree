@@ -57,8 +57,8 @@ const Home = () => {
     return (
         <div>
             <Segment id="gofree-bg">
-                <img width="100%" height="auto" src={wallpaper} style={{backgroundColor: "#fff", borderRadius: 5, marginBottom: 12, borderBottomWidth: 5, borderBottomColor: "#f03c96", borderBottomStyle: "solid" }} />
-                <div style={{ position: "absolute", top: "3%", left: "2%"}}>
+                {/* <img width="100%" height="auto" src={wallpaper} style={{backgroundColor: "#fff", borderRadius: 5, marginBottom: 12, borderBottomWidth: 5, borderBottomColor: "#f03c96", borderBottomStyle: "solid" }} /> */}
+                <Segment id="gofree-home-showcase">
                     {(!!adsWords[current].lead) && (<h2 style={{ marginTop: 10, color: "black", opacity: 0.8, padding: 5, borderRadius: 5 }}>
                         {adsWords[current].lead}
                     </h2>)}
@@ -66,8 +66,8 @@ const Home = () => {
                         {adsWords[current].small}
                     </h2>)}
 
-                </div>
-                <Segment raised stacked style={{ paddingBottom: 20, backgroundColor: "#fff",borderRadius: 5, marginBottom: 10, padding: 10 }}>
+                </Segment>
+                <Segment raised stacked style={{ paddingBottom: 20, backgroundColor: "#fff",borderRadius: 5, marginBottom: 50, padding: 10 }}>
                     <h2>GET QUOTE</h2>
                     <Quote />
                 </Segment>
