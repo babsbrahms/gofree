@@ -1,19 +1,20 @@
 body { 
-    background-color: #7dc4da;
+    background-color: #aed2f0;
 }
 
 #gofree-bg {
     min-height: 80vh;
-    background-color: #7dc4da;
+    background-color: #aed2f0;
     /* "#95C8D8" */
 }
 
 #gofree-menu {
-    background-color: #7dc4da;
+    background-color: #aed2f0;
 }
 
 #gofree-content {
     background-color: steelblue;
+    border-radius: 5px;
 }
 
 

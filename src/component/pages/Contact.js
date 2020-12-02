@@ -10,8 +10,8 @@ const Contact = () => {
             </Segment>
 
             <div>
-                <Card.Group itemsPerRow="2">
-                    <Card link raised color="pink">
+                <Card.Group centered itemsPerRow="3">
+                    <Card id="gofree-content" link raised color="pink">
                         <Card.Content>
                             <Card.Header>Gofree Limited</Card.Header>
                         </Card.Content>
@@ -91,7 +91,7 @@ const Contact = () => {
 
 
 
-                    <Card link raised color="pink">
+                    <Card id="gofree-content" link raised color="pink">
                         <Card.Content>
                             <Card.Header>
                                 Business Opens

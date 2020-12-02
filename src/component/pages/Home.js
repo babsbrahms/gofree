@@ -66,11 +66,11 @@ const Home = () => {
                     </h2>)}
 
                 </Segment>
-                <Segment raised stacked style={{ paddingBottom: 20, backgroundColor: "#fff",borderRadius: 5, marginBottom: 50, padding: 10 }}>
+                <Segment raised stacked style={{ paddingBottom: 30, backgroundColor: "#fff",borderRadius: 5, marginBottom: 50, padding: 10 }}>
                     <h2>GET QUOTE</h2>
                     <Quote />
                 </Segment>
-                <div style={{ paddingBottom: 30 }}>
+                <div style={{ paddingBottom: 40 }}>
                     <h2>SERVICES</h2>
 
                     <Card.Group stackable itemsPerRow="3">
@@ -118,10 +118,10 @@ const Home = () => {
                         Learn More
                     </Button>
                 </div>
-                <div style={{ paddingBottom: 30 }}>
+                <div style={{ paddingBottom: 40, width: '100%' }}>
                     <h2>STEPS</h2>
                     <p>Get your parcel or package delivered in 5 easy steps.</p>
-                    <Step.Group stackable>
+                    <Step.Group size="small" stackable>
                         <Step>
                         <Icon name='shopping cart' />
                         <Step.Content>
@@ -164,7 +164,7 @@ const Home = () => {
                         </Step>
                     </Step.Group>
                 </div>
-                <div style={{ paddingBottom: 30 }}>
+                <div style={{ paddingBottom: 40 }}>
                     <h2>COURIERS</h2>
                     <p>We use the services of the courier companies listed below. We are not their official agent.</p>
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", flexWrap: "wrap"}}>
@@ -178,7 +178,7 @@ const Home = () => {
                     </div>
 
                 </div>
-                <div style={{ backgroundImage:`url(${truck})`, width: "100%", height: '60vh', backgroundPosition: "top left", backgroundRepeat: "no-repeat", backgroundSize: "100% 100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start",  borderRadius: 5, marginBottom: 30}}>
+                <div style={{ backgroundImage:`url(${truck})`, width: "100%", height: '60vh', backgroundPosition: "top left", backgroundRepeat: "no-repeat", backgroundSize: "100% 100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start",  borderRadius: 5, marginBottom: 40}}>
                     <div style={{ backgroundColor: "#fff", opacity: 0.9, width: "50%", padding: 8, borderRadius: 5}}>
                         <h2>WHY US?</h2>
                         <Breadcrumb>
