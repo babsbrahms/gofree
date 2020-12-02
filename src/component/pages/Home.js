@@ -150,7 +150,7 @@ const Home = () => {
                         <Icon name="plane" />
                         <Step.Content>
                             <Step.Title>Shipping</Step.Title>
-                            <Step.Description>We transport the package(s) to your destination</Step.Description>
+                            <Step.Description>We transport the package(s)</Step.Description>
                         </Step.Content>
                         </Step>
 
