@@ -8,6 +8,8 @@ const Cart = () => {
             <Segment id="gofree-topbar">
                 <h1>Cart</h1>
             </Segment>
+
+            
         </div>
     )
 }

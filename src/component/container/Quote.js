@@ -6,7 +6,9 @@ const fromOption = [
 ]
 
 const deliveryOptions = [
-    { key: 'Nigeria', text: 'Nigeria', value: 'nigeria' },
+    { key: 'Nigeria-abuja', text: 'Nigeria-abuja', value: 'nigeria-abuja' },
+    { key: 'Nigeria-lagos', text: 'Nigeria-lagos', value: 'nigeria-lagos' },
+    { key: 'Nigeria-others', text: 'Nigeria-others', value: 'nigeria-others' },
 ]
 
 const typeOptions = [
@@ -14,12 +16,12 @@ const typeOptions = [
     { key: 'package', text: 'Package', value: 'package' },
 ]
 
-const Quote = () => {
+const Quote = ({ color="black", bg="black" }) => {
     const [data, setData] = useState({
         type: "",
         from: "",
         to: "",
-        where: "lagos",
+        // where: "lagos",
         email: ""
     })
     const [packages, SetPackages] = useState([{ weight: "", height: "", length: "", width: "" }])
@@ -78,7 +80,7 @@ const Quote = () => {
                         placeholder={"Add pakage or parcel destination"}
                     />
                 </Form.Field>
-                {(data.to === 'nigeria') && (
+                {/* {(data.to === 'nigeria') && (
                 <Form.Group inline>
                     <label>Where In Nigeria</label>
                     <Form.Field
@@ -107,7 +109,7 @@ const Quote = () => {
                         name="where"
                         onChange={(e, data) => addData(data)}
                     />
-                </Form.Group>)}
+                </Form.Group>)} */}
                 <Form.Field>
                     <Form.Input 
                         label="Email"
@@ -122,7 +124,7 @@ const Quote = () => {
                 <List divided relaxed>
                     {packages.map((pack, index) => (
                     <List.Item key={`package-${index}`}>
-                        <List.Icon name="remove circle" onClick={() => removePackage(index)} color="red" size='large' verticalAlign='middle' />
+                        <List.Icon link name="remove circle" onClick={() => removePackage(index)} color="red" size='large' verticalAlign='middle' />
                         <List.Content>
                             <Form.Group widths='equal'>
                                 <Form.Field>
@@ -170,8 +172,10 @@ const Quote = () => {
                         </List.Content> */}
                     </List.Item>
                 </List>
-
-                <Button color="black" type='submit'>GET QUOTE</Button>
+                <Segment clearing style={{ backgroundColor: bg }}>
+                    <Button floated="right" inverted color={color} type='submit'>GET QUOTE</Button>
+                </Segment>
+                
             </Form>
         </Segment>
     )

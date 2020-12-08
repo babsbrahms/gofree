@@ -9,9 +9,9 @@ const Contact = () => {
                 <h1>Contact Us</h1>
             </Segment>
 
-            <div>
-                <Card.Group centered itemsPerRow="3">
-                    <Card id="gofree-content" link raised color="pink">
+            <div style={{ padding: 30 }}>
+                <Card.Group stackable centered itemsPerRow="2">
+                    <Card link raised color="pink">
                         <Card.Content>
                             <Card.Header>Gofree Limited</Card.Header>
                         </Card.Content>
@@ -91,7 +91,7 @@ const Contact = () => {
 
 
 
-                    <Card id="gofree-content" link raised color="pink">
+                    <Card link raised color="pink">
                         <Card.Content>
                             <Card.Header>
                                 Business Opens

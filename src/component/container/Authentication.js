@@ -77,7 +77,7 @@ const Authentication = () => {
 
 
     return (
-        <div>
+        <div style={{ padding: 20 }}>
             <Message
             attached
             header='Welcome to our site!'
@@ -85,11 +85,11 @@ const Authentication = () => {
             color={'black'}
             />
             <Button.Group fluid attached>
-                <Button color={active === 'register'? 'teal' : 'black'} active={active === 'register'} onClick={() => changeActive('register')}>Register</Button>
+                <Button color={active === 'register'? 'blue' : 'black'} active={active === 'register'} onClick={() => changeActive('register')}>Register</Button>
                 <Button.Or />
-                <Button color={active === 'login'? 'teal' : 'black'} active={active === 'login'} onClick={() => changeActive('login')}>Log In</Button>
+                <Button color={active === 'login'? 'blue'  : 'black'} active={active === 'login'} onClick={() => changeActive('login')}>Log In</Button>
                 <Button.Or />
-                <Button color={active === 'forgot'? 'teal' : 'black'} active={active === 'forgot'} onClick={() => changeActive('forgot')}>Forgot Password</Button>
+                <Button color={active === 'forgot'? 'blue'  : 'black'} active={active === 'forgot'} onClick={() => changeActive('forgot')}>Forgot Password</Button>
             </Button.Group>
             <Form className='attached fluid segment'>
 

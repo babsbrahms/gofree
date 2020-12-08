@@ -4,6 +4,7 @@ import { Loader, Segment, Dimmer, Step, Icon, Button, Message, Form } from 'sema
 import firebase from '../firebaseConfig';
 import { sendVerificationEmail, createProfileName, signOut } from '../fbase'
 import Authentication from  "../container/Authentication";
+import styles from "../../styles"
 
 const UserRoute = ({component: Component, ...rest }) => {
     let unsubscribe = useRef(null);
@@ -98,7 +99,7 @@ const UserRoute = ({component: Component, ...rest }) => {
 
    // console.log({ loading, isAuthenticated, isVerified, hasProfile });
     return (
-        <div>
+        <div id="gofree-bg">
             <div>
                 {loading && (<Segment>
                     <Dimmer active>

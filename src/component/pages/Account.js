@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { Table, Icon, Menu, Segment, Label, Card } from 'semantic-ui-react'
 import "../css/style.css"
-import Quote from "../container/Quote"
 import styles from "../../styles"
+import Quote from "../container/Quote"
 
 export default class Account extends Component {
     state = { activeItem: 'account' }
@@ -18,7 +18,7 @@ export default class Account extends Component {
                 <h1>My Account</h1>
             </Segment>
             <div style={{ padding: 30 }}>
-                <Menu pointing>
+                <Menu pointing stackable>
                     <Menu.Item
                         name='account'
                         icon="user"
@@ -49,6 +49,8 @@ export default class Account extends Component {
 
                 <Segment id="gofree-content" >
                     {(activeItem === 'account') && (
+                    <div>
+                        <br />
                         <Card.Group itemsPerRow="3" centered stackable>
                             <Card>
                                 <Card.Content>
@@ -99,9 +101,10 @@ export default class Account extends Component {
                                 </Card.Content>
                             </Card>
                         </Card.Group>
+                    </div>
                     )}
                     {(activeItem === 'orders') &&  (
-                    <Table celled>
+                    <Table celled unstackable>
                         <Table.Header>
                             <Table.Row>
                             <Table.HeaderCell>Header</Table.HeaderCell>
@@ -153,11 +156,11 @@ export default class Account extends Component {
 
 
                     {(activeItem === 'get quote') && (
-                        <Quote />
+                        <Quote color="linkedin" bg="steelblue" />
                     )}
 
                     {(activeItem === 'saved quote') &&  (
-                    <Table celled>
+                    <Table celled unstackable>
                         <Table.Header>
                             <Table.Row>
                             <Table.HeaderCell>Header</Table.HeaderCell>
