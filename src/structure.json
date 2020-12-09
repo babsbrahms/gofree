@@ -1,3 +1,37 @@
 {
+    "users": {
+        "name": "",
+        "email": "",
+        "phone": "",
+        "address": {
+            "address": "",
+            "country": "",
+            "state": "",
+            "city": ""
+        },
+        "createdAt": "date"
+    },
+    "orders": {
+        "from": "",
+        "to": "",
+        "type": "parcel || package",
+        "packages": [],
+        "email": "user.email",
+        "userId": "user.id",
+        "status": "order | payment | collect | shipping | delivery",
+        "paid": false,
+        "orderOn": "date",
+        "deliveredOn": "date",
+        "amount": "",
+        "currency": "",
+        "address": {
+            "address": "",
+            "country": "",
+            "state": "",
+            "city": ""
+        },
+        "payment": {
 
+        }
+    }
 }

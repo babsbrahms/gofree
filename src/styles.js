@@ -1,4 +1,7 @@
 const styles ={
+    center: {
+        display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'
+    },
     between: {
         display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'
     },
