@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Table, Icon, Menu, Segment, Label, Card, Form, List, Button, Modal, Popup, Divider } from 'semantic-ui-react';
+import validator from "validator"
 import { currentUser } from "../fbase"
 import "../css/style.css"
 import styles from "../../styles"
@@ -9,14 +10,19 @@ import { orderStatus, orderTite } from "../../utils/resources"
 export default class Account extends Component {
     state = { 
         activeItem: 'account',
-        loadingAccount: false,
+        loadingAccount: true,
+        loadingOrders: true,
         editAccount: false,
-        user: {},
+        user: {
+
+        },
         data: {},
         errors: {},
         openOrderDetail: false,
         selectedOrder: {},
-        orders: []
+        orders: [
+
+        ]
 
     }
 
@@ -25,31 +31,113 @@ export default class Account extends Component {
     }
     
     getUser = () => {
-        let user = currentUser()
-        this.setState({ user: user || {} })
+      
+        const user = {
+            name: "Yinka Ibrahim",
+            email: "ib@gmail.co",
+            "address": {
+                "address": "No 21, Lagos Street, Garki, Abuja",
+                "country": "Nigeria",
+                "state": "FCT",
+                "city": "Abuja"
+            },
+        };
+
+        const orders= [
+            {
+                "id": "13dwee33112H",
+                "from": "Nigeria",
+                "to": "Uk",
+                "type": "parcel",
+                "packages": [{
+                    length: 10,
+                    width: 10,
+                    height: 10,
+                    weight: 15,
+                    price: 5000
+                }],
+                "email": "user.email",
+                "userId": "user.id",
+                "status": "shipping",
+                "paid": false,
+                "orderedOn": "20-20-2020",
+                "deliveredOn": "20-20-2020",
+                "price": 1000,
+                "currency": "Naira",
+                "address": {
+                    "address": "No 21, Lagos Street, Garki, Abuja",
+                    "country": "Nigeria",
+                    "state": "FCT",
+                    "city": "Abuja"
+                },
+                "payment": {
         
+                }
+            }
+        ];
+
+        setTimeout(() => {
+            this.setState({ user, orders,
+                loadingAccount: false,
+                loadingOrders: false,
+            })
+        }, 1000)
     }
 
     handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
     addAddress = (data) => this.setState({ 
-        user: {
-            ...this.state.user,
+        data: {
+            ...this.state.data,
             address: {
+                ...this.state.data.address,
                 [data.name]: data.value
             }
         }
     })
 
     addUserData = (data) => this.setState({ 
-        user: {
-            ...this.state.user,
+        data: {
+            ...this.state.data,
             [data.name]: data.value
         }
     })
 
+    validate = (data) => {
+        let err = {}
+            if (!data.name) err.name = "Name is required";
+            if (!validator.isEmail(data.email || "")) err.email = "Enter a valid email"
+
+            if (data.address) {
+                if (!data.address.address) err.address = "Address is required";
+                if (!data.address.city) err.city = "City is required";
+                if (!data.address.state) err.state = "State is required";
+                if (!data.address.country) err.country = "Country is required";
+            } else {
+                err.address = "Address is required";
+                err.city = "City is required";
+                err.state = "State is required";
+                err.country = "Country is required";
+            }
+
+        return err
+    }
+
+    save = () => {
+        const { data } = this.state;
+        this.setState({ errors: {} }, () => {
+            let errors = this.validate(data)
+
+            if (Object.keys(errors).length === 0) {
+                this.setState({ loadingAccount: true })
+            } else {
+                this.setState({ errors })
+            }
+        })
+    }
+
     render() {
-        const { activeItem, loadingAccount, user, errors, editAccount, openOrderDetail, selectedOrder } = this.state;
+        const { activeItem, loadingAccount, user, errors, editAccount, openOrderDetail, selectedOrder, orders, loadingOrders } = this.state;
 
         return (
             <div id="gofree-bg">
@@ -88,17 +176,17 @@ export default class Account extends Component {
 
                 <Segment id="gofree-content" >
                     {(activeItem === 'account') && (
-                    <Segment style={{ backgroundColor: "transparent" }} loading={loadingAccount}>
+                    <Segment style={{ backgroundColor: loadingAccount? "#ffffff" : "transparent" }} loading={loadingAccount}>
                         <br />
                         <Card.Group itemsPerRow="2" centered stackable>
-                            <Card>
+                            <Card color="pink">
                                 <Card.Content>
                                     <div style={styles.betweenStart}>
                                         <Card.Header>
                                             ACCOUNT DETAILS
                                         </Card.Header>
 
-                                        <Icon name="edit" color="blue" link onClick={() => this.setState({ editAccount: !editAccount})} />
+                                        <Icon name="edit" color="blue" link onClick={() => this.setState({ editAccount: !editAccount, data: user })} />
                                     </div>
                                 </Card.Content>
                                 {(!editAccount) && (<Card.Content >
@@ -119,26 +207,29 @@ export default class Account extends Component {
                                     <Form>
                                         
                                         <Form.Input 
-                                            label="name"
+                                            required
+                                            label="Name"
                                             name="name" 
                                             defaultValue={(user.name)? user.name : ""}
                                             onChange={(e, data) => this.addUserData(data)} 
                                             placeholder={"add your name"}
-                                            error={errors.address}
+                                            error={errors.name}
                                         />
 
                                         <Form.Input 
-                                            label="email"
+                                            required
+                                            label="Email"
                                             name="email" 
                                             type="email"
                                             defaultValue={(user.email)? user.email : ""}
                                             onChange={(e, data) => this.addUserData(data)} 
                                             placeholder={"add your email"}
-                                            error={errors.address}
+                                            error={errors.email}
                                         />
 
                                         <Form.Input 
-                                            label="address"
+                                            required
+                                            label="Address"
                                             name="address" 
                                             defaultValue={(user.address && user.address.address)? user.address.address : ""}
                                             onChange={(e, data) => this.addAddress(data)} 
@@ -147,35 +238,38 @@ export default class Account extends Component {
                                         />
 
                                         <Form.Input 
-                                            label="city"
+                                            required
+                                            label="City"
                                             name="city" 
                                             defaultValue={(user.address && user.address.address)? user.address.city : ""}
                                             onChange={(e, data) => this.addAddress(data)} 
                                             placeholder={"add your city"}
-                                            error={errors.address}
+                                            error={errors.city}
                                         />
 
 
                                         <Form.Input 
-                                            label="state"
+                                            required
+                                            label="State"
                                             name="state" 
                                             defaultValue={(user.address && user.address.address)? user.address.state : ""}
                                             onChange={(e, data) => this.addAddress(data)} 
                                             placeholder={"add your state"}
-                                            error={errors.address}
+                                            error={errors.state}
                                         />
 
 
                                         <Form.Input 
-                                            label="country"
+                                            required
+                                            label="Country"
                                             name="country" 
                                             defaultValue={(user.address && user.address.address)? user.address.country : ""}
                                             onChange={(e, data) => this.addAddress(data)} 
                                             placeholder={"add your country"}
-                                            error={errors.address}
+                                            error={errors.country}
                                         />
 
-                                        <Form.Button color="linkedin">
+                                        <Form.Button floated="right" onClick={() => this.save()} color='linkedin'>
                                             Submit
                                         </Form.Button>
                                     </Form>
@@ -185,22 +279,23 @@ export default class Account extends Component {
                     </Segment>
                     )}
                     {(activeItem === 'orders') &&  (
-                    <Segment>
+                    <Segment loading={loadingOrders}>
                         <List divided relaxed>
+                            {orders.map(order => (
                             <List.Item>
                                 <List.Content floated='right'>
-                                    <Button size="small" color="black" onClick={() => this.setState({ openOrderDetail: true })}>VIEW DETAILS</Button>
+                                    <Button size="small" color="black" onClick={() => this.setState({ openOrderDetail: true, selectedOrder: order })}>VIEW DETAILS</Button>
                                 </List.Content>
-                                <List.Icon name={orderStatus.payment} size='large' verticalAlign='middle' />
+                                <List.Icon name={orderStatus[order.status]} size='large' verticalAlign='middle' />
                                 <List.Content>
-                                    <List.Header>5 parcel from uk to nigeria</List.Header>
+                                    <List.Header>{order.packages.length} {order.type} from {order.from} to {order.to}</List.Header>
                                     <List.Description>
-                                        Order on 24th dec 2020
+                                        Ordered on {order.orderedOn}
                                     </List.Description>
-                                    <List.Description as='a'>order no: 2233444</List.Description>
+                                    <List.Description as='a'>order no: {order.id}</List.Description>
                                     <List.Description>
                                         <Label size="small" color="pink" basic>
-                                            {orderTite.payment}
+                                            {orderTite[order.status]}
                                         </Label>
                                         <Popup trigger={<Icon name="info circle" color="black" />}>
                                             <Popup.Header>
@@ -225,14 +320,19 @@ export default class Account extends Component {
                                     </List.Description>
                                 </List.Content>
                             </List.Item>
-
+                            ))}
                         </List>
+                        {((orders.length === 0) && (!loadingOrders)) &&(
+                            <p style={{ textAlign: "center" }}>
+                                You don't have orders!
+                            </p>
+                        )}
                     </Segment>
                     )}
 
 
                     {(activeItem === 'get quote') && (
-                        <Quote color="linkedin" bg="steelblue" />
+                        <Quote />
                     )}
 
                     {(activeItem === 'saved quote') &&  (
@@ -291,23 +391,23 @@ export default class Account extends Component {
                         onOpen={() => this.setState({ openOrderDetail: true })}
                         onClose={() => this.setState({ openOrderDetail: false })}
                         closeIcon
-                        dimmer="blurring"
+                        // dimmer="blurring"
                     >
                         <Modal.Header>
                             Order Details
                         </Modal.Header>
                         <Modal.Content>
-                            <Label basic>Order No: </Label>
-                            <Label basic>Date: 20-12-2020 </Label>
+                            <Label basic>Order No: {selectedOrder.id}</Label>
+                            <Label basic>Date:  </Label>
                             {/* <h3>Title: </h3> */}
-                            <h3>Type: </h3>
-                            <h3>From: </h3>
-                            <h3>To: </h3>
+                            <h3>Type: {selectedOrder.type} </h3>
+                            <h3>From: {selectedOrder.from}</h3>
+                            <h3>To: {selectedOrder.to}</h3>
 
                             <Label basic color="pink" size="small">
-                                TOTAL PRICE: $5000
+                                TOTAL PRICE: {selectedOrder.price} {selectedOrder.currency}
                             </Label>
-                            <Label basic color="pink" size="small">STATUS: {orderTite.payment}</Label>
+                            <Label basic color="pink" size="small">STATUS: {orderTite[selectedOrder.status]}</Label>
                             <Popup trigger={<Icon name="info circle" color="black" />}>
                                 <Popup.Header>
                                     5 transaction stages
@@ -335,22 +435,22 @@ export default class Account extends Component {
                             </p>
                             
                             <List divided relaxed >
-                                <List.Item>
-                                    <List.Content floated='right'>
-                                        $5000
-                                    </List.Content>
-                                    <List.Content>
-                                        <List.Header>10CM * 10CM * 15KG</List.Header>
-                                    </List.Content>
-                                </List.Item>
-                                <List.Item>
-                                    <List.Content floated='right'>
-                                        $5000
-                                    </List.Content>
-                                    <List.Content>
-                                        <List.Header>10CM * 10CM * 15KG</List.Header>
-                                    </List.Content>
-                                </List.Item>
+                                {selectedOrder.packages && selectedOrder.packages.map((pack) => 
+                                    <List.Item>
+                                        <List.Content floated='right'>
+                                            {pack.price} {selectedOrder.currency}
+                                        </List.Content>
+                                        <List.Content>
+                                            <List.Header>{pack.length}CM * {pack.width}CM * {pack.height}CM * {pack.weight}KG <Popup trigger={<Icon name="info circle" />}>
+                                                    <Popup.Content> Length: {pack.length} CM </Popup.Content>
+                                                    <Popup.Content> Width: {pack.width} CM </Popup.Content>
+                                                    <Popup.Content> Height: {pack.height} CM </Popup.Content>
+                                                    <Popup.Content> Weight: {pack.weight} KG </Popup.Content>
+                                                </Popup>
+                                            </List.Header>
+                                        </List.Content>
+                                    </List.Item>
+                                )}
                             </List>
 
                             <Divider />

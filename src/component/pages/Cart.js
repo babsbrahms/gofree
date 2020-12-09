@@ -17,7 +17,7 @@ const Cart = () => {
                 <div style={style.center}>
                     <Header textAlign icon>
                         <Icon circular name="shopping cart" />
-                        You cart is empty!
+                        Your cart is empty!
                     </Header>
                 </div>
 

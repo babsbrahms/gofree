@@ -20,9 +20,9 @@
         "userId": "user.id",
         "status": "order | payment | collect | shipping | delivery",
         "paid": false,
-        "orderOn": "date",
+        "orderedOn": "date",
         "deliveredOn": "date",
-        "amount": "",
+        "price": 0,
         "currency": "",
         "address": {
             "address": "",

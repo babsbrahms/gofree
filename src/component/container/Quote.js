@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Form, Input, Icon, List, Label, Segment, Radio } from "semantic-ui-react";
+import validator from "validator"
 
 const fromOption = [
     { key: 'UK', text: 'UK', value: 'uk' },
@@ -24,7 +25,9 @@ const Quote = ({ color="black", bg="black" }) => {
         // where: "lagos",
         email: ""
     })
-    const [packages, SetPackages] = useState([{ weight: "", height: "", length: "", width: "" }])
+    const [packages, SetPackages] = useState([{ weight: "", height: "", length: "", width: "" }]);
+    const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false)
 
     const addPackage = () => SetPackages([...packages, { weight: "", height: "", length: "", width: "" }]);
 
@@ -35,8 +38,28 @@ const Quote = ({ color="black", bg="black" }) => {
 
     const addData = ({ name, value}) => setData({ ...data, [name]: value })
 
+    const validate = (data) => {
+        let err = {}
+            if (!data.type) err.type = "This field is required";
+            if (!validator.isEmail(data.email || "")) err.email = "Enter a valid email"
+            if (!data.from) err.from = "This field is required";
+            if (!data.to) err.to = "This field is required";
+        return err
+    }
+
+    const getQuote = () => {
+        setErrors({})
+        let errors = validate(data, packages)
+
+        if (Object.keys(errors).length === 0) {
+            setLoading(true)
+        } else {
+            setErrors(errors)
+        }
+    }
+
     return (
-        <Segment style={{ padding: 20 }}>
+        <Segment loading={loading} style={{ padding: 20 }}>
             <Form>
                 <Form.Field>
                     <Form.Dropdown
@@ -50,6 +73,7 @@ const Quote = ({ color="black", bg="black" }) => {
                         name="type"
                         onChange={(e, data) => addData(data)}
                         placeholder={"Parcel or package"}
+                        error={errors.type}
                     />
                 </Form.Field>
                 <Form.Field>
@@ -64,6 +88,7 @@ const Quote = ({ color="black", bg="black" }) => {
                         name="from"
                         onChange={(e, data) => addData(data)}
                         placeholder={"Add pakage or parcel pick up location"}
+                        error={errors.from}
                     />
                 </Form.Field>
                 <Form.Field>
@@ -78,6 +103,7 @@ const Quote = ({ color="black", bg="black" }) => {
                         name="to"
                         onChange={(e, data) => addData(data)}
                         placeholder={"Add pakage or parcel destination"}
+                        error={errors.to}
                     />
                 </Form.Field>
                 {/* {(data.to === 'nigeria') && (
@@ -118,6 +144,7 @@ const Quote = ({ color="black", bg="black" }) => {
                         name="email"
                         onChange={(e, data) => addData(data)}
                         placeholder={"Add your email address"}
+                        error={errors.email}
                     />
                 </Form.Field>
 
@@ -172,8 +199,8 @@ const Quote = ({ color="black", bg="black" }) => {
                         </List.Content> */}
                     </List.Item>
                 </List>
-                <Segment clearing style={{ backgroundColor: bg }}>
-                    <Button floated="right" inverted color={color} type='submit'>GET QUOTE</Button>
+                <Segment clearing>
+                    <Button floated="right" color={color} type='submit' onClick={() => getQuote()} >GET QUOTE</Button>
                 </Segment>
                 
             </Form>
