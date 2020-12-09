@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Table, Icon, Menu, Segment, Label, Card, Form, List, Button, Modal, Popup, Divider } from 'semantic-ui-react';
+import { Table, Icon, Menu, Segment, Label, Card, Form, List, Button, Modal, Popup, Divider, Dropdown } from 'semantic-ui-react';
 import validator from "validator"
 import { currentUser } from "../fbase"
 import "../css/style.css"
@@ -20,9 +20,8 @@ export default class Account extends Component {
         errors: {},
         openOrderDetail: false,
         selectedOrder: {},
-        orders: [
-
-        ]
+        orders: [],
+        quotes: []
 
     }
 
@@ -49,20 +48,29 @@ export default class Account extends Component {
                 "from": "Nigeria",
                 "to": "Uk",
                 "type": "parcel",
-                "packages": [{
-                    length: 10,
-                    width: 10,
-                    height: 10,
-                    weight: 15,
-                    price: 5000
-                }],
+                "packages": [
+                    {
+                        length: 10,
+                        width: 10,
+                        height: 10,
+                        weight: 15,
+                        price: 5000
+                    },
+                    {
+                        length: 10,
+                        width: 10,
+                        height: 10,
+                        weight: 15,
+                        price: 5000
+                    },
+                ],
                 "email": "user.email",
                 "userId": "user.id",
                 "status": "shipping",
                 "paid": false,
                 "orderedOn": "20-20-2020",
                 "deliveredOn": "20-20-2020",
-                "price": 1000,
+                "price": 10000,
                 "currency": "Naira",
                 "address": {
                     "address": "No 21, Lagos Street, Garki, Abuja",
@@ -76,8 +84,34 @@ export default class Account extends Component {
             }
         ];
 
+        const quotes = [
+            {
+                "currency": "Naira",
+                "id": "13dwee33112H",
+                "from": "Nigeria",
+                "to": "Uk",
+                "type": "parcel",
+                "packages": [
+                {
+                    length: 10,
+                    width: 10,
+                    height: 10,
+                    weight: 15,
+                    price: 5000
+                },
+                {
+                    length: 10,
+                    width: 10,
+                    height: 10,
+                    weight: 15,
+                    price: 5000
+                }
+            ],
+            }
+        ]
+
         setTimeout(() => {
-            this.setState({ user, orders,
+            this.setState({ user, orders, quotes,
                 loadingAccount: false,
                 loadingOrders: false,
             })
@@ -137,7 +171,7 @@ export default class Account extends Component {
     }
 
     render() {
-        const { activeItem, loadingAccount, user, errors, editAccount, openOrderDetail, selectedOrder, orders, loadingOrders } = this.state;
+        const { activeItem, loadingAccount, user, errors, editAccount, openOrderDetail, selectedOrder, orders, loadingOrders, quotes } = this.state;
 
         return (
             <div id="gofree-bg">
@@ -284,11 +318,11 @@ export default class Account extends Component {
                             {orders.map(order => (
                             <List.Item>
                                 <List.Content floated='right'>
-                                    <Button size="small" color="black" onClick={() => this.setState({ openOrderDetail: true, selectedOrder: order })}>VIEW DETAILS</Button>
+                                    <Button size="mini" color="black" onClick={() => this.setState({ openOrderDetail: true, selectedOrder: order })}>VIEW DETAILS</Button>
                                 </List.Content>
                                 <List.Icon name={orderStatus[order.status]} size='large' verticalAlign='middle' />
                                 <List.Content>
-                                    <List.Header>{order.packages.length} {order.type} from {order.from} to {order.to}</List.Header>
+                                    <List.Header>{order.packages.length} {order.type}(s) from {order.from} to {order.to}</List.Header>
                                     <List.Description>
                                         Ordered on {order.orderedOn}
                                     </List.Description>
@@ -336,54 +370,51 @@ export default class Account extends Component {
                     )}
 
                     {(activeItem === 'saved quote') &&  (
-                    <Table celled unstackable>
-                        <Table.Header>
-                            <Table.Row>
-                            <Table.HeaderCell>Header</Table.HeaderCell>
-                            <Table.HeaderCell>Header</Table.HeaderCell>
-                            <Table.HeaderCell>Header</Table.HeaderCell>
-                            </Table.Row>
-                        </Table.Header>
-
-                        <Table.Body>
-                            <Table.Row>
-                            <Table.Cell>
-                                <Label ribbon>First</Label>
-                            </Table.Cell>
-                            <Table.Cell>Cell</Table.Cell>
-                            <Table.Cell>Cell</Table.Cell>
-                            </Table.Row>
-                            <Table.Row>
-                            <Table.Cell>Cell</Table.Cell>
-                            <Table.Cell>Cell</Table.Cell>
-                            <Table.Cell>Cell</Table.Cell>
-                            </Table.Row>
-                            <Table.Row>
-                            <Table.Cell>Cell</Table.Cell>
-                            <Table.Cell>Cell</Table.Cell>
-                            <Table.Cell>Cell</Table.Cell>
-                            </Table.Row>
-                        </Table.Body>
-
-                        <Table.Footer>
-                            <Table.Row>
-                            <Table.HeaderCell colSpan='3'>
-                                <Menu floated='right' pagination>
-                                <Menu.Item as='a' icon>
-                                    <Icon name='chevron left' />
-                                </Menu.Item>
-                                <Menu.Item as='a'>1</Menu.Item>
-                                <Menu.Item as='a'>2</Menu.Item>
-                                <Menu.Item as='a'>3</Menu.Item>
-                                <Menu.Item as='a'>4</Menu.Item>
-                                <Menu.Item as='a' icon>
-                                    <Icon name='chevron right' />
-                                </Menu.Item>
-                                </Menu>
-                            </Table.HeaderCell>
-                            </Table.Row>
-                        </Table.Footer>
-                    </Table>
+                    <Segment>
+                        <List divided relaxed>
+                            {quotes.map(quote => (
+                            <List.Item>
+                                <List.Content floated='right'>
+                                    <Dropdown icon="ellipsis vertical" pointing="right">
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item  text='Add To Cart' />
+                                            <Dropdown.Item  text='Edit' />
+                                            <Dropdown.Item  text='Delete'  />
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </List.Content>
+                                <List.Icon name={orderStatus.order} />
+                                <List.Content>
+                                    <List.Header>{quote.packages.length} {quote.type} from {quote.from} to {quote.to}</List.Header>
+                                    <List.Description>Saved on {quote.savedOn}</List.Description>
+                                    <List.Description>
+                                        <Label basic color="pink" size="small" >
+                                            TOTAL PRICE: {quote.price} {quote.currency}
+                                        </Label>
+                                    </List.Description>
+                                    <List.List>
+                                        {quote.packages.map((pack) => 
+                                            <List.Item>
+                                                <List.Content floated='right'>
+                                                    {pack.price} {quote.currency}
+                                                </List.Content>
+                                                <List.Content>
+                                                    <List.Header>{pack.length}CM * {pack.width}CM * {pack.height}CM * {pack.weight}KG <Popup trigger={<Icon name="info circle" />}>
+                                                            <Popup.Content> Length: {pack.length} CM </Popup.Content>
+                                                            <Popup.Content> Width: {pack.width} CM </Popup.Content>
+                                                            <Popup.Content> Height: {pack.height} CM </Popup.Content>
+                                                            <Popup.Content> Weight: {pack.weight} KG </Popup.Content>
+                                                        </Popup>
+                                                    </List.Header>
+                                                </List.Content>
+                                            </List.Item>
+                                        )}
+                                    </List.List>
+                                </List.Content>
+                            </List.Item>
+                            ))}
+                        </List>
+                    </Segment>
                     )}
 
                     <Modal 
@@ -428,7 +459,7 @@ export default class Account extends Component {
                                     <Icon name={orderStatus.delivery} />{orderTite.delivery}
                                 </Popup.Content>
                             </Popup>
-
+                            {(selectedOrder.status === "delivery") && (<Label basic color="pink" size="small">DELIVERED OB: {selectedOrder.deliveredOn}</Label>)}
                             <Divider />
                             <p style={{ textAlign: "center"}}>
                                 <b>PACKAGES</b>

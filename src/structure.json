@@ -9,7 +9,8 @@
             "state": "",
             "city": ""
         },
-        "createdAt": "date"
+        "createdAt": "date",
+        "admin": false
     },
     "orders": {
         "from": "",
@@ -22,6 +23,7 @@
         "paid": false,
         "orderedOn": "date",
         "deliveredOn": "date",
+        "savedOn": "date",
         "price": 0,
         "currency": "",
         "address": {
@@ -33,5 +35,8 @@
         "payment": {
 
         }
+    },
+    "invoice": {
+        
     }
 }

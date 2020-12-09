@@ -13,7 +13,7 @@ const UserRoute = ({component: Component, ...rest }) => {
     const [isVerified, setVerify] = useState(false)
     const [hasProfile, setProfile] = useState(false)
     const [sending, setSending] = useState(false);
-    const [user, setUser] = useState({ uid: '', email: ''})
+    const [user, setUser] = useState({ uid: '', email: '' })
     const [errors, setError] = useState({})
     const [data, addData] = useState({})
     const [disable, setDisable] = useState(false)
