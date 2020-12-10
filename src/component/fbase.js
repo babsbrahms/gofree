@@ -232,6 +232,18 @@ export const createAdminSuperUser = (email, res, error) => firebase.firestore().
     error(err)
 })
 
+
+export const fetchMyAdmin = (userId, res, error) => firebase.firestore().collection("admins").doc(userId).onSnapshot((snapshot) => {
+    let data = {};
+    if (snapshot.exists) {
+        data = { id: snapshot.id, ...snapshot.data()}
+    } 
+
+    res(data)
+}, (err) => {
+    err(error)
+})
+
 /////ACCOUNT
 export const fetchMySavedQuote = (userId, res, error) => firebase.firestore().collection("orders").where("userId", "==", userId).where("paid", "==", false).limit(25).onSnapshot((snapshot) => {
     let list =[];
@@ -278,7 +290,7 @@ export const deleteOrder = (id, res, error) => firebase.firestore().collection("
         error(err)
     })
 
-export const undateOrderStatus = (id, status, res, error) => {
+export const updateOrderStatus = (id, status, res, error) => {
     let key = `date.${status}`
     return firebase.firestore().collection("orders").doc(id).update({
         status,

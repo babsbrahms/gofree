@@ -29,7 +29,7 @@ export default class Account extends Component {
     componentDidMount() {
         let user = currentUser()
         if (user && user.uid) {
-            this.getUser()
+            this.getUser(user.uid)
             this.getOrder(user.uid)
             this.getSaveQuote(user.uid)
         }

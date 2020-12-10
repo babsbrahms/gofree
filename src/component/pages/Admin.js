@@ -1,89 +1,99 @@
 import React, { Component } from 'react'
 import { Table, Icon, Menu, Segment, Label, Card, Form, List, Button, Modal, Popup, Divider, Dropdown } from 'semantic-ui-react';
 import "../css/style.css"
-import styles from "../../styles"
-import Quote from "../container/Quote"
 import { orderStatus, orderTite } from "../../utils/resources"
+import { fetchAdminUsers, fetchOrders, fetchUsers, createAdmin, createAdminSuperUser, deleteAdmin, updateOrderStatus, fetchMyAdmin, currentUser } from "../fbase"
 
 export default class Admin extends Component {
     state = { 
+        me: {},
         activeItem: 'stats',
         loadingOrders: true,
-        loadingAccounts: true,
+        loadingUsers: true,
         loadingStats: true,
+        loadingAdmins: false,
         errors: {},
         orderIndex: 0,
         openOrderDetail: false,
         selectedOrder: {},
         orders: [],
-        accountIndex: 0,
+        userIndex: 0,
         openAccountDetail: false,
-        selectedAccount: {},
-        accounts: [],
+        selectedUser: {},
+        users: [],
+        admins: []
 
     }
 
     componentDidMount() {
+        this.getAdmins()
+        this.getOrder()
         this.getUser()
     }
-    
-    getUser = () => {
-      
-        const orders= [
-            {
-                "id": "13dwee33112H",
-                "from": "Nigeria",
-                "to": "Uk",
-                "type": "parcel",
-                "packages": [
-                    {
-                        length: 10,
-                        width: 10,
-                        height: 10,
-                        weight: 15,
-                        price: 5000
-                    },
-                    {
-                        length: 10,
-                        width: 10,
-                        height: 10,
-                        weight: 15,
-                        price: 5000
-                    },
-                ],
-                "email": "user.email",
-                "userId": "user.id",
-                "status": "shipping",
-                "paid": false,
-                "orderedOn": "20-20-2020",
-                "deliveredOn": "20-20-2020",
-                "price": 10000,
-                "currency": "Naira",
-                "address": {
-                    "address": "No 21, Lagos Street, Garki, Abuja",
-                    "country": "Nigeria",
-                    "state": "FCT",
-                    "city": "Abuja"
-                },
-                "payment": {
-        
-                }
-            }
-        ];
 
 
-        setTimeout(() => {
-            this.setState({
-                orders,
-                loadingOrders: false,
+    componentWillUnmount() {
+        if (this.unOrder) {
+            this.unOrder()
+        }
+
+        if (this.unUser) {
+            this.unUser()
+        }
+
+        if (this.unAdmin) {
+            this.unAdmin()
+        }
+
+        if (this.this.unMyUser) {
+            this.unMyUser()
+        }
+    }
+
+    getMe = () => {
+        let user = currentUser()
+
+        if (user && user.uid) {
+            this.unMyUser = fetchMyAdmin(user.uid, (res) => {
+                this.setState({ me:  res })
+            }, (err) => {
+                alert(err.message)
             })
-        }, 1000)
+        }
+
+    }
+    
+    getUser = (id) => {
+        this.unUser = fetchUsers((res) => {
+            this.setState({ loadingUsers: false, users:  res })
+        }, (err) => {
+            this.setState({ loadingUsers: false })
+            alert(err.message)
+        })
+    }
+    
+    getOrder = (id) => {
+        this.unOrder = fetchOrders((res) => {
+            this.setState({ loadingOrders: false, orders:  res })
+        }, (err) => {
+            this.setState({ loadingOrders: false })
+            alert(err.message)
+        })
+    }
+
+    getAdmins = () => {
+        this.Admin = fetchAdminUsers((res) => {
+            this.setState({ loadingAdmins: false, admins: res })
+        },(err) => {
+            this.setState({ loadingAdmins: false })
+            alert(err.message)
+        })
     }
 
     handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
     render() {
-        const { activeItem, loadingAccounts, openOrderDetail, selectedOrder, orders, loadingOrders, accounts, orderIndex, accountIndex } = this.state;
+        const { activeItem, loadingUsers, openOrderDetail, selectedOrder, orders, loadingOrders, users, orderIndex, userIndex, loadingAdmins } = this.state;
 
         return (
             <div id="gofree-bg">
@@ -100,9 +110,15 @@ export default class Admin extends Component {
                     />
 
                     <Menu.Item
-                        name='accounts'
+                        name='admin'
+                        icon="user doctor"
+                        active={activeItem === 'admin'}
+                        onClick={this.handleItemClick}
+                    />
+                    <Menu.Item
+                        name='users'
                         icon="user"
-                        active={activeItem === 'accounts'}
+                        active={activeItem === 'users'}
                         onClick={this.handleItemClick}
                     />
                     <Menu.Item
@@ -116,11 +132,11 @@ export default class Admin extends Component {
 
                 <Segment id="gofree-content" >
                     {(activeItem === 'stats') && (
-                        <Segment style={{ backgroundColor: "steelblue"}}>
+                        <Segment>
                             <Card.Group centered stackable itemsPerRow="3">
                                 <Card link color="pink">
                                     <Card.Content>
-                                        <Card.Header>Accounts</Card.Header>
+                                        <Card.Header>Users</Card.Header>
                                         <Card.Description>35</Card.Description>
                                     </Card.Content>
                                 </Card>
@@ -142,81 +158,125 @@ export default class Admin extends Component {
                         </Segment>
                     )}
 
-                    {(activeItem === 'accounts') && (
-                    <Table unstackable>
-                        <Table.Header>
-                            <Table.Row>
-                                <Table.HeaderCell>Name</Table.HeaderCell>
-                                <Table.HeaderCell>Registration Date</Table.HeaderCell>
-                                <Table.HeaderCell>E-mail address</Table.HeaderCell>
-                                <Table.HeaderCell>ACTION</Table.HeaderCell>
-                            </Table.Row>
-                        </Table.Header>
-                    
-                        <Table.Body>
-                            {accounts.map((account, key) => (
-                            <Table.Row key={accounts.email}>
-                                <Table.Cell>{account.name}</Table.Cell>
-                                <Table.Cell>September 14, 2013</Table.Cell>
-                                <Table.Cell>{account.email}</Table.Cell>
-                                <Table.Cell><Button size="mini" color="black" onClick={() => this.setState({ openAccountDetail: true, selectedAccount: account })}>VIEW DETAILS</Button></Table.Cell>
-                            </Table.Row>
-                            ))}
-                        </Table.Body>
+                    {(activeItem === 'admin') && (
+                    <Segment loading={loadingAdmins}>
+                        <Table unstackable>
+                            <Table.Header>
+                                <Table.Row>
+                                    <Table.HeaderCell>Name</Table.HeaderCell>
+                                    <Table.HeaderCell>E-mail address</Table.HeaderCell>
+                                    <Table.HeaderCell>ACTION</Table.HeaderCell>
+                                </Table.Row>
+                            </Table.Header>
+                        
+                            <Table.Body>
+                                {users.map((user, key) => (
+                                <Table.Row key={users.email}>
+                                    <Table.Cell>{user.name}</Table.Cell>
+                                    <Table.Cell>{user.email}</Table.Cell>
+                                    <Table.Cell><Button size="mini" color="black" onClick={() => {}}>DELETE</Button></Table.Cell>
+                                </Table.Row>
+                                ))}
+                            </Table.Body>
 
-                        <Table.Footer>
-                            <Table.Row>
-                                <Table.HeaderCell colSpan='4'>
-                                <Menu floated='right' pagination>
-                                    <Menu.Item disabled={accountIndex === 0} as='a' icon>
-                                        <Icon name='chevron left' />
-                                    </Menu.Item>
-                                    <Menu.Item disabled={accounts.length < 25} as='a' icon>
-                                        <Icon name='chevron right' />
-                                    </Menu.Item>
-                                </Menu>
-                                </Table.HeaderCell>
-                            </Table.Row>
-                        </Table.Footer>
-                    </Table>
+                            <Table.Footer>
+                                <Table.Row>
+                                    <Table.HeaderCell colSpan='4'>
+                                    <Menu floated='right' pagination>
+                                        <Menu.Item disabled={userIndex === 0} as='a' icon>
+                                            <Icon name='chevron left' />
+                                        </Menu.Item>
+                                        <Menu.Item disabled={users.length < 25} as='a' icon>
+                                            <Icon name='chevron right' />
+                                        </Menu.Item>
+                                    </Menu>
+                                    </Table.HeaderCell>
+                                </Table.Row>
+                            </Table.Footer>
+                        </Table>
+                    </Segment>
+                    )}
+
+
+                    {(activeItem === 'users') && (
+                    <Segment loading={loadingUsers}>
+                        <Table unstackable>
+                            <Table.Header>
+                                <Table.Row>
+                                    <Table.HeaderCell>Name</Table.HeaderCell>
+                                    <Table.HeaderCell>Registration Date</Table.HeaderCell>
+                                    <Table.HeaderCell>E-mail address</Table.HeaderCell>
+                                    <Table.HeaderCell>ACTION</Table.HeaderCell>
+                                </Table.Row>
+                            </Table.Header>
+                        
+                            <Table.Body>
+                                {users.map((user, key) => (
+                                <Table.Row key={users.email}>
+                                    <Table.Cell>{user.name}</Table.Cell>
+                                    <Table.Cell>September 14, 2013</Table.Cell>
+                                    <Table.Cell>{user.email}</Table.Cell>
+                                    <Table.Cell><Button size="mini" color="black" onClick={() => this.setState({ openAccountDetail: true, selectedUser: user })}>VIEW DETAILS</Button></Table.Cell>
+                                </Table.Row>
+                                ))}
+                            </Table.Body>
+
+                            <Table.Footer>
+                                <Table.Row>
+                                    <Table.HeaderCell colSpan='4'>
+                                    <Menu floated='right' pagination>
+                                        <Menu.Item disabled={userIndex === 0} as='a' icon>
+                                            <Icon name='chevron left' />
+                                        </Menu.Item>
+                                        <Menu.Item disabled={users.length < 25} as='a' icon>
+                                            <Icon name='chevron right' />
+                                        </Menu.Item>
+                                    </Menu>
+                                    </Table.HeaderCell>
+                                </Table.Row>
+                            </Table.Footer>
+                        </Table>
+                    </Segment>
                     )}
                     {(activeItem === 'orders') &&  (
-                    <Table celled unstackable>
-                        <Table.Header>
-                        <Table.Row>
-                            <Table.HeaderCell>ORDER NO</Table.HeaderCell>
-                            <Table.HeaderCell>DESCRIPTION</Table.HeaderCell>
-                            <Table.HeaderCell>STATUS</Table.HeaderCell>
-                            <Table.HeaderCell>ACTION</Table.HeaderCell>
-                        </Table.Row>
-                        </Table.Header>
-                    
-                        <Table.Body>
-                        {orders.map(order => (
+                    <Segment loading={loadingOrders}>
+                        <Table celled unstackable>
+                            <Table.Header>
                             <Table.Row>
-                                <Table.Cell>{order.id}</Table.Cell>
-                                <Table.Cell>{order.packages.length} {order.type}(s) from {order.from} to {order.to}</Table.Cell>
-                                <Table.Cell>{orderTite[order.status]}</Table.Cell>
-                                <Table.Cell><Button size="mini" color="black" onClick={() => this.setState({ openOrderDetail: true, selectedOrder: order })}>VIEW DETAILS</Button></Table.Cell>
+                                <Table.HeaderCell>ORDER NO</Table.HeaderCell>
+                                <Table.HeaderCell>DESCRIPTION</Table.HeaderCell>
+                                <Table.HeaderCell>STATUS</Table.HeaderCell>
+                                <Table.HeaderCell>ACTION</Table.HeaderCell>
                             </Table.Row>
-                        ))}
-                        </Table.Body>
-                    
-                        <Table.Footer>
-                            <Table.Row>
-                                <Table.HeaderCell colSpan='4'>
-                                <Menu floated='right'  pagination>
-                                    <Menu.Item as='a' disabled={orderIndex === 0} icon>
-                                        <Icon name='chevron left' />
-                                    </Menu.Item>
-                                    <Menu.Item as='a' disabled={orders.length < 25} icon>
-                                        <Icon name='chevron right' />
-                                    </Menu.Item>
-                                </Menu>
-                                </Table.HeaderCell>
-                            </Table.Row>
-                        </Table.Footer>
-                    </Table>
+                            </Table.Header>
+                        
+                            <Table.Body>
+                            {orders.map(order => (
+                                <Table.Row>
+                                    <Table.Cell>{order.id}</Table.Cell>
+                                    <Table.Cell>{order.packages.length} {order.type}(s) from {order.from} to {order.to}</Table.Cell>
+                                    <Table.Cell>{orderTite[order.status]}</Table.Cell>
+                                    <Table.Cell><Button size="mini" color="black" onClick={() => this.setState({ openOrderDetail: true, selectedOrder: order })}>VIEW DETAILS</Button></Table.Cell>
+                                </Table.Row>
+                            ))}
+                            </Table.Body>
+                        
+                            <Table.Footer>
+                                <Table.Row>
+                                    <Table.HeaderCell colSpan='4'>
+                                    <Menu floated='right'  pagination>
+                                        <Menu.Item as='a' disabled={orderIndex === 0} icon>
+                                            <Icon name='chevron left' />
+                                        </Menu.Item>
+                                        <Menu.Item as='a' disabled={orders.length < 25} icon>
+                                            <Icon name='chevron right' />
+                                        </Menu.Item>
+                                    </Menu>
+                                    </Table.HeaderCell>
+                                </Table.Row>
+                            </Table.Footer>
+                        </Table>
+                    </Segment>
                     )}
 
                     <Modal 
