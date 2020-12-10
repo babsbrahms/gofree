@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Table, Icon, Menu, Segment, Label, Card, Form, List, Button, Modal, Popup, Divider, Dropdown } from 'semantic-ui-react';
 import validator from "validator"
-import { currentUser } from "../fbase"
+import { currentUser, signOut, fetchMySavedQuote, fetchMyOrders, fetchMyUser } from "../fbase"
 import "../css/style.css"
 import styles from "../../styles"
 import Quote from "../container/Quote"
@@ -12,6 +12,7 @@ export default class Account extends Component {
         activeItem: 'account',
         loadingAccount: true,
         loadingOrders: true,
+        loadingQuote: true,
         editAccount: false,
         user: {
 
@@ -26,96 +27,55 @@ export default class Account extends Component {
     }
 
     componentDidMount() {
-        this.getUser()
+        let user = currentUser()
+        if (user && user.uid) {
+            this.getUser()
+            this.getOrder(user.uid)
+            this.getSaveQuote(user.uid)
+        }
+
+    }
+
+
+    componentWillUnmount() {
+        if (this.unOrder) {
+            this.unOrder()
+        }
+
+        if (this.unUser) {
+            this.unUser()
+        }
+
+        if (this.unQuote) {
+            this.unQuote()
+        }
     }
     
-    getUser = () => {
-      
-        const user = {
-            name: "Yinka Ibrahim",
-            email: "ib@gmail.co",
-            "address": {
-                "address": "No 21, Lagos Street, Garki, Abuja",
-                "country": "Nigeria",
-                "state": "FCT",
-                "city": "Abuja"
-            },
-        };
+    getUser = (id) => {
+        this.unUser = fetchMyUser(id, (res) => {
+            this.setState({ loadingAccount: false, user:  res })
+        }, (err) => {
+            this.setState({ loadingAccount: false })
+            alert(err.message)
+        })
+    }
+    
+    getOrder = (id) => {
+        this.unOrder = fetchMyOrders(id, (res) => {
+            this.setState({ loadingOrders: false, orders:  res })
+        }, (err) => {
+            this.setState({ loadingOrders: false })
+            alert(err.message)
+        })
+    }
 
-        const orders= [
-            {
-                "id": "13dwee33112H",
-                "from": "Nigeria",
-                "to": "Uk",
-                "type": "parcel",
-                "packages": [
-                    {
-                        length: 10,
-                        width: 10,
-                        height: 10,
-                        weight: 15,
-                        price: 5000
-                    },
-                    {
-                        length: 10,
-                        width: 10,
-                        height: 10,
-                        weight: 15,
-                        price: 5000
-                    },
-                ],
-                "email": "user.email",
-                "userId": "user.id",
-                "status": "shipping",
-                "paid": false,
-                "orderedOn": "20-20-2020",
-                "deliveredOn": "20-20-2020",
-                "price": 10000,
-                "currency": "Naira",
-                "address": {
-                    "address": "No 21, Lagos Street, Garki, Abuja",
-                    "country": "Nigeria",
-                    "state": "FCT",
-                    "city": "Abuja"
-                },
-                "payment": {
-        
-                }
-            }
-        ];
-
-        const quotes = [
-            {
-                "currency": "Naira",
-                "id": "13dwee33112H",
-                "from": "Nigeria",
-                "to": "Uk",
-                "type": "parcel",
-                "packages": [
-                {
-                    length: 10,
-                    width: 10,
-                    height: 10,
-                    weight: 15,
-                    price: 5000
-                },
-                {
-                    length: 10,
-                    width: 10,
-                    height: 10,
-                    weight: 15,
-                    price: 5000
-                }
-            ],
-            }
-        ]
-
-        setTimeout(() => {
-            this.setState({ user, orders, quotes,
-                loadingAccount: false,
-                loadingOrders: false,
-            })
-        }, 1000)
+    getSaveQuote = (id) => {
+        this.unQuote = fetchMySavedQuote(id, (res) => {
+            this.setState({ loadingQuote: false, quotes: res })
+        },(err) => {
+            this.setState({ loadingOrders: false })
+            alert(err.message)
+        })
     }
 
     handleItemClick = (e, { name }) => this.setState({ activeItem: name })
@@ -171,7 +131,7 @@ export default class Account extends Component {
     }
 
     render() {
-        const { activeItem, loadingAccount, user, errors, editAccount, openOrderDetail, selectedOrder, orders, loadingOrders, quotes } = this.state;
+        const { activeItem, loadingAccount, user, errors, editAccount, openOrderDetail, selectedOrder, orders, loadingOrders, quotes, loadingQuote } = this.state;
 
         return (
             <div id="gofree-bg">
@@ -236,6 +196,11 @@ export default class Account extends Component {
                                     {(user.address) && (<Card.Description>
                                         {user.address.city} {user.address.state}, {user.address.country}
                                     </Card.Description>)}
+                                </Card.Content>)}
+                                {(!editAccount) && (<Card.Content extra>
+                                    <Button color="red" basic fluid onClick={() => signOut()}>
+                                        LOG OUT
+                                    </Button>
                                 </Card.Content>)}
                                 {(editAccount) && (<Card.Content>
                                     <Form>
@@ -324,7 +289,7 @@ export default class Account extends Component {
                                 <List.Content>
                                     <List.Header>{order.packages.length} {order.type}(s) from {order.from} to {order.to}</List.Header>
                                     <List.Description>
-                                        Ordered on {order.orderedOn}
+                                        Ordered on "DATE"
                                     </List.Description>
                                     <List.Description as='a'>order no: {order.id}</List.Description>
                                     <List.Description>
@@ -370,7 +335,7 @@ export default class Account extends Component {
                     )}
 
                     {(activeItem === 'saved quote') &&  (
-                    <Segment>
+                    <Segment loading={loadingQuote}>
                         <List divided relaxed>
                             {quotes.map(quote => (
                             <List.Item>
@@ -386,7 +351,7 @@ export default class Account extends Component {
                                 <List.Icon name={orderStatus.order} />
                                 <List.Content>
                                     <List.Header>{quote.packages.length} {quote.type} from {quote.from} to {quote.to}</List.Header>
-                                    <List.Description>Saved on {quote.savedOn}</List.Description>
+                                    <List.Description>Saved on 'DATE'</List.Description>
                                     <List.Description>
                                         <Label basic color="pink" size="small" >
                                             TOTAL PRICE: {quote.price} {quote.currency}
@@ -459,7 +424,7 @@ export default class Account extends Component {
                                     <Icon name={orderStatus.delivery} />{orderTite.delivery}
                                 </Popup.Content>
                             </Popup>
-                            {(selectedOrder.status === "delivery") && (<Label basic color="pink" size="small">DELIVERED OB: {selectedOrder.deliveredOn}</Label>)}
+                            {(selectedOrder.status === "delivery") && (<Label basic color="pink" size="small">DELIVERED ON: 'DATE'</Label>)}
                             <Divider />
                             <p style={{ textAlign: "center"}}>
                                 <b>PACKAGES</b>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Form, Input, Icon, List, Label, Segment, Radio } from "semantic-ui-react";
+import { Button, Form, Input, Icon, List, Label, Segment } from "semantic-ui-react";
 import validator from "validator"
 
 const fromOption = [
@@ -36,21 +36,47 @@ const Quote = ({ color="black", bg="black" }) => {
         SetPackages([ ...packages ])
     }
 
+    const addItemToPackage = (data, index) => {
+        let pk = {
+            ...packages[index],
+            [data.name] : parseFloat(data.value)
+        }
+        packages[index] = pk;
+        SetPackages([ ...packages ])
+    }
+
     const addData = ({ name, value}) => setData({ ...data, [name]: value })
 
-    const validate = (data) => {
+    const validate = (data, packages) => {
         let err = {}
             if (!data.type) err.type = "This field is required";
             if (!validator.isEmail(data.email || "")) err.email = "Enter a valid email"
             if (!data.from) err.from = "This field is required";
             if (!data.to) err.to = "This field is required";
+            if (packages.length === 0) {
+                err.emptyPackage = "Add a minimum of one package to get a quote"
+            } else  {
+                let hasError = false
+                let list = packages.map(pk => {
+                    if (!pk.weight || !pk.height || !pk.length || !pk.width) {
+                        hasError = true;
+                    }
+                    return {
+                        weight: !Boolean(pk.weight) , height: !Boolean(pk.height), length: !Boolean(pk.length), width: !Boolean(pk.width)
+                    }
+                });
+
+                if (hasError) {
+                    err.packages = list;
+                }
+            }
         return err
     }
 
     const getQuote = () => {
         setErrors({})
         let errors = validate(data, packages)
-
+        console.log(errors);
         if (Object.keys(errors).length === 0) {
             setLoading(true)
         } else {
@@ -160,8 +186,17 @@ const Quote = ({ color="black", bg="black" }) => {
                                         label={{ basic: true, content: 'kg' }}
                                         labelPosition='right'
                                         placeholder='Enter weight...'
-                                        
+                                        type="number"
+                                        name="weight"
+                                        onChange={(e, data) => addItemToPackage(data, index)} 
+                                        defaultValue={pack.weight}   
+                                        error={errors.packages && errors.packages[index] && errors.packages[index].weight && { content: "Required!!"}} 
                                     />
+                                    {(errors.packages && errors.packages[index] && errors.packages[index].weight) &&(
+                                        <Label size="small" basic color="red" pointing="above">
+                                            Required
+                                        </Label>
+                                    )}
                                 </Form.Field>
                                 <Form.Field>
                                     <label>Length</label>
@@ -169,7 +204,17 @@ const Quote = ({ color="black", bg="black" }) => {
                                         label={{ basic: true, content: 'cm' }}
                                         labelPosition='right'
                                         placeholder='Enter Length...'
+                                        type="number"
+                                        name="length"
+                                        onChange={(e, data) => addItemToPackage(data, index)}
+                                        defaultValue={pack.length}
+                                        error={errors.packages &&  errors.packages[index] && errors.packages[index].length && { content: "Required!!"}}
                                     />
+                                    {(errors.packages && errors.packages[index] && errors.packages[index].length) &&(
+                                        <Label size="small" basic color="red" pointing="above">
+                                            Required
+                                        </Label>
+                                    )}
                                 </Form.Field>
                                 <Form.Field>
                                     <label>Width</label>
@@ -177,7 +222,17 @@ const Quote = ({ color="black", bg="black" }) => {
                                         label={{ basic: true, content: 'cm' }}
                                         labelPosition='right'
                                         placeholder='Enter Width...'
+                                        type="number"
+                                        name="width"
+                                        onChange={(e, data) => addItemToPackage(data, index)}
+                                        defaultValue={pack.width}
+                                        error={errors.packages && errors.packages[index] && errors.packages[index].width && { content: "Required!!"}}
                                     />
+                                    {(errors.packages && errors.packages[index] && errors.packages[index].width) &&(
+                                        <Label size="small" basic color="red" pointing="above">
+                                            Required
+                                        </Label>
+                                    )}
                                 </Form.Field>
                                 <Form.Field>
                                     <label>Height</label>
@@ -185,7 +240,16 @@ const Quote = ({ color="black", bg="black" }) => {
                                         label={{ basic: true, content: 'cm' }}
                                         labelPosition='right'
                                         placeholder='Enter Height...'
+                                        type="number"
+                                        name="height"
+                                        onChange={(e, data) => addItemToPackage(data, index)}
+                                        defaultValue={pack.height}
+                                        error={errors.packages && errors.packages[index] && errors.packages[index].height && { content: "Required!!"}}
                                     />
+                                    {(errors.packages && errors.packages[index] && errors.packages[index].height) && (
+                                    <Label size="small" basic pointing="above" color="red">
+                                        Required
+                                    </Label>)}
                                 </Form.Field>
                             </Form.Group>
                         </List.Content>
@@ -199,6 +263,14 @@ const Quote = ({ color="black", bg="black" }) => {
                         </List.Content> */}
                     </List.Item>
                 </List>
+                {(!!errors.emptyPackage) && (
+                    <p style={{ textAlign: "center", color: "red"}}>
+                        <b>
+                            {errors.emptyPackage}
+                        </b>
+                    </p>
+                )}
+            
                 <Segment clearing>
                     <Button floated="right" color={color} type='submit' onClick={() => getQuote()} >GET QUOTE</Button>
                 </Segment>

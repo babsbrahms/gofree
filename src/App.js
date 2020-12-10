@@ -20,6 +20,7 @@ import Services from "./component/pages/Services"
 
 import UserRoute from './component/route/UserRoute';
 import GuestRoute from './component/route/GuestRoute';
+import AdminRoute from "./component/route/AdminRoute";
 
 function App({ location }) {
   return (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Segment, Card, Button, Image, Step, Breadcrumb, Icon } from "semantic-ui-react";
+import { Segment, Card, Button, Image, Step, Breadcrumb, Icon, Divider, Grid, Input } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import Quote from "../container/Quote"
 import air from "../../utils/images/air-freight-transport-2.jpg"
@@ -67,13 +67,30 @@ const Home = () => {
                     </h2>)}
 
                 </Segment>
-                <Segment color="pink" raised stacked style={{ paddingBottom: 30, backgroundColor: "#fff",borderRadius: 5, marginBottom: 50, padding: 10 }}>
+                <Segment textAlign="center" color="pink" raised stacked style={{ paddingBottom: 30, backgroundColor: "#fff",borderRadius: 5, marginBottom: 50, padding: 10 }}>
+
                     <h2>GET QUOTE</h2>
-                    {(!showQuote) && (<Button color="black" circular onClick={() => setShowQuote(true)}>Click Here To Get Qoute</Button>)}
+                    {(!showQuote) && (<Button color="black" circular onClick={() => setShowQuote(true)}>Click Here To Get Quote</Button>)}
                     {(showQuote) && (<div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end" }}>
                         <Icon circular inverted color="red" name="close" link onClick={() => setShowQuote(false)} />
                     </div>)}
                     {(showQuote) && (<Quote />)}
+
+
+                    <Divider horizontal>Or</Divider>
+
+                    <Input 
+                        action={{
+                            color: 'teal',
+                            labelPosition: "right",
+                            icon: "search" ,
+                            content: "Track Order" ,
+                        }}
+                        actionPosition="right"
+                        placeholder='Add Your Order Id' 
+                    />
+    
+
                 </Segment>
                 <div style={{ paddingBottom: 40 }}>
                     <h2>SERVICES</h2>

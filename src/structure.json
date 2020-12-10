@@ -9,8 +9,14 @@
             "state": "",
             "city": ""
         },
-        "createdAt": "date",
-        "admin": false
+        "createdAt": "date"
+    },
+    "admin": {
+        "name": "",
+        "email": "",
+        "phone": "",
+        "superUser": false,
+        "createdAt": "date"
     },
     "orders": {
         "from": "",
@@ -21,9 +27,9 @@
         "userId": "user.id",
         "status": "order | payment | collect | shipping | delivery",
         "paid": false,
-        "orderedOn": "date",
-        "deliveredOn": "date",
-        "savedOn": "date",
+        "date": {
+
+        },
         "price": 0,
         "currency": "",
         "address": {

@@ -12,10 +12,15 @@ export default class Admin extends Component {
         loadingAccounts: true,
         loadingStats: true,
         errors: {},
+        orderIndex: 0,
         openOrderDetail: false,
         selectedOrder: {},
         orders: [],
+        accountIndex: 0,
+        openAccountDetail: false,
+        selectedAccount: {},
         accounts: [],
+
     }
 
     componentDidMount() {
@@ -78,7 +83,7 @@ export default class Admin extends Component {
     handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
     render() {
-        const { activeItem, loadingAccounts, openOrderDetail, selectedOrder, orders, loadingOrders, quotes } = this.state;
+        const { activeItem, loadingAccounts, openOrderDetail, selectedOrder, orders, loadingOrders, accounts, orderIndex, accountIndex } = this.state;
 
         return (
             <div id="gofree-bg">
@@ -144,39 +149,29 @@ export default class Admin extends Component {
                                 <Table.HeaderCell>Name</Table.HeaderCell>
                                 <Table.HeaderCell>Registration Date</Table.HeaderCell>
                                 <Table.HeaderCell>E-mail address</Table.HeaderCell>
-                                <Table.HeaderCell>Admin</Table.HeaderCell>
+                                <Table.HeaderCell>ACTION</Table.HeaderCell>
                             </Table.Row>
                         </Table.Header>
                     
                         <Table.Body>
-                            <Table.Row>
-                                <Table.Cell>John Lilki</Table.Cell>
+                            {accounts.map((account, key) => (
+                            <Table.Row key={accounts.email}>
+                                <Table.Cell>{account.name}</Table.Cell>
                                 <Table.Cell>September 14, 2013</Table.Cell>
-                                <Table.Cell>jhlilk22@yahoo.com</Table.Cell>
-                                <Table.Cell>No</Table.Cell>
+                                <Table.Cell>{account.email}</Table.Cell>
+                                <Table.Cell><Button size="mini" color="black" onClick={() => this.setState({ openAccountDetail: true, selectedAccount: account })}>VIEW DETAILS</Button></Table.Cell>
                             </Table.Row>
-                            <Table.Row>
-                                <Table.Cell>Jamie Harington</Table.Cell>
-                                <Table.Cell>January 11, 2014</Table.Cell>
-                                <Table.Cell>jamieharingonton@yahoo.com</Table.Cell>
-                                <Table.Cell>Yes</Table.Cell>
-                            </Table.Row>
-                            <Table.Row>
-                                <Table.Cell>Jill Lewis</Table.Cell>
-                                <Table.Cell>May 11, 2014</Table.Cell>
-                                <Table.Cell>jilsewris22@yahoo.com</Table.Cell>
-                                <Table.Cell>Yes</Table.Cell>
-                            </Table.Row>
+                            ))}
                         </Table.Body>
 
                         <Table.Footer>
                             <Table.Row>
                                 <Table.HeaderCell colSpan='4'>
                                 <Menu floated='right' pagination>
-                                    <Menu.Item as='a' icon>
+                                    <Menu.Item disabled={accountIndex === 0} as='a' icon>
                                         <Icon name='chevron left' />
                                     </Menu.Item>
-                                    <Menu.Item as='a' icon>
+                                    <Menu.Item disabled={accounts.length < 25} as='a' icon>
                                         <Icon name='chevron right' />
                                     </Menu.Item>
                                 </Menu>
@@ -210,11 +205,11 @@ export default class Admin extends Component {
                         <Table.Footer>
                             <Table.Row>
                                 <Table.HeaderCell colSpan='4'>
-                                <Menu floated='right' pagination>
-                                    <Menu.Item as='a' icon>
+                                <Menu floated='right'  pagination>
+                                    <Menu.Item as='a' disabled={orderIndex === 0} icon>
                                         <Icon name='chevron left' />
                                     </Menu.Item>
-                                    <Menu.Item as='a' icon>
+                                    <Menu.Item as='a' disabled={orders.length < 25} icon>
                                         <Icon name='chevron right' />
                                     </Menu.Item>
                                 </Menu>
@@ -266,7 +261,7 @@ export default class Admin extends Component {
                                     <Icon name={orderStatus.delivery} />{orderTite.delivery}
                                 </Popup.Content>
                             </Popup>
-                            {(selectedOrder.status === "delivery") && (<Label basic color="pink" size="small">DELIVERED OB: {selectedOrder.deliveredOn}</Label>)}
+                            {(selectedOrder.status === "delivery") && (<Label basic color="pink" size="small">DELIVERED ON: 'DATE'</Label>)}
                             <Divider />
                             <p style={{ textAlign: "center"}}>
                                 <b>PACKAGES</b>
