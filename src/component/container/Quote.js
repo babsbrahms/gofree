@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, Form, Input, Icon, List, Label, Segment } from "semantic-ui-react";
-import validator from "validator"
+import validator from "validator";
+import { addData as AddOrder, currentUser, serverTimestamp, fetchUserByEmail } from "../fbase"
 
 const fromOption = [
     { key: 'UK', text: 'UK', value: 'uk' },
@@ -17,7 +18,8 @@ const typeOptions = [
     { key: 'package', text: 'Package', value: 'package' },
 ]
 
-const Quote = ({ color="black", bg="black" }) => {
+const Quote = (props) => {
+    const myUser = useRef(null)
     const [data, setData] = useState({
         type: "",
         from: "",
@@ -27,7 +29,21 @@ const Quote = ({ color="black", bg="black" }) => {
     })
     const [packages, SetPackages] = useState([{ weight: "", height: "", length: "", width: "" }]);
     const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const [isAuth, setIsAuth] = useState(false);
+
+    useEffect(() => {
+        let user = currentUser();
+
+        if (user && user.email) {
+            setData({ ...data, email: user.email })
+            setIsAuth(true)
+
+            return () => {
+
+            }
+        }
+    }, [])
 
     const addPackage = () => SetPackages([...packages, { weight: "", height: "", length: "", width: "" }]);
 
@@ -39,7 +55,7 @@ const Quote = ({ color="black", bg="black" }) => {
     const addItemToPackage = (data, index) => {
         let pk = {
             ...packages[index],
-            [data.name] : parseFloat(data.value)
+            [data.name] : Math.abs(parseFloat(data.value)) 
         }
         packages[index] = pk;
         SetPackages([ ...packages ])
@@ -75,12 +91,57 @@ const Quote = ({ color="black", bg="black" }) => {
 
     const getQuote = () => {
         setErrors({})
+        setLoading(true)
         let errors = validate(data, packages)
         console.log(errors);
         if (Object.keys(errors).length === 0) {
-            setLoading(true)
+            let date = serverTimestamp()
+            AddOrder("orders", {
+                "from": data.from,
+                "to": data.to,
+                "type": data.type,
+                "packages": packages,
+                "email": data.email,
+                "status": "order",
+                "paid": false,
+                "date": {
+                    "order": date
+                },
+                "price": 0,
+                "currency": "",
+                "address": {
+      
+                },
+                "payment": {
+        
+                }
+            }, (res) => {
+                setLoading(false)
+                if (isAuth) {
+                    // move to order page
+                   // props.history.push(`/order?oid=${res.id}`)
+                   window.location.href= `/order?oid=${res.id}`
+                } else {
+                    // find out if is user
+                    myUser.current = fetchUserByEmail(data.email, (res) => {
+                        if (res.email) {
+                            // move to order page
+                           // props.history.push(`/order?oid=${res.id}`)
+                           window.location.href= `/order?oid=${res.id}`
+                        } else {
+                            alert("Quote has been sent to your email")
+                        }
+                    }, (err) => {
+                        alert(err.message)
+                    })
+                }
+            }, (err) => {
+                alert(err.message)
+                setLoading(false)
+            })
         } else {
             setErrors(errors)
+            setLoading(false)
         }
     }
 
@@ -272,7 +333,7 @@ const Quote = ({ color="black", bg="black" }) => {
                 )}
             
                 <Segment clearing>
-                    <Button floated="right" color={color} type='submit' onClick={() => getQuote()} >GET QUOTE</Button>
+                    <Button floated="right" color={"black"} type='submit' onClick={() => getQuote()} >GET QUOTE</Button>
                 </Segment>
                 
             </Form>

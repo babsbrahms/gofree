@@ -281,7 +281,7 @@ export const fetchMyAdmin = (email, res, error) => firebase.firestore().collecti
 })
 
 /////ACCOUNT
-export const fetchMySavedQuote = (userId, res, error) => firebase.firestore().collection("orders").where("userId", "==", userId).where("paid", "==", false).limit(25).onSnapshot((snapshot) => {
+export const fetchMySavedQuote = (email, res, error) => firebase.firestore().collection("orders").where("email", "==", email).where("paid", "==", false).limit(25).onSnapshot((snapshot) => {
     let list =[];
     snapshot.forEach(doc => {
         list.push({ id: doc.id, ...doc.data() })
@@ -291,8 +291,19 @@ export const fetchMySavedQuote = (userId, res, error) => firebase.firestore().co
     error(err)
 })
 
+export const fetchOrderById = (id, res, error) => firebase.firestore().collection("orders").doc(id).onSnapshot((snapshot) => {
+    let list = {};
+   
+    if (snapshot.exists) {
+        list = { id: snapshot.id, ...snapshot.data() };
+    }
+    
+    res(list)
+}, (err) => {
+    error(err)
+})
 
-export const fetchMyOrders = (userId, res, error) => firebase.firestore().collection("orders").where("userId", "==", userId).where("paid", "==", true).limit(25).onSnapshot((snapshot) => {
+export const fetchMyOrders = (email, res, error) => firebase.firestore().collection("orders").where("email", "==", email).where("paid", "==", true).limit(25).onSnapshot((snapshot) => {
     let list =[];
     snapshot.forEach(doc => {
         list.push({ id: doc.id, ...doc.data() })
@@ -313,10 +324,18 @@ export const fetchMyUser = (userId, res, error) => firebase.firestore().collecti
     error(err)
 })
 
+export const fetchUserByEmail = (email, res, error) => firebase.firestore().collection("users").where("email", "==", email).onSnapshot((snapshot) => {
+    let data = {};
 
-export const saveOrder = () => firebase.firestore().collection("orders").add({
-    
+    snapshot.forEach(doc => {
+        data = { id: doc.id,  ...doc.data() }
+    })
+
+    res(data)
+}, (err) => {
+    error(err)
 })
+
 
 export const deleteOrder = (id, res, error) => firebase.firestore().collection("orders").doc(id).delete()
     .then(r => {

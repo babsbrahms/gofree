@@ -458,7 +458,7 @@ export default class Admin extends Component {
                                     <Icon name={orderStatus.delivery} />{orderTite.delivery}
                                 </Popup.Content>
                             </Popup>
-                            {(selectedOrder.status === "delivery") && (<Label basic color="pink" size="small">DELIVERED ON: 'DATE'</Label>)}
+                            {(selectedOrder.status === "delivery") && (<Label basic color="pink" size="small">DELIVERED ON: {orderStatus.date && orderStatus.date.delivery? orderStatus.date.delivery.toDate().toDateString() : "" }</Label>)}
                             <Divider />
                             <p style={{ textAlign: "center"}}>
                                 <b>PACKAGES</b>

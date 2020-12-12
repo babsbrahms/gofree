@@ -24,7 +24,6 @@
         "type": "parcel || package",
         "packages": [],
         "email": "user.email",
-        "userId": "user.id",
         "status": "order | payment | collect | shipping | delivery",
         "paid": false,
         "date": {

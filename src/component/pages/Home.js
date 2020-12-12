@@ -143,46 +143,46 @@ const Home = () => {
                 <div style={{ paddingBottom: 40, width: '100%' }}>
                     <h2>STEPS</h2>
                     <p>Get your parcel or package delivered in 5 easy steps.</p>
-                    <Step.Group size="small" stackable>
-                        <Step>
-                        <Icon name='shopping cart' />
-                        <Step.Content>
-                            <Step.Title>Order</Step.Title>
-                            <Step.Description>Enter your package information</Step.Description>
-                        </Step.Content>
+                    <Step.Group fluid size="small" stackable>
+                        <Step link>
+                            <Icon name='shopping cart' />
+                            <Step.Content>
+                                <Step.Title>Order</Step.Title>
+                                <Step.Description>Enter your package information</Step.Description>
+                            </Step.Content>
                         </Step>
 
-                        <Step>
-                        <Icon name='payment' />
-                        <Step.Content>
-                            <Step.Title>Payment</Step.Title>
-                            <Step.Description>Pay for the package(s)</Step.Description>
-                        </Step.Content>
+                        <Step link>
+                            <Icon name='payment' />
+                            <Step.Content>
+                                <Step.Title>Payment</Step.Title>
+                                <Step.Description>Pay for the package(s)</Step.Description>
+                            </Step.Content>
                         </Step>
 
-                        <Step>
-                        <Icon name="dolly" />
-                        <Step.Content>
-                            <Step.Title>Collection</Step.Title>
-                            <Step.Description>We collect the package(s)</Step.Description>
-                        </Step.Content>
+                        <Step link>
+                            <Icon name="dolly" />
+                            <Step.Content>
+                                <Step.Title>Collection</Step.Title>
+                                <Step.Description>We collect the package(s)</Step.Description>
+                            </Step.Content>
                         </Step>
 
-                        <Step>
-                        <Icon name="plane" />
-                        <Step.Content>
-                            <Step.Title>Shipping</Step.Title>
-                            <Step.Description>We transport the package(s)</Step.Description>
-                        </Step.Content>
+                        <Step link>
+                            <Icon name="plane" />
+                            <Step.Content>
+                                <Step.Title>Shipping</Step.Title>
+                                <Step.Description>We transport the package(s)</Step.Description>
+                            </Step.Content>
                         </Step>
 
 
-                        <Step>
-                        <Icon name='truck' />
-                        <Step.Content>
-                            <Step.Title>Delivery</Step.Title>
-                            <Step.Description>We deliver your package(s)</Step.Description>
-                        </Step.Content>
+                        <Step link>
+                            <Icon name='truck' />
+                            <Step.Content>
+                                <Step.Title>Delivery</Step.Title>
+                                <Step.Description>We deliver the package(s)</Step.Description>
+                            </Step.Content>
                         </Step>
                     </Step.Group>
                 </div>

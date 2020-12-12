@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { Table, Icon, Menu, Segment, Label, Card, Form, List, Button, Modal, Popup, Divider, Dropdown } from 'semantic-ui-react';
 import validator from "validator"
-import { currentUser, signOut, fetchMySavedQuote, fetchMyOrders, fetchMyUser, updateData } from "../fbase"
+import { Link } from "react-router-dom";
+import { currentUser, signOut, fetchMySavedQuote, fetchMyOrders, fetchMyUser, updateData, deleteData } from "../fbase"
 import "../css/style.css"
 import styles from "../../styles"
 import Quote from "../container/Quote"
@@ -30,8 +31,8 @@ export default class Account extends Component {
         let user = currentUser()
         if (user && user.uid) {
             this.getUser(user.uid)
-            this.getOrder(user.uid)
-            this.getSaveQuote(user.uid)
+            this.getOrder(user.email)
+            this.getSaveQuote(user.email)
         }
 
     }
@@ -60,8 +61,8 @@ export default class Account extends Component {
         })
     }
     
-    getOrder = (id) => {
-        this.unOrder = fetchMyOrders(id, (res) => {
+    getOrder = (email) => {
+        this.unOrder = fetchMyOrders(email, (res) => {
             this.setState({ loadingOrders: false, orders:  res })
         }, (err) => {
             this.setState({ loadingOrders: false })
@@ -69,8 +70,8 @@ export default class Account extends Component {
         })
     }
 
-    getSaveQuote = (id) => {
-        this.unQuote = fetchMySavedQuote(id, (res) => {
+    getSaveQuote = (email) => {
+        this.unQuote = fetchMySavedQuote(email, (res) => {
             this.setState({ loadingQuote: false, quotes: res })
         },(err) => {
             this.setState({ loadingOrders: false })
@@ -139,6 +140,18 @@ export default class Account extends Component {
                 this.setState({ errors, loadingAccount: false })
             }
         })
+    }
+
+    deleteQuote = (id) => {
+        this.setState({ loadingQuote: true }, () => {
+            deleteData("orders", id, (res) => {
+                this.setState({ loadingQuote: false })
+            }, (err) => {
+                alert(err.message)
+                this.setState({ loadingQuote: false })
+            })
+        })
+
     }
 
     render() {
@@ -305,7 +318,7 @@ export default class Account extends Component {
                     <Segment loading={loadingOrders}>
                         <List divided relaxed>
                             {orders.map(order => (
-                            <List.Item>
+                            <List.Item key={order.id}>
                                 <List.Content floated='right'>
                                     <Button size="mini" color="black" onClick={() => this.setState({ openOrderDetail: true, selectedOrder: order })}>VIEW DETAILS</Button>
                                 </List.Content>
@@ -313,7 +326,7 @@ export default class Account extends Component {
                                 <List.Content>
                                     <List.Header>{order.packages.length} {order.type}(s) from {order.from} to {order.to}</List.Header>
                                     <List.Description>
-                                        Ordered on "DATE"
+                                        Ordered on {order.date && order.date.order? order.date['order'].toDate().toDateString() : "" }
                                     </List.Description>
                                     <List.Description as='a'>order no: {order.id}</List.Description>
                                     <List.Description>
@@ -362,20 +375,25 @@ export default class Account extends Component {
                     <Segment loading={loadingQuote}>
                         <List divided relaxed>
                             {quotes.map(quote => (
-                            <List.Item>
+                            <List.Item key={quote.id}>
                                 <List.Content floated='right'>
                                     <Dropdown icon="ellipsis vertical" pointing="right">
                                         <Dropdown.Menu>
-                                            <Dropdown.Item  text='Add To Cart' />
-                                            <Dropdown.Item  text='Edit' />
-                                            <Dropdown.Item  text='Delete'  />
+                                            <Dropdown.Item as={Link} to={`/cart?oid=${quote.id}`} text='Add To Cart' />
+                                            {/* <Dropdown.Item  text='Edit' /> */}
+                                            <Popup on="click" trigger={<Dropdown.Item  text='Delete'  />}>
+                                                <Popup.Header>Are you sure?</Popup.Header>
+                                                <Popup.Content>
+                                                    <Button loading={loadingQuote} disabled={loadingQuote} onClick={() => this.deleteQuote(quote.id)} color="red" fluid>Yes, delete it</Button>
+                                                </Popup.Content>
+                                            </Popup>
                                         </Dropdown.Menu>
                                     </Dropdown>
                                 </List.Content>
                                 <List.Icon name={orderStatus.order} />
                                 <List.Content>
                                     <List.Header>{quote.packages.length} {quote.type} from {quote.from} to {quote.to}</List.Header>
-                                    <List.Description>Saved on 'DATE'</List.Description>
+                                    <List.Description>Saved on {quote.date && quote.date.order? quote.date['order'].toDate().toDateString() : "" }</List.Description>
                                     <List.Description>
                                         <Label basic color="pink" size="small" >
                                             TOTAL PRICE: {quote.price} {quote.currency}
@@ -423,7 +441,7 @@ export default class Account extends Component {
                         </Modal.Header>
                         <Modal.Content>
                             <Label basic>Order No: {selectedOrder.id}</Label>
-                            <Label basic>Date:  </Label>
+                            <Label basic>Ordered Date: {selectedOrder.date && selectedOrder.date.order? selectedOrder.date['order'].toDate().toDateString() : "" } </Label>
                             {/* <h3>Title: </h3> */}
                             <h3>Type: {selectedOrder.type} </h3>
                             <h3>From: {selectedOrder.from}</h3>
@@ -453,7 +471,7 @@ export default class Account extends Component {
                                     <Icon name={orderStatus.delivery} />{orderTite.delivery}
                                 </Popup.Content>
                             </Popup>
-                            {(selectedOrder.status === "delivery") && (<Label basic color="pink" size="small">DELIVERED ON: 'DATE'</Label>)}
+                            {(selectedOrder.status === "delivery") && (<Label basic color="pink" size="small">DELIVERED ON: {orderStatus.date && orderStatus.date.delivery? orderStatus.date.delivery.toDate().toDateString() : "" }</Label>)}
                             <Divider />
                             <p style={{ textAlign: "center"}}>
                                 <b>PACKAGES</b>
