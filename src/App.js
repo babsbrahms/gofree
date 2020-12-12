@@ -27,7 +27,7 @@ function App({ location }) {
     <div>
         <Header />
         <Switch>
-            <Route component={Account} exact path={'/account'} />
+            <UserRoute component={Account} exact path={'/account'} />
             <Route component={Admin} exact path={'/admin'} />
             <GuestRoute component={Auth} exact path={'/auth'}  />
             <Route exact component={Home} path={"/"} />

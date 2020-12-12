@@ -85,7 +85,7 @@ const Quote = ({ color="black", bg="black" }) => {
     }
 
     return (
-        <Segment loading={loading} style={{ padding: 20 }}>
+        <Segment textAlign="left" loading={loading} style={{ padding: 20 }}>
             <Form>
                 <Form.Field>
                     <Form.Dropdown

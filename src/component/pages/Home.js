@@ -87,7 +87,7 @@ const Home = () => {
                             content: "Track Order" ,
                         }}
                         actionPosition="right"
-                        placeholder='Add Your Order Id' 
+                        placeholder='Input Your Order Id' 
                     />
     
 

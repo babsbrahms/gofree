@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Table, Icon, Menu, Segment, Label, Card, Form, List, Button, Modal, Popup, Divider, Dropdown } from 'semantic-ui-react';
 import validator from "validator"
-import { currentUser, signOut, fetchMySavedQuote, fetchMyOrders, fetchMyUser } from "../fbase"
+import { currentUser, signOut, fetchMySavedQuote, fetchMyOrders, fetchMyUser, updateData } from "../fbase"
 import "../css/style.css"
 import styles from "../../styles"
 import Quote from "../container/Quote"
@@ -119,19 +119,30 @@ export default class Account extends Component {
 
     save = () => {
         const { data } = this.state;
-        this.setState({ errors: {} }, () => {
+        this.setState({ errors: {}, loadingAccount: true }, () => {
             let errors = this.validate(data)
 
             if (Object.keys(errors).length === 0) {
-                this.setState({ loadingAccount: true })
+                let user = currentUser();
+
+                if (user && user.uid) {
+                    updateData("users", user.uid, {
+                        ...data
+                    }, () => {
+                        this.setState({ loadingAccount: false })
+                    }, () => {
+                        this.setState({ loadingAccount: false })
+                    })
+                }
+                
             } else {
-                this.setState({ errors })
+                this.setState({ errors, loadingAccount: false })
             }
         })
     }
 
     render() {
-        const { activeItem, loadingAccount, user, errors, editAccount, openOrderDetail, selectedOrder, orders, loadingOrders, quotes, loadingQuote } = this.state;
+        const { activeItem, loadingAccount, user, errors, editAccount, openOrderDetail, selectedOrder, orders, loadingOrders, quotes, loadingQuote, data } = this.state;
 
         return (
             <div id="gofree-bg">
@@ -198,9 +209,22 @@ export default class Account extends Component {
                                     </Card.Description>)}
                                 </Card.Content>)}
                                 {(!editAccount) && (<Card.Content extra>
-                                    <Button color="red" basic fluid onClick={() => signOut()}>
-                                        LOG OUT
-                                    </Button>
+                                    <Popup 
+                                        on="click"
+                                        trigger={
+                                            <Button color="red" basic fluid>
+                                                LOG OUT
+                                            </Button>
+                                        }
+                                    >   
+                                        <Popup.Header>
+                                            Are you sure?
+                                        </Popup.Header>
+                                        <Popup.Content>
+                                            <Button color="green" fluid onClick={() => signOut()}>Yes, log out</Button>
+                                        </Popup.Content>
+                                    </Popup>
+        
                                 </Card.Content>)}
                                 {(editAccount) && (<Card.Content>
                                     <Form>
@@ -209,7 +233,7 @@ export default class Account extends Component {
                                             required
                                             label="Name"
                                             name="name" 
-                                            defaultValue={(user.name)? user.name : ""}
+                                            defaultValue={(data.name)? data.name : ""}
                                             onChange={(e, data) => this.addUserData(data)} 
                                             placeholder={"add your name"}
                                             error={errors.name}
@@ -220,7 +244,7 @@ export default class Account extends Component {
                                             label="Email"
                                             name="email" 
                                             type="email"
-                                            defaultValue={(user.email)? user.email : ""}
+                                            defaultValue={(data.email)? data.email : ""}
                                             onChange={(e, data) => this.addUserData(data)} 
                                             placeholder={"add your email"}
                                             error={errors.email}
@@ -230,7 +254,7 @@ export default class Account extends Component {
                                             required
                                             label="Address"
                                             name="address" 
-                                            defaultValue={(user.address && user.address.address)? user.address.address : ""}
+                                            defaultValue={(data.address && data.address.address)? data.address.address : ""}
                                             onChange={(e, data) => this.addAddress(data)} 
                                             placeholder={"add your address"}
                                             error={errors.address}
@@ -240,7 +264,7 @@ export default class Account extends Component {
                                             required
                                             label="City"
                                             name="city" 
-                                            defaultValue={(user.address && user.address.address)? user.address.city : ""}
+                                            defaultValue={(data.address && data.address.address)? data.address.city : ""}
                                             onChange={(e, data) => this.addAddress(data)} 
                                             placeholder={"add your city"}
                                             error={errors.city}
@@ -251,7 +275,7 @@ export default class Account extends Component {
                                             required
                                             label="State"
                                             name="state" 
-                                            defaultValue={(user.address && user.address.address)? user.address.state : ""}
+                                            defaultValue={(data.address && data.address.address)? data.address.state : ""}
                                             onChange={(e, data) => this.addAddress(data)} 
                                             placeholder={"add your state"}
                                             error={errors.state}
@@ -262,7 +286,7 @@ export default class Account extends Component {
                                             required
                                             label="Country"
                                             name="country" 
-                                            defaultValue={(user.address && user.address.address)? user.address.country : ""}
+                                            defaultValue={(data.address && data.address.address)? data.address.country : ""}
                                             onChange={(e, data) => this.addAddress(data)} 
                                             placeholder={"add your country"}
                                             error={errors.country}
@@ -379,6 +403,11 @@ export default class Account extends Component {
                             </List.Item>
                             ))}
                         </List>
+                        {((quotes.length === 0) && (!loadingQuote)) &&(
+                            <p style={{ textAlign: "center" }}>
+                                You don't have saved quotes!
+                            </p>
+                        )}
                     </Segment>
                     )}
 

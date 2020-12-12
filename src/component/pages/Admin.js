@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import { Table, Icon, Menu, Segment, Label, Card, Form, List, Button, Modal, Popup, Divider, Dropdown } from 'semantic-ui-react';
+import validator from "validator";
 import "../css/style.css"
 import { orderStatus, orderTite } from "../../utils/resources"
-import { fetchAdminUsers, fetchOrders, fetchUsers, createAdmin, createAdminSuperUser, deleteAdmin, updateOrderStatus, fetchMyAdmin, currentUser } from "../fbase"
+import { fetchAdminUsers, fetchOrders, fetchUsers, createAdmin, createAdminSuperUser, deleteAdmin, updateOrderStatus, fetchMyAdmin, currentUser, signOut } from "../fbase"
+import styles from '../../styles';
 
 export default class Admin extends Component {
     state = { 
@@ -21,8 +23,9 @@ export default class Admin extends Component {
         openAccountDetail: false,
         selectedUser: {},
         users: [],
-        admins: []
-
+        admins: [],
+        data: {},
+        errors: {},
     }
 
     componentDidMount() {
@@ -45,9 +48,9 @@ export default class Admin extends Component {
             this.unAdmin()
         }
 
-        if (this.this.unMyUser) {
-            this.unMyUser()
-        }
+        // if (this.this.unMyUser) {
+        //     this.unMyUser()
+        // }
     }
 
     getMe = () => {
@@ -55,7 +58,8 @@ export default class Admin extends Component {
 
         if (user && user.uid) {
             this.unMyUser = fetchMyAdmin(user.uid, (res) => {
-                this.setState({ me:  res })
+                console.log(res);
+                this.setState({ me: res })
             }, (err) => {
                 alert(err.message)
             })
@@ -92,8 +96,55 @@ export default class Admin extends Component {
 
     handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
+    addUserData = (data) => this.setState({ 
+        data: {
+            ...this.state.data,
+            [data.name]: data.value
+        }
+    })
+
+    validate = (data) => {
+        let err = {}
+            if (!data.name) err.name = "Name is required";
+            if (!validator.isEmail(data.email || "")) err.email = "Enter a valid email"
+
+        return err
+    }
+
+    save = () => {
+        const { data } = this.state;
+        this.setState({ errors: {}, loadingAdmins: true }, () => {
+            let errors = this.validate(data)
+
+            if (Object.keys(errors).length === 0) {
+                createAdmin(data.name, data.email)
+                .then(() => {
+                    this.setState({ data: {}, loadingAdmins: false })
+                }).catch((err) => {
+                    this.setState({ loadingAdmins: false })
+                    alert(err.message)
+                })
+                
+            } else {
+                this.setState({ errors, loadingAdmins: false })
+            }
+        })
+    }
+
+    adminDel = (id) => {
+        this.setState({ loadingAdmins: true }, () => {
+            deleteAdmin(id, () => {
+                this.setState({ loadingAdmins: false })
+            }, (err) => {
+                this.setState({ loadingAdmins: false })
+                alert(err.message)
+            })
+        })
+
+    }
+
     render() {
-        const { activeItem, loadingUsers, openOrderDetail, selectedOrder, orders, loadingOrders, users, orderIndex, userIndex, loadingAdmins } = this.state;
+        const { activeItem, loadingUsers, openOrderDetail, selectedOrder, orders, loadingOrders, users, orderIndex, userIndex, loadingAdmins, me, data, errors, admins } = this.state;
 
         return (
             <div id="gofree-bg">
@@ -132,7 +183,10 @@ export default class Admin extends Component {
 
                 <Segment id="gofree-content" >
                     {(activeItem === 'stats') && (
-                        <Segment>
+                        <Segment> 
+                            <Segment style={styles.betweenStart}>
+                                {me.name} <Button basic color="pink" content="log out" icon="log out" onClick={() => signOut()}  />
+                            </Segment>
                             <Card.Group centered stackable itemsPerRow="3">
                                 <Card link color="pink">
                                     <Card.Content>
@@ -160,6 +214,49 @@ export default class Admin extends Component {
 
                     {(activeItem === 'admin') && (
                     <Segment loading={loadingAdmins}>
+                        <Segment clearing textAlign="center">
+                            
+                            <Popup position="top center" on="click" trigger={<Icon color="black" name="add circle" size="huge" link />}>
+
+                                <Popup.Header>
+                                    Create Admin Account
+                                </Popup.Header>
+                                <Popup.Header>
+                                    <Card>
+                                        <Card.Content>
+                                            <Form >
+                                                <Form.Input 
+                                                    required
+                                                    label="Name"
+                                                    name="name" 
+                                                    type="name"
+                                                    placeholder={"add your name"}
+                                                    value={(data.name)? data.name : ""}
+                                                    onChange={(e, data) => this.addUserData(data)} 
+                                                    error={errors.name}
+                                                />
+
+                                                <Form.Input 
+                                                    required
+                                                    label="Email"
+                                                    name="email" 
+                                                    type="email"
+                                                    placeholder={"add your email"}
+                                                    value={(data.email)? data.email : ""}
+                                                    onChange={(e, data) => this.addUserData(data)} 
+                                                    error={errors.email}
+                                                
+                                                />
+
+                                                <Form.Button loading={loadingAdmins} disabled={loadingAdmins} floated="right" onClick={() => this.save()} color='pink' basic>
+                                                    Submit
+                                                </Form.Button>
+                                            </Form>
+                                        </Card.Content>
+                                    </Card>
+                                </Popup.Header>
+                            </Popup>
+                        </Segment>
                         <Table unstackable>
                             <Table.Header>
                                 <Table.Row>
@@ -170,16 +267,26 @@ export default class Admin extends Component {
                             </Table.Header>
                         
                             <Table.Body>
-                                {users.map((user, key) => (
+                                {admins.map((user, key) => (
                                 <Table.Row key={users.email}>
                                     <Table.Cell>{user.name}</Table.Cell>
                                     <Table.Cell>{user.email}</Table.Cell>
-                                    <Table.Cell><Button size="mini" color="black" onClick={() => {}}>DELETE</Button></Table.Cell>
+                                    <Table.Cell>
+                                        <Popup on="click" trigger={<Button size="mini" color="black" >DELETE</Button>}>
+                                            <Popup.Header>
+                                                Are you sure?
+                                            </Popup.Header>
+                                            <Popup.Content>
+                                                <Button color='green' content='Yes, delete user' onClick={() => this.adminDel(user.id)} />
+                                            </Popup.Content>
+                                        </Popup>
+                                        
+                                    </Table.Cell>
                                 </Table.Row>
                                 ))}
                             </Table.Body>
 
-                            <Table.Footer>
+                            {/* <Table.Footer>
                                 <Table.Row>
                                     <Table.HeaderCell colSpan='4'>
                                     <Menu floated='right' pagination>
@@ -192,7 +299,7 @@ export default class Admin extends Component {
                                     </Menu>
                                     </Table.HeaderCell>
                                 </Table.Row>
-                            </Table.Footer>
+                            </Table.Footer> */}
                         </Table>
                     </Segment>
                     )}
@@ -214,9 +321,31 @@ export default class Admin extends Component {
                                 {users.map((user, key) => (
                                 <Table.Row key={users.email}>
                                     <Table.Cell>{user.name}</Table.Cell>
-                                    <Table.Cell>September 14, 2013</Table.Cell>
+                                    <Table.Cell>{user.createdAt.toDate().toDateString()}</Table.Cell>
                                     <Table.Cell>{user.email}</Table.Cell>
-                                    <Table.Cell><Button size="mini" color="black" onClick={() => this.setState({ openAccountDetail: true, selectedUser: user })}>VIEW DETAILS</Button></Table.Cell>
+                                    <Table.Cell>
+                                        <Popup position="top right" on="click" trigger={<Button size="mini" color="black" >VIEW DETAILS</Button>}>
+                                            <Popup.Header>Account Detail</Popup.Header>
+                                            <Popup.Content>
+                                                <Card>
+                                                    <Card.Content >
+                                                        <Card.Description>
+                                                            Name: {user.name}
+                                                        </Card.Description>
+                                                        <Card.Description>
+                                                            Email: {user.email}
+                                                        </Card.Description>
+                                                        {(user.address) && (<Card.Description>
+                                                            {user.address.address}
+                                                        </Card.Description>)}
+                                                        {(user.address) && (<Card.Description>
+                                                            {user.address.city} {user.address.state}, {user.address.country}
+                                                        </Card.Description>)}
+                                                    </Card.Content>
+                                                </Card>
+                                            </Popup.Content>
+                                        </Popup>
+                                    </Table.Cell>
                                 </Table.Row>
                                 ))}
                             </Table.Body>

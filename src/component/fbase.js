@@ -130,7 +130,7 @@ export const twitterAuth = () => {
 
 
 //GENERAL
-// firebase.firestore().enablePersistence({ synchronizeTabs: true })
+ firebase.firestore().enablePersistence()
 
 // []
 // export const setData = (collection, id, data, success, error) => firebase.firestore().collection(collection).doc(id).set(data).then(res => success(res)).catch(err => error(err));
@@ -179,7 +179,7 @@ export const fetchUsers = (res, error) => firebase.firestore().collection("users
     })
     res(list)
 }, (err) => {
-    err(error)
+    error(err)
 })
 
 
@@ -190,7 +190,7 @@ export const fetchOrders = (res, error) => firebase.firestore().collection("orde
     })
     res(list)
 }, (err) => {
-    err(error)
+    error(err)
 })
 
 
@@ -201,17 +201,32 @@ export const fetchAdminUsers = (res, error) => firebase.firestore().collection("
     })
     res(list)
 }, (err) => {
-    err(error)
+    error(err)
 })
 
-export const createAdmin = (email) => firebase.firestore().collection("admins").add({
-    "name": "",
-    "email": email,
-    "superUser": false,
-    "createdAt": serverTimestamp()
-})
+export const createAdmin = (name, email) => {
+    return firebase.firestore().collection("admins").where("email", '==', email).get()
+    .then((snapshot) => {
+        let data = {};
 
-export const deleteAdmin = (id, res, error) => firebase.firestore().collection("admins").doc(id)
+        snapshot.forEach(doc => {
+            data = { id: doc.id, ...doc.data() }
+        })
+
+        if (data.email && (data.email.toLowerCase() === email.toLowerCase())) {
+           return Promise.reject({ message: `${email} already exist in the admin account` })
+        } else {
+           return firebase.firestore().collection("admins").add({
+                "name": name,
+                "email": email,
+                "superUser": false,
+                "createdAt": serverTimestamp()
+            })
+        }
+    })
+}
+
+export const deleteAdmin = (id, res, error) => firebase.firestore().collection("admins").doc(id).delete()
 .then(r => {
     res(r)
 })
@@ -235,13 +250,12 @@ export const createAdminSuperUser = (email, res, error) => firebase.firestore().
 
 export const fetchMyAdmin = (userId, res, error) => firebase.firestore().collection("admins").doc(userId).onSnapshot((snapshot) => {
     let data = {};
-    if (snapshot.exists) {
-        data = { id: snapshot.id, ...snapshot.data()}
-    } 
+    
+    data = { id: snapshot.id, ...snapshot.data()}
 
     res(data)
 }, (err) => {
-    err(error)
+    error(err)
 })
 
 /////ACCOUNT
@@ -252,7 +266,7 @@ export const fetchMySavedQuote = (userId, res, error) => firebase.firestore().co
     })
     res(list)
 }, (err) => {
-    err(error)
+    error(err)
 })
 
 
@@ -263,7 +277,7 @@ export const fetchMyOrders = (userId, res, error) => firebase.firestore().collec
     })
     res(list)
 }, (err) => {
-    err(error)
+    error(err)
 })
 
 export const fetchMyUser = (userId, res, error) => firebase.firestore().collection("users").doc(userId).onSnapshot((snapshot) => {
@@ -274,7 +288,7 @@ export const fetchMyUser = (userId, res, error) => firebase.firestore().collecti
 
     res(data)
 }, (err) => {
-    err(error)
+    error(err)
 })
 
 
