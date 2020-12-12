@@ -35,7 +35,7 @@ function App({ location }) {
             <Route exact component={Privacy} path={'/privacy'} />
             <Route exact component={Terms} path={'/terms'} />
             <Route exact component={Cart} path={'/cart'}/>
-            <Route exact component={Checkout} path={'/checkout'}/>
+            <UserRoute exact component={Checkout} path={'/checkout'}/>
             <Route exact component={Contact} path={'/contact'}/>
             <Route exact component={Services} path={'/services'}/>
             <Route component={Error} exact path={'/*'}  />

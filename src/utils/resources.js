@@ -1,5 +1,5 @@
 
-export const orderStatus = {
+export const orderIcon = {
     "order": 'shopping cart',
     'payment': 'payment',
     "collection": "dolly",
@@ -24,4 +24,15 @@ export const orderTite = {
     "shipping": "PACKAGE SHIPPED" ,
     "delivery": 'PACKAGE DELIVERED',
     "cancelled": "ORDER CANCELLED"
+}
+
+export const getUrlParams = (params = "") => {
+    let obj = {};
+    if (params && params.startsWith("?")) {
+        let vals = params.slice(1)
+        vals.split("&").forEach(str => {
+            obj[str.split("=")[0]] = str.split("=")[1]
+        })
+    }
+    return obj
 }

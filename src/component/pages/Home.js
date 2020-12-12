@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Segment, Card, Button, Image, Step, Breadcrumb, Icon, Divider, Grid, Input } from "semantic-ui-react";
+import { Segment, Card, Button, Image, Step, Breadcrumb, Icon, Divider, List, Input, Popup, Label } from "semantic-ui-react";
 import { Link } from "react-router-dom";
+import { fetchOrderById } from "../fbase";
+import { orderTite, orderIcon } from "../../utils/resources"
 import Quote from "../container/Quote"
 import air from "../../utils/images/air-freight-transport-2.jpg"
 import truck from "../../utils/images/cargo-gofree-truck.jpg"
@@ -37,6 +39,9 @@ const Home = () => {
     const [current, setCurrent] = useState(0);
     let timer = useRef(null)
     let [showQuote, setShowQuote] = useState(false)
+    let [order, setOrder] = useState({})
+    let [loading, setLoading] = useState(false);
+    let [trackId, setTrackId] = useState("")
 
     useEffect(() => {
         timer.current = setInterval(() => {
@@ -54,6 +59,22 @@ const Home = () => {
         }
     })
 
+    const getOrder = () => {
+        if (trackId) {
+            setLoading(true)
+            fetchOrderById(trackId, (res) => {
+                setOrder(res)
+                setLoading(false)
+            }, (err) => {
+                setLoading(false)
+                alert(err.message)
+            })
+        } else {
+            setLoading(false)
+            alert('Add order id for tracking')
+        }
+    }
+
     return (
         <div>
             <Segment id="gofree-bg">
@@ -67,7 +88,7 @@ const Home = () => {
                     </h2>)}
 
                 </Segment>
-                <Segment textAlign="center" color="pink" raised stacked style={{ paddingBottom: 30, backgroundColor: "#fff",borderRadius: 5, marginBottom: 50, padding: 10 }}>
+                <Segment loading={loading} textAlign="center" color="pink" raised stacked style={{ paddingBottom: 30, backgroundColor: "#fff",borderRadius: 5, marginBottom: 50, padding: 10 }}>
 
                     <h2>GET QUOTE</h2>
                     {(!showQuote) && (<Button color="black" circular onClick={() => setShowQuote(true)}>Click Here To Get Quote</Button>)}
@@ -85,10 +106,66 @@ const Home = () => {
                             labelPosition: "right",
                             icon: "search" ,
                             content: "Track Order" ,
+                            onClick: () => getOrder(trackId)
                         }}
                         actionPosition="right"
                         placeholder='Input Your Order Id' 
+                        defaultValue={trackId}
+                        onChange={(e,data) => setTrackId(data.value)}
+                        
                     />
+
+                    {(order.id) && (
+                    <Segment textAlign="left">
+                        <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end" }}>
+                            <Icon circular inverted color="red" name="close" link onClick={() => setOrder({ })} />
+                        </div>
+                        <List divided relaxed>
+                            <List.Item>
+        
+                                <List.Icon name={orderIcon[order.status]} />
+                                <List.Content>
+                                    <List.Header>{order.packages.length} {order.type} from {order.from} to {order.to}</List.Header>
+                                    <List.Description>
+                                        Ordered on {order.date && order.date.order? order.date['order'].toDate().toDateString() : "" }
+                                    </List.Description>
+                                    <List.Description>
+                                        <Label basic color="pink" size="small" >
+                                            STATUS: {orderTite[order.status]}
+                                        </Label>
+                                    </List.Description>
+                                    <List.Description>
+                                        <Label basic color="pink" size="small" >
+                                            TOTAL PRICE: {order.price} {order.currency}
+                                        </Label>
+                                    </List.Description>
+                                    <List.List>
+                                        {order.packages.map((pack) => 
+                                            <List.Item>
+                                                <List.Content floated='right'>
+                                                    {pack.price} {order.currency}
+                                                </List.Content>
+                                                <List.Content>
+                                                    <List.Header>{pack.length}CM * {pack.width}CM * {pack.height}CM * {pack.weight}KG <Popup trigger={<Icon name="info circle" />}>
+                                                            <Popup.Content> Length: {pack.length} CM </Popup.Content>
+                                                            <Popup.Content> Width: {pack.width} CM </Popup.Content>
+                                                            <Popup.Content> Height: {pack.height} CM </Popup.Content>
+                                                            <Popup.Content> Weight: {pack.weight} KG </Popup.Content>
+                                                        </Popup>
+                                                    </List.Header>
+                                                </List.Content>
+                                            </List.Item>
+                                        )}
+                                    </List.List>
+                                    {(!order.paid) && (
+                                        <Button circular color="black" as={Link} to={`/checkout?${trackId}`}>
+                                            Click Here To Pay
+                                        </Button>
+                                    )}
+                                </List.Content>
+                            </List.Item>
+                        </List>
+                    </Segment>)}
     
 
                 </Segment>

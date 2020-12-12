@@ -291,7 +291,8 @@ export const fetchMySavedQuote = (email, res, error) => firebase.firestore().col
     error(err)
 })
 
-export const fetchOrderById = (id, res, error) => firebase.firestore().collection("orders").doc(id).onSnapshot((snapshot) => {
+export const fetchOrderById = (id, res, error) => firebase.firestore().collection("orders").doc(id).get()
+.then((snapshot) => {
     let list = {};
    
     if (snapshot.exists) {
@@ -299,7 +300,8 @@ export const fetchOrderById = (id, res, error) => firebase.firestore().collectio
     }
     
     res(list)
-}, (err) => {
+})
+.catch((err) => {
     error(err)
 })
 
@@ -345,7 +347,7 @@ export const deleteOrder = (id, res, error) => firebase.firestore().collection("
         error(err)
     })
 
-export const updateOrderStatus = (id, status, res, error) => {
+export const updateorderIcon = (id, status, res, error) => {
     let key = `date.${status}`
     return firebase.firestore().collection("orders").doc(id).update({
         status,

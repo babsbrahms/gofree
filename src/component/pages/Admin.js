@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import { Table, Icon, Menu, Segment, Label, Card, Form, List, Button, Modal, Popup, Divider, Dropdown } from 'semantic-ui-react';
 import validator from "validator";
 import "../css/style.css"
-import { orderStatus, orderTite } from "../../utils/resources"
-import { fetchAdminUsers, fetchOrders, fetchUsers, createAdmin, createAdminSuperUser, deleteAdmin, updateOrderStatus, fetchMyAdmin, currentUser, signOut } from "../fbase"
+import { orderIcon, orderTite } from "../../utils/resources"
+import { fetchAdminUsers, fetchOrders, fetchUsers, createAdmin, createAdminSuperUser, deleteAdmin, updateorderIcon, fetchMyAdmin, currentUser, signOut } from "../fbase"
 import styles from '../../styles';
 
 export default class Admin extends Component {
@@ -443,22 +443,22 @@ export default class Admin extends Component {
                                     5 transaction stages
                                 </Popup.Header>
                                 <Popup.Content>
-                                <Icon name={orderStatus.order} /> {orderTite.order}
+                                <Icon name={orderIcon.order} /> {orderTite.order}
                                 </Popup.Content>
                                 <Popup.Content>
-                                    <Icon name={orderStatus.payment} /> {orderTite.payment}
+                                    <Icon name={orderIcon.payment} /> {orderTite.payment}
                                 </Popup.Content>
                                 <Popup.Content>
-                                    <Icon name={orderStatus.collection} /> {orderTite.collection}
+                                    <Icon name={orderIcon.collection} /> {orderTite.collection}
                                 </Popup.Content>
                                 <Popup.Content>
-                                    <Icon name={orderStatus.shipping} />{orderTite.shipping}
+                                    <Icon name={orderIcon.shipping} />{orderTite.shipping}
                                 </Popup.Content>
                                 <Popup.Content>
-                                    <Icon name={orderStatus.delivery} />{orderTite.delivery}
+                                    <Icon name={orderIcon.delivery} />{orderTite.delivery}
                                 </Popup.Content>
                             </Popup>
-                            {(selectedOrder.status === "delivery") && (<Label basic color="pink" size="small">DELIVERED ON: {orderStatus.date && orderStatus.date.delivery? orderStatus.date.delivery.toDate().toDateString() : "" }</Label>)}
+                            {(selectedOrder.status === "delivery") && (<Label basic color="pink" size="small">DELIVERED ON: {orderIcon.date && orderIcon.date.delivery? orderIcon.date.delivery.toDate().toDateString() : "" }</Label>)}
                             <Divider />
                             <p style={{ textAlign: "center"}}>
                                 <b>PACKAGES</b>

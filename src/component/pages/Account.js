@@ -6,7 +6,7 @@ import { currentUser, signOut, fetchMySavedQuote, fetchMyOrders, fetchMyUser, up
 import "../css/style.css"
 import styles from "../../styles"
 import Quote from "../container/Quote"
-import { orderStatus, orderTite } from "../../utils/resources"
+import { orderIcon, orderTite } from "../../utils/resources"
 
 export default class Account extends Component {
     state = { 
@@ -240,8 +240,7 @@ export default class Account extends Component {
         
                                 </Card.Content>)}
                                 {(editAccount) && (<Card.Content>
-                                    <Form>
-                                        
+                                    <Form> 
                                         <Form.Input 
                                             required
                                             label="Name"
@@ -322,7 +321,7 @@ export default class Account extends Component {
                                 <List.Content floated='right'>
                                     <Button size="mini" color="black" onClick={() => this.setState({ openOrderDetail: true, selectedOrder: order })}>VIEW DETAILS</Button>
                                 </List.Content>
-                                <List.Icon name={orderStatus[order.status]} size='large' verticalAlign='middle' />
+                                <List.Icon name={orderIcon[order.status]} size='large' verticalAlign='middle' />
                                 <List.Content>
                                     <List.Header>{order.packages.length} {order.type}(s) from {order.from} to {order.to}</List.Header>
                                     <List.Description>
@@ -338,19 +337,19 @@ export default class Account extends Component {
                                                 5 transaction stages
                                             </Popup.Header>
                                             <Popup.Content>
-                                               <Icon name={orderStatus.order} /> {orderTite.order}
+                                               <Icon name={orderIcon.order} /> {orderTite.order}
                                             </Popup.Content>
                                             <Popup.Content>
-                                                <Icon name={orderStatus.payment} /> {orderTite.payment}
+                                                <Icon name={orderIcon.payment} /> {orderTite.payment}
                                             </Popup.Content>
                                             <Popup.Content>
-                                                <Icon name={orderStatus.collection} /> {orderTite.collection}
+                                                <Icon name={orderIcon.collection} /> {orderTite.collection}
                                             </Popup.Content>
                                             <Popup.Content>
-                                                <Icon name={orderStatus.shipping} />{orderTite.shipping}
+                                                <Icon name={orderIcon.shipping} />{orderTite.shipping}
                                             </Popup.Content>
                                             <Popup.Content>
-                                                <Icon name={orderStatus.delivery} />{orderTite.delivery}
+                                                <Icon name={orderIcon.delivery} />{orderTite.delivery}
                                             </Popup.Content>
                                         </Popup>
                                     </List.Description>
@@ -390,7 +389,7 @@ export default class Account extends Component {
                                         </Dropdown.Menu>
                                     </Dropdown>
                                 </List.Content>
-                                <List.Icon name={orderStatus.order} />
+                                <List.Icon name={orderIcon.order} />
                                 <List.Content>
                                     <List.Header>{quote.packages.length} {quote.type} from {quote.from} to {quote.to}</List.Header>
                                     <List.Description>Saved on {quote.date && quote.date.order? quote.date['order'].toDate().toDateString() : "" }</List.Description>
@@ -456,22 +455,22 @@ export default class Account extends Component {
                                     5 transaction stages
                                 </Popup.Header>
                                 <Popup.Content>
-                                <Icon name={orderStatus.order} /> {orderTite.order}
+                                <Icon name={orderIcon.order} /> {orderTite.order}
                                 </Popup.Content>
                                 <Popup.Content>
-                                    <Icon name={orderStatus.payment} /> {orderTite.payment}
+                                    <Icon name={orderIcon.payment} /> {orderTite.payment}
                                 </Popup.Content>
                                 <Popup.Content>
-                                    <Icon name={orderStatus.collection} /> {orderTite.collection}
+                                    <Icon name={orderIcon.collection} /> {orderTite.collection}
                                 </Popup.Content>
                                 <Popup.Content>
-                                    <Icon name={orderStatus.shipping} />{orderTite.shipping}
+                                    <Icon name={orderIcon.shipping} />{orderTite.shipping}
                                 </Popup.Content>
                                 <Popup.Content>
-                                    <Icon name={orderStatus.delivery} />{orderTite.delivery}
+                                    <Icon name={orderIcon.delivery} />{orderTite.delivery}
                                 </Popup.Content>
                             </Popup>
-                            {(selectedOrder.status === "delivery") && (<Label basic color="pink" size="small">DELIVERED ON: {orderStatus.date && orderStatus.date.delivery? orderStatus.date.delivery.toDate().toDateString() : "" }</Label>)}
+                            {(selectedOrder.status === "delivery") && (<Label basic color="pink" size="small">DELIVERED ON: {orderIcon.date && orderIcon.date.delivery? orderIcon.date.delivery.toDate().toDateString() : "" }</Label>)}
                             <Divider />
                             <p style={{ textAlign: "center"}}>
                                 <b>PACKAGES</b>
