@@ -234,24 +234,46 @@ export const deleteAdmin = (id, res, error) => firebase.firestore().collection("
     error(err)
 })
 
-export const createAdminSuperUser = (email, res, error) => firebase.firestore().collection("admins").add({
-    "name": "",
-    "email": email,
-    "superUser": true,
-    "createdAt": serverTimestamp()
-})
-.then(r => {
-    res(r)
-})
-.catch(err => {
-    error(err)
-})
+export const createAdminSuperUser = (email, name, res, error) => {
+    return firebase.firestore().collection("admins").where("superUser", "==", true).get()
+    .then((snapshot) => {
+        let data = 0;
+
+        snapshot.forEach(() => {
+            data = data + 1
+        })
+
+        if (data !== 0) {
+            return { message: "Sorry, an admin owner alread exist. Please contact the app developer."}
+        } else {
+            return firebase.firestore().collection("admins").add({
+                "name": name,
+                "email": email,
+                "superUser": true,
+                "createdAt": serverTimestamp()
+            })
+            .then(r => {
+                res(r)
+            })
+            .catch(err => {
+                error(err)
+            })
+        }
+        
+    })
+    .catch(err => {
+        error(err)
+    })
+}
 
 
-export const fetchMyAdmin = (userId, res, error) => firebase.firestore().collection("admins").doc(userId).onSnapshot((snapshot) => {
+export const fetchMyAdmin = (email, res, error) => firebase.firestore().collection("admins").where("email", "==", email).onSnapshot((snapshot) => {
     let data = {};
     
-    data = { id: snapshot.id, ...snapshot.data()}
+    snapshot.forEach(doc => {
+        data = { id: doc.id, ...doc.data()}
+    })
+    
 
     res(data)
 }, (err) => {

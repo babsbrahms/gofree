@@ -29,6 +29,7 @@ export default class Admin extends Component {
     }
 
     componentDidMount() {
+        this.getMe()
         this.getAdmins()
         this.getOrder()
         this.getUser()
@@ -48,16 +49,16 @@ export default class Admin extends Component {
             this.unAdmin()
         }
 
-        // if (this.this.unMyUser) {
-        //     this.unMyUser()
-        // }
+        if (this.unMyUser) {
+            this.unMyUser()
+        }
     }
 
     getMe = () => {
         let user = currentUser()
 
         if (user && user.uid) {
-            this.unMyUser = fetchMyAdmin(user.uid, (res) => {
+            this.unMyUser = fetchMyAdmin(user.email, (res) => {
                 console.log(res);
                 this.setState({ me: res })
             }, (err) => {
@@ -67,7 +68,7 @@ export default class Admin extends Component {
 
     }
     
-    getUser = (id) => {
+    getUser = () => {
         this.unUser = fetchUsers((res) => {
             this.setState({ loadingUsers: false, users:  res })
         }, (err) => {
@@ -76,7 +77,7 @@ export default class Admin extends Component {
         })
     }
     
-    getOrder = (id) => {
+    getOrder = () => {
         this.unOrder = fetchOrders((res) => {
             this.setState({ loadingOrders: false, orders:  res })
         }, (err) => {
@@ -185,7 +186,7 @@ export default class Admin extends Component {
                     {(activeItem === 'stats') && (
                         <Segment> 
                             <Segment style={styles.betweenStart}>
-                                {me.name} <Button basic color="pink" content="log out" icon="log out" onClick={() => signOut()}  />
+                                <h2>{me.name}</h2> <Button basic color="pink" content="log out" icon="log out" onClick={() => signOut()}  />
                             </Segment>
                             <Card.Group centered stackable itemsPerRow="3">
                                 <Card link color="pink">
@@ -262,7 +263,7 @@ export default class Admin extends Component {
                                 <Table.Row>
                                     <Table.HeaderCell>Name</Table.HeaderCell>
                                     <Table.HeaderCell>E-mail address</Table.HeaderCell>
-                                    <Table.HeaderCell>ACTION</Table.HeaderCell>
+                                    <Table.HeaderCell></Table.HeaderCell>
                                 </Table.Row>
                             </Table.Header>
                         
@@ -272,6 +273,7 @@ export default class Admin extends Component {
                                     <Table.Cell>{user.name}</Table.Cell>
                                     <Table.Cell>{user.email}</Table.Cell>
                                     <Table.Cell>
+                                        {(me.superUser) && (!user.superUser) && (
                                         <Popup on="click" trigger={<Button size="mini" color="black" >DELETE</Button>}>
                                             <Popup.Header>
                                                 Are you sure?
@@ -279,7 +281,7 @@ export default class Admin extends Component {
                                             <Popup.Content>
                                                 <Button color='green' content='Yes, delete user' onClick={() => this.adminDel(user.id)} />
                                             </Popup.Content>
-                                        </Popup>
+                                        </Popup>)}
                                         
                                     </Table.Cell>
                                 </Table.Row>
@@ -313,7 +315,7 @@ export default class Admin extends Component {
                                     <Table.HeaderCell>Name</Table.HeaderCell>
                                     <Table.HeaderCell>Registration Date</Table.HeaderCell>
                                     <Table.HeaderCell>E-mail address</Table.HeaderCell>
-                                    <Table.HeaderCell>ACTION</Table.HeaderCell>
+                                    <Table.HeaderCell>Detail</Table.HeaderCell>
                                 </Table.Row>
                             </Table.Header>
                         
@@ -336,10 +338,16 @@ export default class Admin extends Component {
                                                             Email: {user.email}
                                                         </Card.Description>
                                                         {(user.address) && (<Card.Description>
-                                                            {user.address.address}
+                                                            Address: {user.address.address}
                                                         </Card.Description>)}
                                                         {(user.address) && (<Card.Description>
-                                                            {user.address.city} {user.address.state}, {user.address.country}
+                                                            City: {user.address.city}
+                                                        </Card.Description>)}
+                                                        {(user.address) && (<Card.Description>
+                                                            State: {user.address.state}
+                                                        </Card.Description>)}
+                                                        {(user.address) && (<Card.Description>
+                                                            Country: {user.address.country}
                                                         </Card.Description>)}
                                                     </Card.Content>
                                                 </Card>
