@@ -142,14 +142,14 @@ const Home = () => {
                                     </List.Description>
                                     <List.Description>
                                         <Label basic color="pink" size="small" >
-                                            TOTAL PRICE: {order.price} {order.currency}
+                                            TOTAL PRICE: {Number(order.price).toFixed(2)} {order.currency}
                                         </Label>
                                     </List.Description>
                                     <List.List>
                                         {order.packages.map((pack) => 
                                             <List.Item>
                                                 <List.Content floated='right'>
-                                                    {pack.price} {order.currency}
+                                                    {Number(pack.price).toFixed(2)} {order.currency}
                                                 </List.Content>
                                                 <List.Content>
                                                     <List.Header>{pack.length}CM * {pack.width}CM * {pack.height}CM * {pack.weight}KG <Popup trigger={<Icon name="info circle" />}>

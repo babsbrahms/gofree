@@ -395,14 +395,14 @@ export default class Account extends Component {
                                     <List.Description>Saved on {quote.date && quote.date.order? quote.date['order'].toDate().toDateString() : "" }</List.Description>
                                     <List.Description>
                                         <Label basic color="pink" size="small" >
-                                            TOTAL PRICE: {quote.price} {quote.currency}
+                                            TOTAL PRICE: {Number(quote.price).toFixed(2)} {quote.currency}
                                         </Label>
                                     </List.Description>
                                     <List.List>
                                         {quote.packages.map((pack) => 
                                             <List.Item>
                                                 <List.Content floated='right'>
-                                                    {pack.price} {quote.currency}
+                                                    {Number(pack.price).toFixed(2)} {quote.currency}
                                                 </List.Content>
                                                 <List.Content>
                                                     <List.Header>{pack.length}CM * {pack.width}CM * {pack.height}CM * {pack.weight}KG <Popup trigger={<Icon name="info circle" />}>
@@ -439,7 +439,7 @@ export default class Account extends Component {
                             Order Details
                         </Modal.Header>
                         <Modal.Content>
-                            <Label basic>Order No: {selectedOrder.id}</Label>
+                            <Label basic>Order Id: {selectedOrder.id}</Label>
                             <Label basic>Ordered Date: {selectedOrder.date && selectedOrder.date.order? selectedOrder.date['order'].toDate().toDateString() : "" } </Label>
                             {/* <h3>Title: </h3> */}
                             <h3>Type: {selectedOrder.type} </h3>
@@ -447,7 +447,7 @@ export default class Account extends Component {
                             <h3>To: {selectedOrder.to}</h3>
 
                             <Label basic color="pink" size="small">
-                                TOTAL PRICE: {selectedOrder.price} {selectedOrder.currency}
+                                TOTAL PRICE: {Number(selectedOrder.price).toFixed(2)} {selectedOrder.currency}
                             </Label>
                             <Label basic color="pink" size="small">STATUS: {orderTite[selectedOrder.status]}</Label>
                             <Popup trigger={<Icon name="info circle" color="black" />}>
@@ -480,7 +480,7 @@ export default class Account extends Component {
                                 {selectedOrder.packages && selectedOrder.packages.map((pack) => 
                                     <List.Item>
                                         <List.Content floated='right'>
-                                            {pack.price} {selectedOrder.currency}
+                                            {Number(pack.price).toFixed(2)} {selectedOrder.currency}
                                         </List.Content>
                                         <List.Content>
                                             <List.Header>{pack.length}CM * {pack.width}CM * {pack.height}CM * {pack.weight}KG <Popup trigger={<Icon name="info circle" />}>

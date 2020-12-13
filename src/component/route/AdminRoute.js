@@ -77,7 +77,7 @@ const UserRoute = ({component: Component, ...rest }) => {
             createAdminSuperUser(user.email, data.name, (res) => {
                 setError({})
                 setSending(false)
-                window.location.reload(true)
+               // window.location.reload(true)
             }, (err) => {
                 setSending(false)
                 setError({ ...errors, general: err.message })

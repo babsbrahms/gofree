@@ -427,15 +427,15 @@ export default class Admin extends Component {
                             Order Details
                         </Modal.Header>
                         <Modal.Content>
-                            <Label basic>Order No: {selectedOrder.id}</Label>
-                            <Label basic>Date:  </Label>
+                            <Label basic>Order Id: {selectedOrder.id}</Label>
+                            <Label basic>Ordered Date: {selectedOrder.date && selectedOrder.date.order? selectedOrder.date['order'].toDate().toDateString() : "" } </Label>
                             <h3>Customer Name: </h3>
                             <h3>Type: {selectedOrder.type} </h3>
                             <h3>From: {selectedOrder.from}</h3>
                             <h3>To: {selectedOrder.to}</h3>
 
                             <Label basic color="pink" size="small">
-                                TOTAL PRICE: {selectedOrder.price} {selectedOrder.currency}
+                                TOTAL PRICE: {Number(selectedOrder.price).toFixed(2)} {selectedOrder.currency}
                             </Label>
                             <Label basic color="pink" size="small">STATUS: {orderTite[selectedOrder.status]}</Label>
                             <Popup trigger={<Icon name="info circle" color="black" />}>
@@ -468,7 +468,7 @@ export default class Admin extends Component {
                                 {selectedOrder.packages && selectedOrder.packages.map((pack) => 
                                     <List.Item>
                                         <List.Content floated='right'>
-                                            {pack.price} {selectedOrder.currency}
+                                            {Number(pack.price).toFixed(2)} {selectedOrder.currency}
                                         </List.Content>
                                         <List.Content>
                                             <List.Header>{pack.length}CM * {pack.width}CM * {pack.height}CM * {pack.weight}KG <Popup trigger={<Icon name="info circle" />}>
