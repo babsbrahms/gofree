@@ -27,7 +27,7 @@ const Quote = (props) => {
         // where: "lagos",
         email: ""
     })
-    const [packages, SetPackages] = useState([{ weight: "", height: "", length: "", width: "" }]);
+    const [packages, SetPackages] = useState([{ weight: "", height: "", length: "", width: "", price: 0 }]);
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [isAuth, setIsAuth] = useState(false);
@@ -95,20 +95,33 @@ const Quote = (props) => {
         let errors = validate(data, packages)
         console.log(errors);
         if (Object.keys(errors).length === 0) {
+            let calcMargin = (type) => {
+                if (type === 'parcel') {
+                    return 5000
+                } else {
+                    return 6000
+                }
+            }
+            let calcVal = calcMargin(data.type)
+            let calcPackage = packages.map((px) => ({
+                ...px,
+                price: ((px.length * px.height * px.weight * px.width)/calcVal)* 0.7
+            }));
+            let totalPrice = calcPackage.reduce((prev, curr) => prev + curr.price, 0);
             let date = serverTimestamp()
             AddOrder("orders", {
                 "from": data.from,
                 "to": data.to,
                 "type": data.type,
-                "packages": packages,
+                "packages": calcPackage,
                 "email": data.email,
                 "status": "order",
                 "paid": false,
                 "date": {
                     "order": date
                 },
-                "price": 0,
-                "currency": "",
+                "price": totalPrice,
+                "currency": "NGN",
                 "address": {
       
                 },
@@ -116,26 +129,29 @@ const Quote = (props) => {
         
                 }
             }, (res) => {
+                let oid = res.id;
                 setLoading(false)
                 if (isAuth) {
                     // move to order page
-                   // props.history.push(`/order?oid=${res.id}`)
-                   window.location.href= `/order?oid=${res.id}`
+                //    props.history.push(`/order?oid=${res.id}`)
+                   window.location.href= `/cart?oid=${oid}`
                 } else {
                     // find out if is user
                     myUser.current = fetchUserByEmail(data.email, (res) => {
                         if (res.email) {
                             // move to order page
-                           // props.history.push(`/order?oid=${res.id}`)
-                           window.location.href= `/order?oid=${res.id}`
+                        //    props.history.push(`/order?oid=${res.id}`)
+                           window.location.href= `/cart?oid=${oid}`
                         } else {
                             alert("Quote has been sent to your email")
                         }
                     }, (err) => {
+                        console.log("USER BT EMAIL ERR:: ",err);
                         alert(err.message)
                     })
                 }
             }, (err) => {
+                console.log("ALL ORDER ERR:: ",err);
                 alert(err.message)
                 setLoading(false)
             })

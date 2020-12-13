@@ -63,8 +63,14 @@ const Home = () => {
         if (trackId) {
             setLoading(true)
             fetchOrderById(trackId, (res) => {
-                setOrder(res)
                 setLoading(false)
+
+                if (res.id) {
+                    setOrder(res)
+                } else {
+                    alert("Order not found!")
+                }
+                
             }, (err) => {
                 setLoading(false)
                 alert(err.message)
