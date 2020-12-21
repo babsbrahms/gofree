@@ -380,7 +380,7 @@ export default class Admin extends Component {
                         <Table celled unstackable>
                             <Table.Header>
                             <Table.Row>
-                                <Table.HeaderCell>ORDER NO</Table.HeaderCell>
+                                <Table.HeaderCell>ORDER ID</Table.HeaderCell>
                                 <Table.HeaderCell>DESCRIPTION</Table.HeaderCell>
                                 <Table.HeaderCell>STATUS</Table.HeaderCell>
                                 <Table.HeaderCell>ACTION</Table.HeaderCell>

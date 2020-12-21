@@ -11,7 +11,7 @@
         },
         "createdAt": "date"
     },
-    "admin": {
+    "admins": {
         "name": "",
         "email": "",
         "phone": "",

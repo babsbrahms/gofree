@@ -327,7 +327,7 @@ export default class Account extends Component {
                                     <List.Description>
                                         Ordered on {order.date && order.date.order? order.date['order'].toDate().toDateString() : "" }
                                     </List.Description>
-                                    <List.Description as='a'>order no: {order.id}</List.Description>
+                                    <List.Description as='a'>Order Id: {order.id}</List.Description>
                                     <List.Description>
                                         <Label size="small" color="pink" basic>
                                             {orderTite[order.status]}

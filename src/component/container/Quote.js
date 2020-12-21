@@ -105,7 +105,7 @@ const Quote = (props) => {
             let calcVal = calcMargin(data.type)
             let calcPackage = packages.map((px) => ({
                 ...px,
-                price: ((px.length * px.height * px.weight * px.width)/calcVal)* 0.7
+                price: (((px.length * px.weight) * (px.height * px.weight) * (px.width * px.weight))/calcVal)* 0.7
             }));
             let totalPrice = calcPackage.reduce((prev, curr) => prev + curr.price, 0);
             let date = serverTimestamp()
