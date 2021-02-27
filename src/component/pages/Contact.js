@@ -63,7 +63,7 @@ const Contact = () => {
                                 <List.Item>
                                     <List.Content>
                                         <List.Content>
-                                        email: gofreeltd@yahoo.com
+                                        email: Info@gofreeltd@yahoo.com
                                         </List.Content>
                                     </List.Content>
                                 </List.Item>

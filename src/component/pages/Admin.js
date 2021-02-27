@@ -2,9 +2,14 @@ import React, { Component } from 'react'
 import { Table, Icon, Menu, Segment, Label, Card, Form, List, Button, Modal, Popup, Divider, Dropdown } from 'semantic-ui-react';
 import validator from "validator";
 import "../css/style.css"
-import { orderIcon, orderTite } from "../../utils/resources"
-import { fetchAdminUsers, fetchOrders, fetchUsers, createAdmin, createAdminSuperUser, deleteAdmin, updateorderIcon, fetchMyAdmin, currentUser, signOut } from "../fbase"
+import { orderIcon, orderTite, months } from "../../utils/resources"
+import { fetchAdminUsers, fetchPaidOrders, fetchNewOrders, fetchSentInvoiceOrders, fetchUsers, createAdmin, createAdminSuperUser, deleteAdmin, updateorderIcon, fetchMyAdmin, currentUser, signOut } from "../fbase"
 import styles from '../../styles';
+import { OrderDetails } from "../container/OrderDetails"
+
+const years = Array.from({length: (new Date().getFullYear() - 2020)}, (item, i) => {
+    return (2020 + i + 1)
+});
 
 export default class Admin extends Component {
     state = { 
@@ -19,6 +24,7 @@ export default class Admin extends Component {
         openOrderDetail: false,
         selectedOrder: {},
         orders: [],
+        orderType: "invoice-prep",
         userIndex: 0,
         openAccountDetail: false,
         selectedUser: {},
@@ -26,6 +32,17 @@ export default class Admin extends Component {
         admins: [],
         data: {},
         errors: {},
+        // updatedAt : {
+        //     timestamp: new Date().getTime(),
+        //     month: new Date().getMonth(),
+        //     year: new Date().getFullYear(),
+        //     day: new Date().getDate()
+        // },
+        period: {
+            month: new Date().getMonth(),
+            year: new Date().getFullYear()
+        },
+        currentPeriod: `${months[new Date().getMonth()]}-${new Date().getFullYear()}`,
     }
 
     componentDidMount() {
@@ -78,11 +95,36 @@ export default class Admin extends Component {
     }
     
     getOrder = () => {
-        this.unOrder = fetchOrders((res) => {
-            this.setState({ loadingOrders: false, orders:  res })
-        }, (err) => {
-            this.setState({ loadingOrders: false })
-            alert(err.message)
+        const { period, orderType } = this.state;
+        
+        if (this.unOrder) {
+            this.unOrder()
+        }
+
+        this.setState({ loadingOrders: true, currentPeriod: `${months[period.month]}-${period.year}` }, () => {
+            if (orderType === "invoice-prep")  {
+                this.unOrder = fetchNewOrders(period, (res) => {
+                    this.setState({ loadingOrders: false, orders:  res })
+                }, (err) => {
+                    this.setState({ loadingOrders: false })
+                    alert(err.message)
+                })
+            } else if (orderType === "invoice-sent") {
+                this.unOrder = fetchSentInvoiceOrders(period, (res) => {
+                    this.setState({ loadingOrders: false, orders:  res })
+                }, (err) => {
+                    this.setState({ loadingOrders: false })
+                    alert(err.message)
+                })
+            } else  {
+                this.unOrder = fetchPaidOrders(period, (res) => {
+                    this.setState({ loadingOrders: false, orders:  res })
+                }, (err) => {
+                    this.setState({ loadingOrders: false })
+                    alert(err.message)
+                })
+            }
+
         })
     }
 
@@ -145,7 +187,7 @@ export default class Admin extends Component {
     }
 
     render() {
-        const { activeItem, loadingUsers, openOrderDetail, selectedOrder, orders, loadingOrders, users, orderIndex, userIndex, loadingAdmins, me, data, errors, admins } = this.state;
+        const { activeItem, loadingUsers, openOrderDetail, selectedOrder, orders, loadingOrders, users, orderIndex, userIndex, loadingAdmins, me, data, errors, admins, period, currentPeriod, orderType } = this.state;
 
         return (
             <div id="gofree-bg">
@@ -188,7 +230,7 @@ export default class Admin extends Component {
                             <Segment style={styles.betweenStart}>
                                 <h2>{me.name}</h2> <Button basic color="pink" content="log out" icon="log out" onClick={() => signOut()}  />
                             </Segment>
-                            <Card.Group centered stackable itemsPerRow="3">
+                            {/* <Card.Group centered stackable itemsPerRow="3">
                                 <Card link color="pink">
                                     <Card.Content>
                                         <Card.Header>Users</Card.Header>
@@ -209,7 +251,7 @@ export default class Admin extends Component {
                                         <Card.Description>40000</Card.Description>
                                     </Card.Content>
                                 </Card>
-                            </Card.Group>
+                            </Card.Group> */}
                         </Segment>
                     )}
 
@@ -377,6 +419,30 @@ export default class Admin extends Component {
                     )}
                     {(activeItem === 'orders') &&  (
                     <Segment loading={loadingOrders}>
+                        <Button.Group fluid>
+                            <Button active={orderType === "invoice-prep"} onClick={() => this.setState({ orderType: "invoice-prep"}, () => this.getOrder())}>New Order</Button>
+                            <Button.Or />
+                            <Button active={orderType === "invoice-sent"} onClick={() => this.setState({ orderType: "invoice-sent"}, () => this.getOrder())}>Sent Invoice</Button>
+                            <Button.Or />
+                            <Button active={orderType === "paid"} onClick={() => this.setState({ orderType: "paid"}, () => this.getOrder())}>Paid Order</Button>
+                        </Button.Group>
+                        <br/>
+                        <div style={{ display: "flex", flexDirection: "row", justifyContent: "center"}}>
+                        {(orderType !== "invoice-prep") && (
+                        <span>
+                        <b> Period: {currentPeriod} </b><Popup trigger={<Icon link bordered color="teal" name="pencil alternate"  />} on="click">
+                            <Form>
+                                <Form.Select value={period.year} label="year" options={years.map((x) => ({ text: x, value: x, key: x}))} value={period.year} onChange={(e, d) => this.setState({ period: { ...period, year: d.value }})} />
+
+                                <Form.Select value={period.month} label="month" options={months.map((x, i) => ({ text: x, value: i, key: x}))} value={period.month} onChange={(e, d) => this.setState({ period: { ...period, month: d.value }})} />
+
+                                <Form.Button fluid disabled={loadingOrders} loading={loadingOrders} onClick={() => this.getOrder()} >
+                                    Get Orders
+                                </Form.Button>
+                            </Form>
+                        </Popup>
+                        </span>)} 
+                        </div>
                         <Table celled unstackable>
                             <Table.Header>
                             <Table.Row>
@@ -427,88 +493,7 @@ export default class Admin extends Component {
                             Order Details
                         </Modal.Header>
                         <Modal.Content>
-                            <Label basic>Order Id: {selectedOrder.id}</Label>
-                            <Label basic>Ordered Date: {selectedOrder.date && selectedOrder.date.order? selectedOrder.date['order'].toDate().toDateString() : "" } </Label>
-                            <h3>Customer Name: </h3>
-                            <h3>Type: {selectedOrder.type} </h3>
-                            <h3>From: {selectedOrder.from}</h3>
-                            <h3>To: {selectedOrder.to}</h3>
-
-                            <Label basic color="pink" size="small">
-                                TOTAL PRICE: {Number(selectedOrder.price).toFixed(2)} {selectedOrder.currency}
-                            </Label>
-                            <Label basic color="pink" size="small">STATUS: {orderTite[selectedOrder.status]}</Label>
-                            <Popup trigger={<Icon name="info circle" color="black" />}>
-                                <Popup.Header>
-                                    5 transaction stages
-                                </Popup.Header>
-                                <Popup.Content>
-                                <Icon name={orderIcon.order} /> {orderTite.order}
-                                </Popup.Content>
-                                <Popup.Content>
-                                    <Icon name={orderIcon.payment} /> {orderTite.payment}
-                                </Popup.Content>
-                                <Popup.Content>
-                                    <Icon name={orderIcon.collection} /> {orderTite.collection}
-                                </Popup.Content>
-                                <Popup.Content>
-                                    <Icon name={orderIcon.shipping} />{orderTite.shipping}
-                                </Popup.Content>
-                                <Popup.Content>
-                                    <Icon name={orderIcon.delivery} />{orderTite.delivery}
-                                </Popup.Content>
-                            </Popup>
-                            {(selectedOrder.status === "delivery") && (<Label basic color="pink" size="small">DELIVERED ON: {orderIcon.date && orderIcon.date.delivery? orderIcon.date.delivery.toDate().toDateString() : "" }</Label>)}
-                            <Divider />
-                            <p style={{ textAlign: "center"}}>
-                                <b>PACKAGES</b>
-                            </p>
-                            
-                            <List divided relaxed >
-                                {selectedOrder.packages && selectedOrder.packages.map((pack) => 
-                                    <List.Item>
-                                        <List.Content floated='right'>
-                                            {Number(pack.price).toFixed(2)} {selectedOrder.currency}
-                                        </List.Content>
-                                        <List.Content>
-                                            <List.Header>{pack.length}CM * {pack.width}CM * {pack.height}CM * {pack.weight}KG <Popup trigger={<Icon name="info circle" />}>
-                                                    <Popup.Content> Length: {pack.length} CM </Popup.Content>
-                                                    <Popup.Content> Width: {pack.width} CM </Popup.Content>
-                                                    <Popup.Content> Height: {pack.height} CM </Popup.Content>
-                                                    <Popup.Content> Weight: {pack.weight} KG </Popup.Content>
-                                                </Popup>
-                                            </List.Header>
-                                        </List.Content>
-                                    </List.Item>
-                                )}
-                            </List>
-
-                            <Divider />
-
-                            <Card.Group itemsPerRow="2" stackable>
-                                <Card link color="pink">
-                                    <Card.Content>
-                                        <Card.Header>Payment</Card.Header>
-                                    </Card.Content>
-                                    <Card.Content>
-
-                                    </Card.Content>
-                                </Card>
-
-                                <Card link color="pink">
-                                    <Card.Content>
-                                        <Card.Header>Adresss</Card.Header>
-                                    </Card.Content>
-                                    <Card.Content>
-                                        {(selectedOrder.address) && (<Card.Description>
-                                            {selectedOrder.address.address}
-                                        </Card.Description>)}
-                                        {(selectedOrder.address) && (<Card.Description>
-                                            {selectedOrder.address.city} {selectedOrder.address.state}, {selectedOrder.address.country}
-                                        </Card.Description>)}
-                                    </Card.Content>
-                                </Card>
-                            </Card.Group>
+                            <OrderDetails selectedOrder={selectedOrder} />
                         </Modal.Content>
                         <Modal.Actions>
                             <Button color="black" onClick={() => this.setState({ openOrderDetail: false })}>

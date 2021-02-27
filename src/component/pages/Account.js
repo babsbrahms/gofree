@@ -334,10 +334,16 @@ export default class Account extends Component {
                                         </Label>
                                         <Popup trigger={<Icon name="info circle" color="black" />}>
                                             <Popup.Header>
-                                                5 transaction stages
+                                                7 transaction stages
                                             </Popup.Header>
                                             <Popup.Content>
                                                <Icon name={orderIcon.order} /> {orderTite.order}
+                                            </Popup.Content>
+                                            <Popup.Content>
+                                               <Icon name={orderIcon["invoice-prep"]} /> {orderTite["invoice-prep"]}
+                                            </Popup.Content>
+                                            <Popup.Content>
+                                               <Icon name={orderIcon["invoice-sent"]} /> {orderTite["invoice-sent"]}
                                             </Popup.Content>
                                             <Popup.Content>
                                                 <Icon name={orderIcon.payment} /> {orderTite.payment}

@@ -95,17 +95,60 @@ const Quote = (props) => {
         let errors = validate(data, packages)
         console.log(errors);
         if (Object.keys(errors).length === 0) {
-            let calcMargin = (type) => {
+            let calcUnitPrice = (length, width, height, weight, type) => {
+
+                const parcelCalc = (length, width, height, weight) => {
+                    let vol = (length* width * height) / 5000;
+
+                    let calcDetail = vol - weight;
+
+                    if (calcDetail > weight) {
+                        return weight + (calcDetail / 2)
+                    } else {
+                        return weight
+                    }
+
+
+                }
+
+                const packageCalc = (length, width, height, weight) => {
+                    let vol = (length* width * height) / 6000;
+
+                    let calWeight = 0;
+
+                    if (weight <= 50) {
+                        calWeight = weight + 2
+                    } else if (weight > 50 && weight <= 60) {
+                        calWeight = weight + 3
+                    } else if (weight > 60 && weight <= 100) {
+                        calWeight = weight + 5
+                    } else if (weight > 100 && weight <= 200) {
+                        calWeight = weight + 10
+                    } else if (weight > 200) {
+                        calWeight = weight + 20
+                    }
+
+                    let calcDetail = vol - calWeight;
+
+                    if (calcDetail > calWeight) {
+                        return calWeight + (calcDetail / 2)
+                    } else {
+                        return calWeight
+                    }
+
+                }
+
                 if (type === 'parcel') {
-                    return 5000
+                   return parcelCalc(length, width, height, weight)
                 } else {
-                    return 6000
+                    return packageCalc(length, width, height, weight)
                 }
             }
-            let calcVal = calcMargin(data.type)
+
+
             let calcPackage = packages.map((px) => ({
                 ...px,
-                price: (((px.length * px.weight) * (px.height * px.weight) * (px.width * px.weight))/calcVal)* 0.7
+                price: calcUnitPrice(px.length, px.width, px.height, px.weight, data.type)
             }));
             let totalPrice = calcPackage.reduce((prev, curr) => prev + curr.price, 0);
             let date = serverTimestamp()
@@ -117,11 +160,12 @@ const Quote = (props) => {
                 "email": data.email,
                 "status": "order",
                 "paid": false,
+                "ready": false,
                 "date": {
                     "order": date
                 },
                 "price": totalPrice,
-                "currency": "NGN",
+                "currency": "Pounds",
                 "address": {
       
                 },
@@ -130,26 +174,28 @@ const Quote = (props) => {
                 }
             }, (res) => {
                 let oid = res.id;
-                setLoading(false)
-                if (isAuth) {
-                    // move to order page
-                //    props.history.push(`/order?oid=${res.id}`)
-                   window.location.href= `/cart?oid=${oid}`
-                } else {
-                    // find out if is user
-                    myUser.current = fetchUserByEmail(data.email, (res) => {
-                        if (res.email) {
-                            // move to order page
-                        //    props.history.push(`/order?oid=${res.id}`)
-                           window.location.href= `/cart?oid=${oid}`
-                        } else {
-                            alert("Quote has been sent to your email")
-                        }
-                    }, (err) => {
-                        console.log("USER BT EMAIL ERR:: ",err);
-                        alert(err.message)
-                    })
-                }
+                setLoading(false);
+
+                window.location.href= `/cart?oid=${oid}`;
+                // if (isAuth) {
+                //     // move to order page
+                // //    props.history.push(`/order?oid=${res.id}`)
+                //    window.location.href= `/cart?oid=${oid}`
+                // } else {
+                //     // find out if is user
+                //     myUser.current = fetchUserByEmail(data.email, (res) => {
+                //         if (res.email) {
+                //             // move to order page
+                //         //    props.history.push(`/order?oid=${res.id}`)
+                //            window.location.href= `/cart?oid=${oid}`
+                //         } else {
+                //             alert("Quote has been sent to your email")
+                //         }
+                //     }, (err) => {
+                //         console.log("USER BT EMAIL ERR:: ",err);
+                //         alert(err.message)
+                //     })
+                // }
             }, (err) => {
                 console.log("ALL ORDER ERR:: ",err);
                 alert(err.message)

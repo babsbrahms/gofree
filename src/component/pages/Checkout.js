@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Icon, Segment, Card, Form, Button, Popup, List, Label, Header } from 'semantic-ui-react';
 import validator from "validator"
-import { currentUser, updateData, fetchUserByEmail, fetchOrderById } from "../fbase";
+import { currentUser, updateData, fetchUserByEmail, fetchOrderById, serverTimestamp } from "../fbase";
 import { getUrlParams, orderTite, orderIcon } from "../../utils/resources"
 import "../css/style.css"
 import styles from "../../styles"
@@ -126,6 +126,38 @@ export default class Checkout extends Component {
             } else {
                 this.setState({ errors, loadingAccount: false })
             }
+        })
+    }
+
+    setUpInvoice = () => {
+        const { order, user } = this.state;
+
+        let date = serverTimestamp();
+
+        this.setState({ loadingOrder: true }, () => {
+            updateData("orders", order.id, {
+                ...order,
+                updatedAt : {
+                    timestamp: new Date().getTime(),
+                    month: new Date().getMonth(),
+                    year: new Date().getFullYear(),
+                    day: new Date().getDate()
+                },
+                address: user.address,
+                paid: false,
+                ready : true,
+                status: "invoice-prep",
+                date: {
+                    ...order.date,
+                    "invoice-prep": date
+                }
+            }, () => {
+                this.setState({ loadingOrder: false })
+                alert("We will send the payment link to your email");
+            }, (err) => {
+                this.setState({ loadingOrder: false })
+                alert(err.message);
+            })
         })
     }
 
@@ -271,14 +303,14 @@ export default class Checkout extends Component {
                                         )}
                                     </List.List>
                                     <List.Description>
-                                        {(!order.paid) && (
-                                            <Button circular color="black">
-                                                Pay 50000 NGN
+                                        {(order.status === "order") && (
+                                            <Button circular color="black" onClick={() => this.setUpInvoice()}>
+                                                Pay {Number(order.price).toFixed(2)} {order.currency}
                                             </Button>
                                         )}
 
-                                        {(order.paid) && (
-                                            <h3>This order has been paid for</h3>
+                                        {(order.status !== "order") && (
+                                            <h3>This order invoice has been sent</h3>
                                         )}
                                     </List.Description>
                                 </List.Content>

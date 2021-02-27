@@ -1,6 +1,8 @@
 
 export const orderIcon = {
     "order": 'shopping cart',
+    "invoice-prep": "file alternate",
+    "invoice-sent": "clipboard check",
     'payment': 'payment',
     "collection": "dolly",
     "shipping": "plane" ,
@@ -10,6 +12,8 @@ export const orderIcon = {
 
 export const orderList = [ 
     "order",
+    "invoice-prep",
+    "invoice-sent",
     'payment',
     "collection",
     "shipping",
@@ -19,9 +23,11 @@ export const orderList = [
 
 export const orderTite = {
     "order": 'ORDER RECIEVED',
+    "invoice-prep": "PREPARING INVOICE",
+    "invoice-sent": "INVOICE SENT",
     'payment': 'PAYMENT RECIEVED',
     "collection": "PACKAGE COLLECTED",
-    "shipping": "PACKAGE SHIPPED" ,
+    "shipping": "PACKAGE SHIPPED",
     "delivery": 'PACKAGE DELIVERED',
     "cancelled": "ORDER CANCELLED"
 }
@@ -36,3 +42,19 @@ export const getUrlParams = (params = "") => {
     }
     return obj
 }
+
+
+export const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+]

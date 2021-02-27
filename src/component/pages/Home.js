@@ -44,19 +44,19 @@ const Home = () => {
     let [trackId, setTrackId] = useState("")
 
     useEffect(() => {
-        timer.current = setInterval(() => {
-            console.log(current);
-            if (current === (adsWords.length - 1)) {
-                setCurrent(0)
-            } else {
-                setCurrent(current + 1)
-            }
-        }, 5000);
+        // timer.current = setInterval(() => {
+        //     console.log(current);
+        //     if (current === (adsWords.length - 1)) {
+        //         setCurrent(0)
+        //     } else {
+        //         setCurrent(current + 1)
+        //     }
+        // }, 5000);
 
-        return() => {
-            clearInterval(timer.current)
+        // return() => {
+        //     clearInterval(timer.current)
             
-        }
+        // }
     })
 
     const getOrder = () => {
@@ -307,7 +307,7 @@ const Home = () => {
                                 <Image
                                 floated='right'
                                 size='mini'
-                                src='https://react.semantic-ui.com/images/avatar/large/steve.jpg'
+                                // src='https://react.semantic-ui.com/images/avatar/large/steve.jpg'
                                 />
                                 <Card.Header>Steve Sanders</Card.Header>
                                 <Card.Meta>Manager</Card.Meta>
@@ -321,7 +321,7 @@ const Home = () => {
                                 <Image
                                 floated='right'
                                 size='mini'
-                                src='https://react.semantic-ui.com/images/avatar/large/molly.png'
+                                // src='https://react.semantic-ui.com/images/avatar/large/molly.png'
                                 />
                                 <Card.Header>Molly Thomas</Card.Header>
                                 <Card.Meta>Sally Dental Group</Card.Meta>
@@ -335,7 +335,7 @@ const Home = () => {
                                 <Image
                                 floated='right'
                                 size='mini'
-                                src='https://react.semantic-ui.com/images/avatar/large/jenny.jpg'
+                                // src='https://react.semantic-ui.com/images/avatar/large/jenny.jpg'
                                 />
                                 <Card.Header>Jenny Lawrence</Card.Header>
                                 <Card.Meta>London</Card.Meta>

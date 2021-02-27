@@ -183,7 +183,29 @@ export const fetchUsers = (res, error) => firebase.firestore().collection("users
 })
 
 
-export const fetchOrders = (res, error) => firebase.firestore().collection("orders").where("paid", "==", true).limit(25).onSnapshot((snapshot) => {
+export const fetchPaidOrders = (period, res, error) => firebase.firestore().collection("orders").where("paid", "==", true).where("updatedAt.year", "==", period.year).where("updatedAt.month", "==", period.month).onSnapshot((snapshot) => {
+    let list =[];
+    snapshot.forEach(doc => {
+        list.push({ id: doc.id, ...doc.data() })
+    })
+    res(list)
+}, (err) => {
+    error(err)
+})
+
+
+export const fetchSentInvoiceOrders = (period, res, error) => firebase.firestore().collection("orders").where("status", "==", "invoice-sent").where("updatedAt.year", "==", period.year).where("updatedAt.month", "==", period.month).onSnapshot((snapshot) => {
+    let list =[];
+    snapshot.forEach(doc => {
+        list.push({ id: doc.id, ...doc.data() })
+    })
+    res(list)
+}, (err) => {
+    error(err)
+})
+
+
+export const fetchNewOrders = (period, res, error) => firebase.firestore().collection("orders").where("status", "==", "invoice-prep").onSnapshot((snapshot) => {
     let list =[];
     snapshot.forEach(doc => {
         list.push({ id: doc.id, ...doc.data() })
@@ -281,7 +303,7 @@ export const fetchMyAdmin = (email, res, error) => firebase.firestore().collecti
 })
 
 /////ACCOUNT
-export const fetchMySavedQuote = (email, res, error) => firebase.firestore().collection("orders").where("email", "==", email).where("paid", "==", false).limit(25).onSnapshot((snapshot) => {
+export const fetchMySavedQuote = (email, res, error) => firebase.firestore().collection("orders").where("email", "==", email).where("status", "==", "order").limit(25).onSnapshot((snapshot) => {
     let list =[];
     snapshot.forEach(doc => {
         list.push({ id: doc.id, ...doc.data() })
@@ -305,7 +327,7 @@ export const fetchOrderById = (id, res, error) => firebase.firestore().collectio
     error(err)
 })
 
-export const fetchMyOrders = (email, res, error) => firebase.firestore().collection("orders").where("email", "==", email).where("paid", "==", true).limit(25).onSnapshot((snapshot) => {
+export const fetchMyOrders = (email, res, error) => firebase.firestore().collection("orders").where("email", "==", email).where("ready", "==", true).limit(25).onSnapshot((snapshot) => {
     let list =[];
     snapshot.forEach(doc => {
         list.push({ id: doc.id, ...doc.data() })

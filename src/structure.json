@@ -24,8 +24,9 @@
         "type": "parcel || package",
         "packages": [],
         "email": "user.email",
-        "status": "order | payment | collect | shipping | delivery",
+        "status": "order | invoice-prep | invoice-sent | payment | collect | shipping | delivery",
         "paid": false,
+        "ready": false,
         "date": {
 
         },
@@ -39,6 +40,13 @@
         },
         "payment": {
 
+        },
+        "createdAt": "date",
+        "updatedAt" : {
+            "timestamp": "new Date().getTime()",
+            "month": "new Date().getMonth()",
+            "year": "new Date().getFullYear()",
+            "day": "new Date().getDate()"
         }
     },
     "invoice": {
