@@ -16,7 +16,7 @@ const Header = () => {
     return (
         <Menu id="gofree-menu" color="blue" pointing secondary>
             <Menu.Item
-                name='home'
+                name='GoFree'
                 active={activeItem === 'home'}
                 onClick={() => setActiveItem('home')}
                 as={Link} 

@@ -49,7 +49,9 @@
             "day": "new Date().getDate()"
         }
     },
-    "invoice": {
-        
+    "logs": {
+        "text": "",
+        "createdAt": "",
+        "data": "order"
     }
 }

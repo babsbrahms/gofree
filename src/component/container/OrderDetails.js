@@ -1,18 +1,25 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Icon, Label, Card, List, Popup, Divider, Segment, Select, Input } from 'semantic-ui-react';
+import { Icon, Label, Card, List, Popup, Divider, Segment, Select, Input, Form, Button } from 'semantic-ui-react';
 import "../css/style.css"
 import { orderIcon, orderTite, orderStatus } from "../../utils/resources"
-import { fetchUserByEmail, fetchOneOrder, updateData, serverTimestamp } from "../fbase"
+import { fetchUserByEmail, fetchOneOrder, updateData, serverTimestamp, addData, fetchOrderLogs } from "../fbase"
+import styles from "../../styles"
 
 
-export const OrderDetails = ({ id }) => {
+export const OrderDetails = ({ id, adminName }) => {
     const unUser = useRef(null);
-    const unOrder = useRef(null)
+    const unOrder = useRef(null);
+    const unLog = useRef(null)
+    const mail_link_ref = useRef(null);
+    const mail_price_ref = useRef(null)
 
     const [active, setActive] = useState("")
     const [user, setUser] = useState({})
     const [selectedOrder, setSelectedOrder] = useState({})
     const [loading, setLoading] = useState(true)
+    const [editAccount, setEditAccount] = useState(false)
+    const [errors, setErrors] = useState({})
+    const [logs, setLogs] = useState([])
 
     useEffect(() => {
         unOrder.current = fetchOneOrder(id, (res) => {
@@ -30,6 +37,10 @@ export const OrderDetails = ({ id }) => {
             if (unOrder.current) {
                 unOrder.current()
             }
+
+            if (unLog.current) {
+                unLog.current()
+            }
         }
     }, [])
 
@@ -37,15 +48,32 @@ export const OrderDetails = ({ id }) => {
         unUser.current = fetchUserByEmail(email, (user) => {
             setUser(user)
         }, (err) => {
-            console.log(err.message);
+            alert(err.message);
         })
     }
+
+
+    const getLogs = () => {
+        if (!unLog.current) {
+            setLoading(true)
+            unLog.current = fetchOrderLogs(selectedOrder.id, (res) => {
+                setLoading(false)
+                setLogs(res)
+            }, (err) => {
+                console.log(err);
+                setLoading(false)
+                alert(err.message);
+            })
+        }
+
+    }
+
 
     const sendInvoice = () => {
         setLoading(true);
 
         let date = serverTimestamp();
-        
+
         updateData("orders", selectedOrder.id, {
             ...selectedOrder,
             status: "invoice-sent", 
@@ -64,6 +92,18 @@ export const OrderDetails = ({ id }) => {
         }, () => {
             setLoading(false)
 
+            // log
+            addData("logs", {
+                "text": `${adminName} added payment link`,
+                "orderId": selectedOrder.id,
+                "createdAt": date,
+                "data": selectedOrder
+            }, () =>  {
+                mail_link_ref.current.click()
+            }, (err) => {
+                setLoading(false);
+                alert(err.message)
+            })
 
         }, (err) => {
             setLoading(false);
@@ -74,11 +114,48 @@ export const OrderDetails = ({ id }) => {
 
     const changePrice = () => {
         setLoading(true);
+        let date = serverTimestamp();
 
         updateData("orders", selectedOrder.id, selectedOrder, () => {
             setLoading(false)
 
-            
+            // log
+            addData("logs", {
+                "text": `${adminName} changed price to ${selectedOrder.price}`,
+                "createdAt": date,
+                "data": selectedOrder
+            }, () =>  {
+                mail_price_ref.current.click()
+            }, (err) => {
+                setLoading(false);
+                alert(err.message)
+            })
+        }, (err) => {
+            setLoading(false);
+            alert(err.message)
+        })
+    }
+
+
+    const revertLog = (log) => {
+        setLoading(true);
+        let date = serverTimestamp();
+
+        updateData("orders", selectedOrder.id, log.data, () => {
+            setLoading(false)
+
+            // log
+            addData("logs", {
+                "text": `${adminName} reverted logs`,
+                "orderId": selectedOrder.id,
+                "createdAt": date,
+                "data": selectedOrder
+            }, () =>  {
+
+            }, (err) => {
+                setLoading(false);
+                alert(err.message)
+            })
         }, (err) => {
             setLoading(false);
             alert(err.message)
@@ -110,11 +187,87 @@ export const OrderDetails = ({ id }) => {
         }, () => {
             setLoading(false)
 
+            // log
+            addData("logs", {
+                "text": `${adminName} changed status to ${selected.text}`,
+                "orderId": selectedOrder.id,
+                "createdAt": date,
+                "data": selectedOrder
+            }, () =>  {
+
+            }, (err) => {
+                setLoading(false);
+                alert(err.message)
+            })
             
         }, (err) => {
             setLoading(false);
             alert(err.message)
         })
+    }
+   
+    const addAddress = (data) => 
+        setSelectedOrder({
+            ...selectedOrder,
+            address: {
+                ...selectedOrder.address,
+                [data.name]: data.value
+            }
+        })
+
+    const validate = (data) => {
+        let err = {}
+
+            if (data.address) {
+                if (!data.address.address) err.address = "Address is required";
+                if (!data.address.city) err.city = "City is required";
+                if (!data.address.state) err.state = "State is required";
+                if (!data.address.country) err.country = "Country is required";
+            } else {
+                err.address = "Address is required";
+                err.city = "City is required";
+                err.state = "State is required";
+                err.country = "Country is required";
+            }
+
+        return err
+    }
+
+    const saveAddress = () => {
+
+        setErrors({});
+        setLoading(true)
+
+        let errors = validate(selectedOrder)
+
+        if (Object.keys(errors).length === 0) {
+            let date = serverTimestamp();
+
+            updateData("orders", selectedOrder.id, selectedOrder, () => {
+                setLoading(false)
+                setEditAccount(false)
+                // log
+                addData("logs", {
+                    "text": `${adminName} changed order address`,
+                    "orderId": selectedOrder.id,
+                    "createdAt": date,
+                    "data": selectedOrder
+                }, () =>  {
+    
+                }, (err) => {
+                    setLoading(false);
+                    alert(err.message)
+                })
+                
+            }, (err) => {
+                setLoading(false);
+                alert(err.message)
+            })
+        } else {
+            setErrors(errors);
+            setLoading(false)
+        }
+        
     }
 
     return (
@@ -241,27 +394,115 @@ export const OrderDetails = ({ id }) => {
             <Card.Group itemsPerRow="2" stackable>
                 <Card link color="pink">
                     <Card.Content>
-                        <Card.Header>Payment</Card.Header>
+                        <div style={styles.betweenStart}>
+                            <Card.Header>Logs</Card.Header>
+                            
+                            {(logs.length === 0) && (<Button loading={loading} disabled={loading} onClick={() => getLogs()}>
+                                Get Logs
+                            </Button>)}
+                        </div>
                     </Card.Content>
                     <Card.Content>
+                        
+                        <div style={{ maxHeight: 250, overflowY: "auto"}}>
+                            <List divided relaxed >
+                                {logs.map((log) => 
+                                    <List.Item>
+                                        <List.Content floated='right'>
+                                            <Button onClick={() => revertLog(log)}>Revert</Button>
+                                        </List.Content>
+                                        <List.Content>
+                                            <List.Header>{log.text}</List.Header>
+                                            <List.Description>
+                                                {log.createdAt? `${log.createdAt.toDate().toDateString()} ${log.createdAt.toDate().toLocaleTimeString()}` : "" }
+                                            </List.Description>
+                                        </List.Content>
+                                    </List.Item>
+                                )}
+                            </List>
+                        </div>
 
                     </Card.Content>
                 </Card>
 
                 <Card link color="pink">
                     <Card.Content>
-                        <Card.Header>Adresss</Card.Header>
+                        <div style={styles.betweenStart}>
+                            <Card.Header>
+                                Adresss
+                            </Card.Header>
+
+                            <Icon name="edit" color="blue" link onClick={() => setEditAccount(!editAccount)} />
+                        </div>
                     </Card.Content>
-                    <Card.Content>
+                    {(!editAccount) && (<Card.Content>
                         {(selectedOrder.address) && (<Card.Description>
                             {selectedOrder.address.address}
                         </Card.Description>)}
                         {(selectedOrder.address) && (<Card.Description>
                             {selectedOrder.address.city} {selectedOrder.address.state}, {selectedOrder.address.country}
                         </Card.Description>)}
-                    </Card.Content>
+                    </Card.Content>)}
+
+                    {(editAccount) && (
+                    <Card.Content>
+                        <Form> 
+
+                            <Form.Input 
+                                required
+                                label="Address"
+                                name="address" 
+                                defaultValue={(selectedOrder.address && selectedOrder.address.address)? selectedOrder.address.address : ""}
+                                onChange={(e, data) => addAddress(data)} 
+                                placeholder={"add your address"}
+                                error={errors.address}
+                            />
+
+                            <Form.Input 
+                                required
+                                label="City"
+                                name="city" 
+                                defaultValue={(selectedOrder.address && selectedOrder.address.address)? selectedOrder.address.city : ""}
+                                onChange={(e, data) => addAddress(data)} 
+                                placeholder={"add your city"}
+                                error={errors.city}
+                            />
+
+
+                            <Form.Input 
+                                required
+                                label="State"
+                                name="state" 
+                                defaultValue={(selectedOrder.address && selectedOrder.address.address)? selectedOrder.address.state : ""}
+                                onChange={(e, data) => addAddress(data)} 
+                                placeholder={"add your state"}
+                                error={errors.state}
+                            />
+
+
+                            <Form.Input 
+                                required
+                                label="Country"
+                                name="country" 
+                                defaultValue={(selectedOrder.address && selectedOrder.address.address)? selectedOrder.address.country : ""}
+                                onChange={(e, data) => addAddress(data)} 
+                                placeholder={"add your country"}
+                                error={errors.country}
+                            />
+
+                            <Form.Button floated="right" onClick={() => saveAddress()} color='linkedin'>
+                                Submit
+                            </Form.Button>
+                        </Form>
+                    </Card.Content>)}
                 </Card>
             </Card.Group>
+                        
+            <div style={{ width: 0, height: 0}}>
+                <a ref={mail_link_ref} href={`mailto:${selectedOrder.email}?subject=Payment Link For Your GoFree Order&body=Use this link ${selectedOrder.link} to pay for your order. You can track your order from the home page with this tracking Id: ${selectedOrder.id} . Thank you for using GoFree.`}></a>
+
+                <a ref={mail_price_ref} href={`mailto:${selectedOrder.email}?subject=Your GoFree ${selectedOrder.type} price updated.`}></a>
+            </div>
         </div>)}
     </Segment>
     )

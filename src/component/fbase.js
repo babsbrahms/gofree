@@ -314,6 +314,17 @@ export const fetchOneOrder = (id, res, error) => firebase.firestore().collection
 }, (err) => {
     error(err)
 })
+
+
+export const fetchOrderLogs = (id, res, error) => firebase.firestore().collection("logs").where("orderId", "==", id).orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+    let list =[];
+    snapshot.forEach(doc => {
+        list.push({ id: doc.id, ...doc.data() })
+    })
+    res(list)
+}, (err) => {
+    error(err)
+})
 /////ACCOUNT
 export const fetchMySavedQuote = (email, res, error) => firebase.firestore().collection("orders").where("email", "==", email).where("status", "==", "order").limit(25).onSnapshot((snapshot) => {
     let list =[];
