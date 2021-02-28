@@ -493,7 +493,7 @@ export default class Admin extends Component {
                             Order Details
                         </Modal.Header>
                         <Modal.Content>
-                            <OrderDetails selectedOrder={selectedOrder} />
+                            <OrderDetails id={selectedOrder.id} />
                         </Modal.Content>
                         <Modal.Actions>
                             <Button color="black" onClick={() => this.setState({ openOrderDetail: false })}>

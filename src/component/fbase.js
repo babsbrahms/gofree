@@ -302,6 +302,18 @@ export const fetchMyAdmin = (email, res, error) => firebase.firestore().collecti
     error(err)
 })
 
+
+export const fetchOneOrder = (id, res, error) => firebase.firestore().collection("orders").doc(id).onSnapshot((snapshot) => {
+    let list = {};
+   
+    if (snapshot.exists) {
+        list = { id: snapshot.id, ...snapshot.data() };
+    }
+    
+    res(list)
+}, (err) => {
+    error(err)
+})
 /////ACCOUNT
 export const fetchMySavedQuote = (email, res, error) => firebase.firestore().collection("orders").where("email", "==", email).where("status", "==", "order").limit(25).onSnapshot((snapshot) => {
     let list =[];

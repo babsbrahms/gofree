@@ -154,6 +154,7 @@ export default class Checkout extends Component {
             }, () => {
                 this.setState({ loadingOrder: false })
                 alert("We will send the payment link to your email");
+                window.location.reload(true);
             }, (err) => {
                 this.setState({ loadingOrder: false })
                 alert(err.message);

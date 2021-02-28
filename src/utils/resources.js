@@ -32,6 +32,17 @@ export const orderTite = {
     "cancelled": "ORDER CANCELLED"
 }
 
+export const orderStatus = [
+    { status: "order", text: 'ORDER RECIEVED', "paid": false, "ready": false },
+    { status: "invoice-prep", text: "PREPARING INVOICE", "paid": false, "ready": true },
+    { status: "invoice-sent", text: "INVOICE SENT", "paid": false, "ready": true },
+    { status: "payment", text: 'PAYMENT RECIEVED', "paid": true, "ready": true },
+    { status: "collection", text: "PACKAGE COLLECTED", "paid": true, "ready": true },
+    { status: "shipping", text: "PACKAGE SHIPPED", "paid": true, "ready": true },
+    { status: "delivery", text: 'PACKAGE DELIVERED', "paid": true, "ready": true },
+    { status: "cancelled", text: "ORDER CANCELLED", "paid": true, "ready": true },
+]
+
 export const getUrlParams = (params = "") => {
     let obj = {};
     if (params && params.startsWith("?")) {

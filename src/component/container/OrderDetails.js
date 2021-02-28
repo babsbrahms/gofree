@@ -1,32 +1,179 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Icon, Label, Card, List, Popup, Divider } from 'semantic-ui-react';
+import { Icon, Label, Card, List, Popup, Divider, Segment, Select, Input } from 'semantic-ui-react';
 import "../css/style.css"
-import { orderIcon, orderTite } from "../../utils/resources"
-import { fetchUserByEmail } from "../fbase"
+import { orderIcon, orderTite, orderStatus } from "../../utils/resources"
+import { fetchUserByEmail, fetchOneOrder, updateData, serverTimestamp } from "../fbase"
 
 
-export const OrderDetails = ({ selectedOrder }) => {
+export const OrderDetails = ({ id }) => {
+    const unUser = useRef(null);
+    const unOrder = useRef(null)
 
+    const [active, setActive] = useState("")
     const [user, setUser] = useState({})
-    const unUser = useRef(null)
+    const [selectedOrder, setSelectedOrder] = useState({})
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        unUser.current = fetchUserByEmail(selectedOrder.email, (user) => {
-        setUser(user)
-    }, (err) => {
-        console.log(err.message);
-    })
+        unOrder.current = fetchOneOrder(id, (res) => {
+            setLoading(false);
+            setSelectedOrder(res)
+            // console.log(res);
+            getUser(res.email)
+        })
 
         return() => {
             if (unUser.current) {
                 unUser.current()
             }
-            
+
+            if (unOrder.current) {
+                unOrder.current()
+            }
         }
-    })
+    }, [])
+
+    const getUser = (email) => {
+        unUser.current = fetchUserByEmail(email, (user) => {
+            setUser(user)
+        }, (err) => {
+            console.log(err.message);
+        })
+    }
+
+    const sendInvoice = () => {
+        setLoading(true);
+
+        let date = serverTimestamp();
+        
+        updateData("orders", selectedOrder.id, {
+            ...selectedOrder,
+            status: "invoice-sent", 
+            "paid": false, 
+            "ready": true,
+            date: {
+                ...selectedOrder,
+                "invoice-sent" : date
+            },
+            updatedAt : {
+                timestamp: new Date().getTime(),
+                month: new Date().getMonth(),
+                year: new Date().getFullYear(),
+                day: new Date().getDate()
+            },
+        }, () => {
+            setLoading(false)
+
+
+        }, (err) => {
+            setLoading(false);
+            alert(err.message)
+        })
+    }
+
+
+    const changePrice = () => {
+        setLoading(true);
+
+        updateData("orders", selectedOrder.id, selectedOrder, () => {
+            setLoading(false)
+
+            
+        }, (err) => {
+            setLoading(false);
+            alert(err.message)
+        })
+    }
+
+    const changeStatus = (status) => {
+        setLoading(true);
+
+        let date = serverTimestamp();
+
+        let selected = orderStatus.find(x => x.status === status);
+
+        updateData("orders", selectedOrder.id, {
+            ...selectedOrder,
+            status: status, 
+            "paid": selected.paid || false, 
+            "ready": selected.ready || false,
+            date: {
+                ...selectedOrder,
+                [status] : date
+            },
+            updatedAt : {
+                timestamp: new Date().getTime(),
+                month: new Date().getMonth(),
+                year: new Date().getFullYear(),
+                day: new Date().getDate()
+            },
+        }, () => {
+            setLoading(false)
+
+            
+        }, (err) => {
+            setLoading(false);
+            alert(err.message)
+        })
+    }
 
     return (
-        <div>
+
+    <Segment loading={loading}>
+        {(!!selectedOrder.id) && (<div>
+            <p>
+                <a style={{ cursor: "pointer", color: (active === "Change Status")? "#e04797" : "#548fca" }} onClick={() => setActive("Change Status")} >Change Status</a> | <a style={{ cursor: "pointer", color: (active === "Send Invoice")? "#e04797" : "#548fca" }} onClick={() => setActive("Send Invoice")}>Send Invoice</a> | <a style={{ cursor: "pointer", color: (active === "Change Price")? "#e04797" : "#548fca" }} onClick={() => setActive("Change Price")}>Change Price</a> {(active !== "") && (<span>| <Icon link onClick={() => setActive("")} name="cancel" color="red" /></span>)}
+            </p>
+            <div>
+                {(active === "Change Status") && (
+                    <Select value={selectedOrder.status} onChange={(e, data) => changeStatus(data.value)} placeholder='Change Order Status' options={orderStatus.map(x => ({ key: x.status, value: x.status, text: x.text }))} />
+                )}
+
+                {(active === "Send Invoice") && (
+                    <Input 
+                        action={{
+                            color: 'teal',
+                            labelPosition: "right",
+                            icon: "search" ,
+                            content: "Send Invoice" ,
+                            onClick: () => sendInvoice()
+                        }}
+                        actionPosition="right"
+                        placeholder='Enter Payment Link' 
+                        defaultValue={selectedOrder.link}
+                        onChange={(e,data) => setSelectedOrder({ ...selectedOrder, link: e.target.value })}
+                        
+                    />
+                )}
+
+                {(active === "Change Price") && (
+                    <div>
+                        <Input 
+                            action={{
+                                color: 'teal',
+                                labelPosition: "right",
+                                icon: "search" ,
+                                content: "Change Price",
+                                onClick: () => changePrice()
+                            }}
+                            actionPosition="right"
+                            placeholder='Input New Pice' 
+                            defaultValue={selectedOrder.price}
+                            onChange={(e,data) => setSelectedOrder({ ...selectedOrder, price: e.target.value })}
+                            
+                        />
+
+                    </div>
+                )}
+
+                {/* {(active === "Delete") && (
+                    <Button>
+                       Yes, Delete Order.
+                    </Button>
+                )} */}
+            </div>
+        
+            <Divider />
             <Label basic>Order Id: {selectedOrder.id}</Label>
             <Label basic>Ordered Date: {selectedOrder.date && selectedOrder.date.order? selectedOrder.date['order'].toDate().toDateString() : "" } </Label>
             <h3>Customer Name: {user.name} </h3>
@@ -115,6 +262,7 @@ export const OrderDetails = ({ selectedOrder }) => {
                     </Card.Content>
                 </Card>
             </Card.Group>
-        </div>
+        </div>)}
+    </Segment>
     )
 }
