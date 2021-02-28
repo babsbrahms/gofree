@@ -407,7 +407,7 @@ export const OrderDetails = ({ id, adminName }) => {
                         <div style={{ maxHeight: 250, overflowY: "auto"}}>
                             <List divided relaxed >
                                 {logs.map((log) => 
-                                    <List.Item>
+                                    <List.Item key={log.id}>
                                         <List.Content floated='right'>
                                             <Button onClick={() => revertLog(log)}>Revert</Button>
                                         </List.Content>

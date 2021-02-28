@@ -29,7 +29,7 @@ const Footer = () => {
                 <List.Item>
                     <List.Icon name='mail' />
                     <List.Content>
-                        <a href='mailto:gofreeltd@yahoo.com'>gofreeltd@yahoo.com</a>
+                        <a href='mailto:info@gofreeltd.com'>info@gofreeltd.com</a>
                     </List.Content>
                 </List.Item>
                 <List.Item>
