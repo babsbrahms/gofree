@@ -130,7 +130,7 @@ export const twitterAuth = () => {
 
 
 //GENERAL
- firebase.firestore().enablePersistence()
+//  firebase.firestore().enablePersistence()
 
 // []
 // export const setData = (collection, id, data, success, error) => firebase.firestore().collection(collection).doc(id).set(data).then(res => success(res)).catch(err => error(err));

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Table, Icon, Menu, Segment, Label, Card, Form, List, Button, Modal, Popup, Divider, Dropdown } from 'semantic-ui-react';
 import validator from "validator"
 import { Link } from "react-router-dom";
-import { currentUser, signOut, fetchMySavedQuote, fetchMyOrders, fetchMyUser, updateData, deleteData } from "../fbase"
+import { currentUser, signOut, fetchMySavedQuote, fetchMyOrders, fetchMyUser, updateData, deleteData, createProfileName } from "../fbase"
 import "../css/style.css"
 import styles from "../../styles"
 import Quote from "../container/Quote"
@@ -54,7 +54,21 @@ export default class Account extends Component {
     
     getUser = (id) => {
         this.unUser = fetchMyUser(id, (res) => {
-            this.setState({ loadingAccount: false, user:  res })
+            if (!res.uid) {
+                const us = currentUser();
+
+                createProfileName(us.uid, us.displayName, "", us.email)
+                .then(() => {
+                    this.setState({ loadingAccount: false, user: { email: us.email, name: us.displayName } })
+                })
+                .catch((err) => {
+                    this.setState({ loadingAccount: false })
+                    alert(err.message)
+                })
+            } else {
+                this.setState({ loadingAccount: false, user:  res })
+            }
+            
         }, (err) => {
             this.setState({ loadingAccount: false })
             alert(err.message)

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Icon, Segment, Card, Form, Button, Popup, List, Label, Header } from 'semantic-ui-react';
 import validator from "validator"
-import { currentUser, updateData, fetchUserByEmail, fetchOrderById, serverTimestamp } from "../fbase";
+import { currentUser, updateData, fetchUserByEmail, fetchOrderById, serverTimestamp, createProfileName } from "../fbase";
 import { getUrlParams, orderTite, orderIcon } from "../../utils/resources"
 import "../css/style.css"
 import styles from "../../styles"
@@ -59,7 +59,21 @@ export default class Checkout extends Component {
     
     getUser = (email) => {
         fetchUserByEmail(email, (res) => {
-            this.setState({ loadingAccount: false, data: res, user: res })
+            if (!res.uid) {
+                const us = currentUser();
+
+                createProfileName(us.uid, us.displayName, "", us.email)
+                .then(() => {
+                    this.setState({ loadingAccount: false, user: { email: us.email, name: us.displayName }, data: { email: us.email, name: us.displayName } })
+                })
+                .catch((err) => {
+                    this.setState({ loadingAccount: false })
+                    alert(err.message)
+                })
+            } else {
+                this.setState({ loadingAccount: false, user: res, data: res })
+            }
+            // this.setState({ loadingAccount: false, data: res, user: res })
         }, (err) => {
             this.setState({ loadingAccount: false })
             alert(err.message)
@@ -153,7 +167,7 @@ export default class Checkout extends Component {
                 }
             }, () => {
                 this.setState({ loadingOrder: false })
-                alert("We will send the payment link to your email");
+                alert("We will send an invoice to your email");
                 window.location.reload(true);
             }, (err) => {
                 this.setState({ loadingOrder: false })
@@ -174,7 +188,7 @@ export default class Checkout extends Component {
 
 
                 <Segment id="gofree-content" loading={loadingAccount || loadingOrder} >
-                    {(!data.id) && (
+                    {(!order.id) && (
                         <div style={style.center}>
                             <Header textAlign icon>
                                 <Icon circular name="shopping cart" />
@@ -209,6 +223,7 @@ export default class Checkout extends Component {
                                         label="Email"
                                         name="email" 
                                         type="email"
+                                        disabled
                                         defaultValue={(data.email)? data.email : ""}
                                         onChange={(e, data) => this.addUserData(data)} 
                                         placeholder={"add your email"}
@@ -265,7 +280,7 @@ export default class Checkout extends Component {
                         </Card>
                     </Segment>)}
                     
-                    {(!!order.id) && (!!data.id) && (<Segment loading={loadingOrder}>
+                    {(!!order.id) && (user.address && user.address.address) && (<Segment loading={loadingOrder}>
                         <List divided relaxed>
                             <List.Item>
 
@@ -311,7 +326,7 @@ export default class Checkout extends Component {
                                         )}
 
                                         {(order.status !== "order") && (
-                                            <h3>This order invoice has been sent</h3>
+                                            <h3>This order invoice will be sent to your email.</h3>
                                         )}
                                     </List.Description>
                                 </List.Content>
