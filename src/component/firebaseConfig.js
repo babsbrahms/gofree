@@ -8,13 +8,7 @@ import "firebase/analytics";
 import "firebase/performance"
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDtdfd32Vdb5tiGsopkyHcU-2XilGiuVv0",
-    authDomain: "gofreeltd.firebaseapp.com",
-    databaseURL: "https://gofreeltd.firebaseio.com",
-    projectId: "gofreeltd",
-    storageBucket: "gofreeltd.appspot.com",
-    messagingSenderId: "961955373449",
-    appId: "1:961955373449:web:3fb604569fd3966df94158"
+
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
