@@ -1,27 +1,29 @@
 import React, {useState} from 'react'
 import { Menu, Dropdown, Button } from "semantic-ui-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 
 const Header = () => {
+    const { pathname } = useLocation()
     let part = '';
 
-    if (window.location.pathname === '/') {
+    if (pathname === '/') {
         part = 'home'
     } else {
-        part = window.location.pathname.slice(1)
+        part = pathname.slice(1)
     }
     const [activeItem, setActiveItem] = useState(part)
     // console.log(window.location.origin);
     return (
         <Menu id="gofree-menu" color="blue" pointing secondary>
             <Menu.Item
-                name='GoFree'
                 active={activeItem === 'home'}
                 onClick={() => setActiveItem('home')}
                 as={Link} 
                 to={'/'}
-            />
+            >
+                GoFree
+            </Menu.Item>
 
 
             <Dropdown item text='Navigation' pointing onClick={() => setActiveItem('')}>

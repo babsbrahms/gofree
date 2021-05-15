@@ -113,7 +113,7 @@ const Quote = (props) => {
                         return weight * stateRate.rate
                     } else {
                         let calcDetail = vol - weight;
-                        return (weight + (calcDetail * 0.5)) + (weight * stateRate.rate)
+                        return (weight + (calcDetail * 0.5)) * stateRate.rate
                     }
 
                 }
@@ -147,7 +147,7 @@ const Quote = (props) => {
                         return weight * stateRate.rate
                     } else {
                         let calcDetail = vol - weight;
-                        return (weight + (calcDetail * 0.5)) + (weight * stateRate.rate)
+                        return (weight + (calcDetail * 0.5)) * stateRate.rate
                     }
 
                 }
@@ -164,7 +164,8 @@ const Quote = (props) => {
                 ...px,
                 price: calcUnitPrice(px.length, px.width, px.height, px.weight, data.type)
             }));
-            let deliveryFee = packages.reduce((acc, curr) => acc + curr.weight, 0) >= 50? 0 : 15;
+            let totaQty = packages.reduce((acc, curr) => acc + curr.weight, 0)
+            let deliveryFee = (totaQty >= 50)? 0 : 15;
             let totalPrice = calcPackage.reduce((prev, curr) => prev + curr.price, 0) + 20 + deliveryFee;
             let date = serverTimestamp()
             AddOrder("orders", {
