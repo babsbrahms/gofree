@@ -113,7 +113,7 @@ const Quote = (props) => {
                         return weight * stateRate.rate
                     } else {
                         let calcDetail = vol - weight;
-                        return (calcDetail * 0.5) + (weight * stateRate.rate)
+                        return (weight + (calcDetail * 0.5)) + (weight * stateRate.rate)
                     }
 
                 }
@@ -147,7 +147,7 @@ const Quote = (props) => {
                         return weight * stateRate.rate
                     } else {
                         let calcDetail = vol - weight;
-                        return (calcDetail * 0.5) + (weight * stateRate.rate)
+                        return (weight + (calcDetail * 0.5)) + (weight * stateRate.rate)
                     }
 
                 }
