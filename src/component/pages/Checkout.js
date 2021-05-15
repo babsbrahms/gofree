@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Icon, Segment, Card, Form, Button, Popup, List, Label, Header } from 'semantic-ui-react';
+import { Icon, Segment, Card, Form, Button, Popup, List, Label, Header, Divider } from 'semantic-ui-react';
 import validator from "validator"
 import { currentUser, updateData, fetchUserByEmail, fetchOrderById, serverTimestamp, createProfileName } from "../fbase";
 import { getUrlParams, orderTite, orderIcon } from "../../utils/resources"
@@ -318,6 +318,40 @@ export default class Checkout extends Component {
                                             </List.Item>
                                         )}
                                     </List.List>
+                                    <List.Item>
+                                        <List.Content floated='right'>
+                                            {Number(order.handling).toFixed(2)} {order.currency}
+                                        </List.Content>
+                                        <List.Content>
+                                            <List.Description>
+                                                HANDLING FEE:
+                                            </List.Description>
+                                        </List.Content>
+                                    </List.Item>
+                                    <List.Item>
+                                        <List.Content floated='right'>
+                                            {Number(order.delivery).toFixed(2)} {order.currency}
+                                        </List.Content>
+                                        <List.Content>
+                                            <List.Description>
+                                                DELIVERY FEE: 
+                                            </List.Description>
+                                        </List.Content>
+                                    </List.Item>
+                                    <List.Item>
+                                        <List.Content floated='right'>
+                                            <Label basic color="pink" >
+                                                {Number(order.price).toFixed(2)} {order.currency}
+                                            </Label>
+                                            
+                                        </List.Content>
+                                        <List.Content>
+                                            <List.Header>
+                                                TOTAL PRICE: 
+                                            </List.Header>
+                                        </List.Content>
+                                    </List.Item>
+                                    <Divider />
                                     <List.Description>
                                         {(order.status === "order") && (
                                             <Button circular color="black" onClick={() => this.setUpInvoice()}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Segment, Icon, Header, Button, Dimmer, Loader, Image, List , Popup, Label} from "semantic-ui-react";
+import { Segment, Icon, Header, Button, Dimmer, Loader, Image, List , Popup, Label, Divider} from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import "../css/style.css"
 import { fetchOrderById } from "../fbase";
@@ -84,11 +84,6 @@ const Cart = (props) => {
                                         STATUS: {orderTite[order.status]}
                                     </Label>
                                 </List.Description>
-                                <List.Description>
-                                    <Label basic color="pink" size="small" >
-                                        TOTAL PRICE: {Number(order.price).toFixed(2)} {order.currency}
-                                    </Label>
-                                </List.Description>
                                 <List.List>
                                     {order.packages.map((pack) => 
                                         <List.Item>
@@ -107,6 +102,40 @@ const Cart = (props) => {
                                         </List.Item>
                                     )}
                                 </List.List>
+                                <List.Item>
+                                    <List.Content floated='right'>
+                                        {Number(order.handling).toFixed(2)} {order.currency}
+                                    </List.Content>
+                                    <List.Content>
+                                        <List.Description>
+                                            HANDLING FEE:
+                                        </List.Description>
+                                    </List.Content>
+                                </List.Item>
+                                <List.Item>
+                                    <List.Content floated='right'>
+                                        {Number(order.delivery).toFixed(2)} {order.currency}
+                                    </List.Content>
+                                    <List.Content>
+                                        <List.Description>
+                                            DELIVERY FEE: 
+                                        </List.Description>
+                                    </List.Content>
+                                </List.Item>
+                                <List.Item>
+                                    <List.Content floated='right'>
+                                        <Label basic color="pink" >
+                                            {Number(order.price).toFixed(2)} {order.currency}
+                                        </Label>
+                                        
+                                    </List.Content>
+                                    <List.Content>
+                                        <List.Header>
+                                            TOTAL PRICE: 
+                                        </List.Header>
+                                    </List.Content>
+                                </List.Item>
+                                <Divider />
                                 <List.Description>
                                     {(!order.paid) && (
                                         <Button circular color="black" as={Link} to={`/checkout?oid=${trackId}`}>

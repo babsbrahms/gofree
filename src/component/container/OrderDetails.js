@@ -387,6 +387,39 @@ export const OrderDetails = ({ id, adminName }) => {
                         </List.Content>
                     </List.Item>
                 )}
+                <List.Item>
+                    <List.Content floated='right'>
+                        {Number(selectedOrder.handling).toFixed(2)} {selectedOrder.currency}
+                    </List.Content>
+                    <List.Content>
+                        <List.Description>
+                            HANDLING FEE:
+                        </List.Description>
+                    </List.Content>
+                </List.Item>
+                <List.Item>
+                    <List.Content floated='right'>
+                        {Number(selectedOrder.delivery).toFixed(2)} {selectedOrder.currency}
+                    </List.Content>
+                    <List.Content>
+                        <List.Description>
+                            DELIVERY FEE: 
+                        </List.Description>
+                    </List.Content>
+                </List.Item>
+                <List.Item>
+                    <List.Content floated='right'>
+                        <Label basic color="pink" >
+                            {Number(selectedOrder.price).toFixed(2)} {selectedOrder.currency}
+                        </Label>
+                        
+                    </List.Content>
+                    <List.Content>
+                        <List.Header>
+                            TOTAL PRICE: 
+                        </List.Header>
+                    </List.Content>
+                </List.Item>
             </List>
 
             <Divider />
@@ -499,7 +532,7 @@ export const OrderDetails = ({ id, adminName }) => {
             </Card.Group>
                         
             <div style={{ width: 0, height: 0}}>
-                <a ref={mail_link_ref} href={`mailto:${selectedOrder.email}?subject=Payment Link For Your GoFree Order&body=Use this link ${selectedOrder.link} to pay for your order. You can track your order from the home page with this tracking Id: ${selectedOrder.id} . Thank you for using GoFree.`}></a>
+                <a ref={mail_link_ref} href={`mailto:${selectedOrder.email}?subject=Payment Link For Your GoFree Order&body=Use this link "${selectedOrder.link}" to pay for your order. \n You can track your order from the home page with this tracking Id: ${selectedOrder.id}.\n Thank you for using GoFree.`}></a>
 
                 <a ref={mail_price_ref} href={`mailto:${selectedOrder.email}?subject=Your GoFree ${selectedOrder.type} price updated.`}></a>
             </div>

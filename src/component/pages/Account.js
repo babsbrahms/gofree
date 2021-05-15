@@ -413,11 +413,7 @@ export default class Account extends Component {
                                 <List.Content>
                                     <List.Header>{quote.packages.length} {quote.type} from {quote.from} to {quote.to}</List.Header>
                                     <List.Description>Saved on {quote.date && quote.date.order? quote.date['order'].toDate().toDateString() : "" }</List.Description>
-                                    <List.Description>
-                                        <Label basic color="pink" size="small" >
-                                            TOTAL PRICE: {Number(quote.price).toFixed(2)} {quote.currency}
-                                        </Label>
-                                    </List.Description>
+
                                     <List.List>
                                         {quote.packages.map((pack) => 
                                             <List.Item>
@@ -436,6 +432,39 @@ export default class Account extends Component {
                                             </List.Item>
                                         )}
                                     </List.List>
+                                    <List.Item>
+                                        <List.Content floated='right'>
+                                            {Number(quote.handling).toFixed(2)} {quote.currency}
+                                        </List.Content>
+                                        <List.Content>
+                                            <List.Description>
+                                                HANDLING FEE:
+                                            </List.Description>
+                                        </List.Content>
+                                    </List.Item>
+                                    <List.Item>
+                                        <List.Content floated='right'>
+                                            {Number(quote.delivery).toFixed(2)} {quote.currency}
+                                        </List.Content>
+                                        <List.Content>
+                                            <List.Description>
+                                                DELIVERY FEE: 
+                                            </List.Description>
+                                        </List.Content>
+                                    </List.Item>
+                                    <List.Item>
+                                        <List.Content floated='right'>
+                                            <Label basic color="pink" >
+                                                {Number(quote.price).toFixed(2)} {quote.currency}
+                                            </Label>
+                                            
+                                        </List.Content>
+                                        <List.Content>
+                                            <List.Header>
+                                                TOTAL PRICE: 
+                                            </List.Header>
+                                        </List.Content>
+                                    </List.Item>
                                 </List.Content>
                             </List.Item>
                             ))}
@@ -513,6 +542,38 @@ export default class Account extends Component {
                                         </List.Content>
                                     </List.Item>
                                 )}
+                                    <List.Item>
+                                        <List.Content floated='right'>
+                                            {Number(selectedOrder.handling).toFixed(2)} {selectedOrder.currency}
+                                        </List.Content>
+                                        <List.Content>
+                                            <List.Description>
+                                                HANDLING FEE:
+                                            </List.Description>
+                                        </List.Content>
+                                    </List.Item>
+                                    <List.Item>
+                                        <List.Content floated='right'>
+                                            {Number(selectedOrder.delivery).toFixed(2)} {selectedOrder.currency}
+                                        </List.Content>
+                                        <List.Content>
+                                            <List.Description>
+                                                DELIVERY FEE: 
+                                            </List.Description>
+                                        </List.Content>
+                                    </List.Item>
+                                    <List.Item>
+                                        <List.Content floated='right'>
+                                            <Label basic color="pink" >
+                                                {Number(selectedOrder.price).toFixed(2)} {selectedOrder.currency}
+                                            </Label>  
+                                        </List.Content>
+                                        <List.Content>
+                                            <List.Header>
+                                                TOTAL PRICE: 
+                                            </List.Header>
+                                        </List.Content>
+                                    </List.Item>
                             </List>
 
                             <Divider />

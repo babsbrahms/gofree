@@ -31,6 +31,8 @@
 
         },
         "price": 0,
+        "delivery": "0 || 15",
+        "handling": 20,
         "currency": "",
         "address": {
             "address": "",

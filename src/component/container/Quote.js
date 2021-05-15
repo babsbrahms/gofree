@@ -8,9 +8,9 @@ const fromOption = [
 ]
 
 const deliveryOptions = [
-    { key: 'Nigeria-abuja', text: 'Nigeria-abuja', value: 'nigeria-abuja' },
-    { key: 'Nigeria-lagos', text: 'Nigeria-lagos', value: 'nigeria-lagos' },
-    { key: 'Nigeria-others', text: 'Nigeria-others', value: 'nigeria-others' },
+    { key: 'Nigeria-abuja', text: 'Nigeria-abuja', value: 'nigeria-abuja', rate: 5 },
+    { key: 'Nigeria-lagos', text: 'Nigeria-lagos', value: 'nigeria-lagos', rate: 4.5 },
+    { key: 'Nigeria-others', text: 'Nigeria-others', value: 'nigeria-others', rate: 5 },
 ]
 
 const typeOptions = [
@@ -95,45 +95,59 @@ const Quote = (props) => {
         let errors = validate(data, packages)
         console.log(errors);
         if (Object.keys(errors).length === 0) {
+            let stateRate = deliveryOptions.find((x) => x.value === data.to)
             let calcUnitPrice = (length, width, height, weight, type) => {
 
                 const parcelCalc = (length, width, height, weight) => {
                     let vol = (length* width * height) / 5000;
 
-                    let calcDetail = vol - weight;
+                    // let calcDetail = vol - weight;
 
-                    if (calcDetail > weight) {
-                        return weight + (calcDetail * 0.5)
+                    // if (calcDetail > weight) {
+                    //     return weight + (calcDetail * 0.5)
+                    // } else {
+                    //     return weight
+                    // }
+
+                    if (weight > vol) {
+                        return weight * stateRate.rate
                     } else {
-                        return weight
+                        let calcDetail = vol - weight;
+                        return (calcDetail * 0.5) + (weight * stateRate.rate)
                     }
-
 
                 }
 
                 const packageCalc = (length, width, height, weight) => {
                     let vol = (length* width * height) / 6000;
 
-                    let calWeight = 0;
+                    // let calWeight = 0;
 
-                    if (weight <= 50) {
-                        calWeight = weight + 2
-                    } else if (weight > 50 && weight <= 60) {
-                        calWeight = weight + 3
-                    } else if (weight > 60 && weight <= 100) {
-                        calWeight = weight + 5
-                    } else if (weight > 100 && weight <= 200) {
-                        calWeight = weight + 10
-                    } else if (weight > 200) {
-                        calWeight = weight + 20
-                    }
+                    // if (weight <= 50) {
+                    //     calWeight = weight + 2
+                    // } else if (weight > 50 && weight <= 60) {
+                    //     calWeight = weight + 3
+                    // } else if (weight > 60 && weight <= 100) {
+                    //     calWeight = weight + 5
+                    // } else if (weight > 100 && weight <= 200) {
+                    //     calWeight = weight + 10
+                    // } else if (weight > 200) {
+                    //     calWeight = weight + 20
+                    // }
 
-                    let calcDetail = vol - calWeight;
+                    // let calcDetail = vol - calWeight;
 
-                    if (calcDetail > calWeight) {
-                        return calWeight + (calcDetail * 0.5)
+                    // if (calcDetail > calWeight) {
+                    //     return calWeight + (calcDetail * 0.5)
+                    // } else {
+                    //     return calWeight
+                    // }
+
+                    if (weight > vol) {
+                        return weight * stateRate.rate
                     } else {
-                        return calWeight
+                        let calcDetail = vol - weight;
+                        return (calcDetail * 0.5) + (weight * stateRate.rate)
                     }
 
                 }
@@ -150,7 +164,8 @@ const Quote = (props) => {
                 ...px,
                 price: calcUnitPrice(px.length, px.width, px.height, px.weight, data.type)
             }));
-            let totalPrice = calcPackage.reduce((prev, curr) => prev + curr.price, 0);
+            let deliveryFee = packages.reduce((acc, curr) => acc + curr.weight, 0) >= 50? 0 : 15;
+            let totalPrice = calcPackage.reduce((prev, curr) => prev + curr.price, 0) + 20 + deliveryFee;
             let date = serverTimestamp()
             AddOrder("orders", {
                 "from": data.from,
@@ -165,6 +180,8 @@ const Quote = (props) => {
                     "order": date
                 },
                 "price": totalPrice,
+                "delivery": deliveryFee,
+                "handling": 20,
                 "currency": "Pounds",
                 "address": {
       
