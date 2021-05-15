@@ -12,3 +12,4 @@ yarn-error.log
 service-account.json
 config.json
 functions/keys.json
+src/component/firebaseConfig.js 

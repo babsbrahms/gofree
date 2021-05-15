@@ -103,7 +103,7 @@ const Quote = (props) => {
                     let calcDetail = vol - weight;
 
                     if (calcDetail > weight) {
-                        return weight + (calcDetail / 2)
+                        return weight + (calcDetail * 0.5)
                     } else {
                         return weight
                     }
@@ -131,7 +131,7 @@ const Quote = (props) => {
                     let calcDetail = vol - calWeight;
 
                     if (calcDetail > calWeight) {
-                        return calWeight + (calcDetail / 2)
+                        return calWeight + (calcDetail * 0.5)
                     } else {
                         return calWeight
                     }
