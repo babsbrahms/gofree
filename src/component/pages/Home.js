@@ -97,10 +97,11 @@ const Home = () => {
             <Segment id="gofree-bg">
                 {/* <img width="100%" height="auto" src={wallpaper} style={{backgroundColor: "#fff", borderRadius: 5, marginBottom: 12, borderBottomWidth: 5, borderBottomColor: "#f03c96", borderBottomStyle: "solid" }} /> */}
                 <Segment id="gofree-home-showcase">
-                    {(!!adsWords[current].lead) && (<h2 style={{ marginTop: 10, color: "black", opacity: 0.8, padding: 5, borderRadius: 5, fontSize: 40 }}>
+ 
+                    {(!!adsWords[current].lead) && (<h2 style={{ marginTop: 10, color: "black", opacity: 0.8, padding: 5, borderRadius: 5, fontSize: 40, backgroundColor: "white" }}>
                         {adsWords[current].lead}
                     </h2>)}
-                    {(!!adsWords[current].small) && (<h2 style={{ marginTop: 10, color: "black", opacity: 0.8, padding: 5, borderRadius: 5, fontSize: 40 }}>
+                    {(!!adsWords[current].small) && (<h2 style={{ marginTop: 10, color: "black", opacity: 0.8, padding: 5, borderRadius: 5, fontSize: 40,  backgroundColor: "white"}}>
                         {adsWords[current].small}
                     </h2>)}
 

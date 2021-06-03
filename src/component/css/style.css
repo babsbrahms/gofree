@@ -1,62 +1,61 @@
-body { 
-    /* background-color: #8BC6EC; */
-    background-color: #FFDEE9;
+body {
+  /* background-color: #8BC6EC; */
+  background-color: #ffdee9;
 }
 
 #gofree-bg {
-    min-height: 80vh;
-/*     
+  min-height: 80vh;
+  /*     
     background-color: #8EC5FC;
     background-image: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); */
-/* 
+  /* 
     background-color: #8BC6EC;
     background-image: linear-gradient(135deg, #8BC6EC 0%, #9599E2 100%); */
 
-    background-color: #FFDEE9;
-background-image: linear-gradient(0deg, #FFDEE9 0%, #B5FFFC 100%);
+  background-color: #ffdee9;
+  background-image: linear-gradient(0deg, #ffdee9 0%, #b5fffc 100%);
 
-
-    /* background-color: #aed2f0; */
-    /* "#95C8D8" */
+  /* background-color: #aed2f0; */
+  /* "#95C8D8" */
 }
 
 #gofree-menu {
-    /* background-color: #8BC6EC */
-    background-color: #FFDEE9;
+  /* background-color: #8BC6EC */
+  background-color: #ffdee9;
 }
 
 #gofree-content {
-    background-color: steelblue;
-    border-radius: 5px;
+  background-color: steelblue;
+  border-radius: 5px;
 }
 
-
 #gofree-home-showcase {
-    background-image: url("../../utils/images/wallpaper.svg");
-    background-position: 80% center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    height: 85vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 50px;
-    border-bottom-style: solid;
-    border-bottom-color: #f03c96;
-    border-bottom-width: 5px;
+  background-image: url("../../utils/images/wallpaper.svg");
+  background-position: 80% center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 85vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 50px;
+  border-bottom-style: solid;
+  border-bottom-color: #f03c96;
+  border-bottom-width: 5px;
 }
 
 #gofree-topbar {
-    background-image: url("../../utils/images/blue-bg.jpg");
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    margin-bottom: 50px;
+  background-image: url("../../utils/images/blue-bg.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin-bottom: 50px;
 }
 
 #gofree-topbar h1 {
-    padding: 10;
-    font-size: 50px;
+  padding: 10;
+  font-size: 50px;
 }
