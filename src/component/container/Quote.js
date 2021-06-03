@@ -1,17 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Form, Input, Icon, List, Label, Segment } from "semantic-ui-react";
 import validator from "validator";
-import { addData as AddOrder, currentUser, serverTimestamp, fetchUserByEmail } from "../fbase"
+import { addData as AddOrder, currentUser, serverTimestamp, fetchUserByEmail } from "../fbase";
+import { nigeriaStates } from "../../utils/resources"
 
 const fromOption = [
     { key: 'UK', text: 'UK', value: 'uk' },
 ]
 
-const deliveryOptions = [
-    { key: 'Nigeria-abuja', text: 'Nigeria-abuja', value: 'nigeria-abuja', rate: 5 },
-    { key: 'Nigeria-lagos', text: 'Nigeria-lagos', value: 'nigeria-lagos', rate: 4.5 },
-    { key: 'Nigeria-others', text: 'Nigeria-others', value: 'nigeria-others', rate: 5 },
-]
+const deliveryOptions =  nigeriaStates.map(x => ({ key: x, text: x, value: x, rate: x=== 'Lagos'? 4.5 : 5 }))
+
+// [
+//     { key: 'Nigeria-abuja', text: 'Nigeria-abuja', value: 'nigeria-abuja', rate: 5 },
+//     { key: 'Nigeria-lagos', text: 'Nigeria-lagos', value: 'nigeria-lagos', rate: 4.5 },
+//     { key: 'Nigeria-others', text: 'Nigeria-others', value: 'nigeria-others', rate: 5 },
+// ]
 
 const typeOptions = [
     { key: 'parcel', text: 'Parcel', value: 'parcel' },
@@ -22,7 +25,7 @@ const Quote = (props) => {
     const myUser = useRef(null)
     const [data, setData] = useState({
         type: "",
-        from: "",
+        from: "uk",
         to: "",
         // where: "lagos",
         email: ""
@@ -259,8 +262,8 @@ const Quote = (props) => {
                     />
                 </Form.Field>
                 <Form.Field>
+                    <label>Deliver To</label> <small style={{ color: "red"}}>We do not deliver to Borno, Maiduguri</small>
                     <Form.Dropdown
-                        label="Deliver To"
                         fluid
                         search
                         selection
@@ -273,6 +276,7 @@ const Quote = (props) => {
                         error={errors.to}
                     />
                 </Form.Field>
+                
                 {/* {(data.to === 'nigeria') && (
                 <Form.Group inline>
                     <label>Where In Nigeria</label>

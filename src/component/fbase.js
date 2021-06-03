@@ -37,7 +37,7 @@ export const fetchFirebasUser = (id, success, error) => firebase.firestore().col
 export const emailSignUp = (email, password) => firebase.auth().createUserWithEmailAndPassword(email, password)
 
 // [x]
-export const sendVerificationEmail = () => firebase.auth().currentUser.sendEmailVerification()
+export const sendVerificationEmail = () => firebase.auth().currentUser.sendEmailVerification({ url: window.location.href })
 
 // [x]
 export const createProfileName = (userId, surname, given, email) => {

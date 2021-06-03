@@ -17,6 +17,10 @@ import "../css/style.css"
 
 const adsWords = [
     {
+        lead: "Get your parcels and packages",
+        small: "delivered from UK to Nigeria"
+    },
+    {
         lead: "Get Your Parcel Delivered",
         small: "With A trusted International Courier Service."
     },
@@ -37,7 +41,7 @@ const adsWords = [
 
 const Home = () => {
     const [current, setCurrent] = useState(0);
-    let timer = useRef(null)
+    let quoteRef = useRef(null)
     let [showQuote, setShowQuote] = useState(false)
     let [order, setOrder] = useState({})
     let [loading, setLoading] = useState(false);
@@ -81,6 +85,13 @@ const Home = () => {
         }
     }
 
+
+    const navToQuote = () => {
+        setShowQuote(true);
+        quoteRef.current.scrollIntoView()
+        // window.scrollTo(0, quoteRef.current.offsetTop)
+    }
+
     return (
         <div>
             <Segment id="gofree-bg">
@@ -93,10 +104,15 @@ const Home = () => {
                         {adsWords[current].small}
                     </h2>)}
 
-                </Segment>
-                <Segment loading={loading} textAlign="center" color="pink" raised stacked style={{ paddingBottom: 30, backgroundColor: "#fff",borderRadius: 5, marginBottom: 50, padding: 10 }}>
+                    <div style={{ paddingTop: 20}}>
+                        <Button color="blue" onClick={() => navToQuote()}>Get Quote</Button>
+                    </div>
+                    
 
-                    <h2>GET QUOTE</h2>
+                </Segment>
+                <Segment  loading={loading} textAlign="center" color="pink" raised stacked style={{ paddingBottom: 30, backgroundColor: "#fff",borderRadius: 5, marginBottom: 70, padding: 10, marginTop: 70 }}>
+
+                    <h2 ref={quoteRef}>GET QUOTE</h2>
                     {(!showQuote) && (<Button color="black" circular onClick={() => setShowQuote(true)}>Click Here To Get Quote</Button>)}
                     {(showQuote) && (<div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end" }}>
                         <Icon circular inverted color="red" name="close" link onClick={() => setShowQuote(false)} />
@@ -175,7 +191,7 @@ const Home = () => {
     
 
                 </Segment>
-                <div style={{ paddingBottom: 40 }}>
+                <div style={{ paddingBottom: 70 }}>
                     <h2>SERVICES</h2>
 
                     <Card.Group stackable itemsPerRow="3">
@@ -223,7 +239,7 @@ const Home = () => {
                         Learn More
                     </Button>
                 </div>
-                <div style={{ paddingBottom: 40, width: '100%' }}>
+                <div style={{ paddingBottom: 70, width: '100%' }}>
                     <h2>STEPS</h2>
                     <p>Get your parcel or package delivered in 5 easy steps.</p>
                     <Step.Group fluid size="small" stackable>
@@ -269,7 +285,7 @@ const Home = () => {
                         </Step>
                     </Step.Group>
                 </div>
-                <div style={{ paddingBottom: 40 }}>
+                <div style={{ paddingBottom: 70 }}>
                     <h2>COURIERS</h2>
                     <p>We use the services of the courier companies listed below. We are not their official agent.</p>
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", flexWrap: "wrap"}}>
@@ -283,7 +299,7 @@ const Home = () => {
                     </div>
 
                 </div>
-                <div style={{ backgroundImage:`url(${truck})`, width: "100%", height: '60vh', backgroundPosition: "top left", backgroundRepeat: "no-repeat", backgroundSize: "100% 100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start",  borderRadius: 5, marginBottom: 40}}>
+                <div style={{ backgroundImage:`url(${truck})`, width: "100%", height: '60vh', backgroundPosition: "top left", backgroundRepeat: "no-repeat", backgroundSize: "100% 100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start",  borderRadius: 5, marginBottom: 70}}>
                     <div style={{ backgroundColor: "#fff", opacity: 0.9, width: "50%", padding: 8, borderRadius: 5}}>
                         <h2>WHY US?</h2>
                         <Breadcrumb>
