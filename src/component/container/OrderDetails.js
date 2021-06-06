@@ -333,6 +333,7 @@ export const OrderDetails = ({ id, adminName }) => {
             <h3>Type: {selectedOrder.type} </h3>
             <h3>From: {selectedOrder.from}</h3>
             <h3>To: {selectedOrder.to}</h3>
+            <h3>Pickup Location ({selectedOrder.pickup && selectedOrder.pickup.type}): {selectedOrder.pickup && selectedOrder.pickup.address}</h3>
 
             <Label basic color="pink" size="small">
                 TOTAL PRICE: {Number(selectedOrder.price).toFixed(2)} {selectedOrder.currency}
