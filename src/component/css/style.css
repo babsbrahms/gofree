@@ -30,18 +30,19 @@ body {
 }
 
 #gofree-home-showcase {
-  background-image: url("../../utils/images/wallpaper.svg");
-  background-position: 80% center;
+  background-image: url("../../utils/images/air-freight-transport-2.jpg");
+  background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
-  height: 85vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
+  justify-content: flex-start;
+  align-items: center;
   padding: 10px;
   border-radius: 5px;
-  margin-bottom: 50px;
+  margin-bottom: 80px;
+  padding-bottom: 80px;
   border-bottom-style: solid;
   border-bottom-color: #f03c96;
   border-bottom-width: 5px;

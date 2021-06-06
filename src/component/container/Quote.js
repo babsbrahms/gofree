@@ -8,7 +8,7 @@ const fromOption = [
     { key: 'UK', text: 'UK', value: 'uk' },
 ]
 
-const deliveryOptions =  nigeriaStates.map(x => ({ key: x, text: x, value: x, rate: x=== 'Lagos'? 4.5 : 5 }))
+const deliveryOptions =  nigeriaStates.map(x => ({ key: x, text: x, value: x, rate: x=== 'Lagos'? 4.5 : 5.5 }))
 
 // [
 //     { key: 'Nigeria-abuja', text: 'Nigeria-abuja', value: 'nigeria-abuja', rate: 5 },
@@ -18,13 +18,13 @@ const deliveryOptions =  nigeriaStates.map(x => ({ key: x, text: x, value: x, ra
 
 const typeOptions = [
     { key: 'parcel', text: 'Parcel', value: 'parcel' },
-    { key: 'package', text: 'Package', value: 'package' },
+    { key: 'document', text: 'Document', value: 'document' },
 ]
 
-const Quote = (props) => {
+const Quote = ({ backgroundColor }) => {
     const myUser = useRef(null)
     const [data, setData] = useState({
-        type: "",
+        type: "parcel",
         from: "uk",
         to: "",
         // where: "lagos",
@@ -102,7 +102,7 @@ const Quote = (props) => {
             let calcUnitPrice = (length, width, height, weight, type) => {
 
                 const parcelCalc = (length, width, height, weight) => {
-                    let vol = (length* width * height) / 5000;
+                    let vol = (length* width * height) / 6000;
 
                     // let calcDetail = vol - weight;
 
@@ -121,8 +121,8 @@ const Quote = (props) => {
 
                 }
 
-                const packageCalc = (length, width, height, weight) => {
-                    let vol = (length* width * height) / 6000;
+                const documentCalc = (length, width, height, weight) => {
+                    let vol = (length* width * height) / 5000;
 
                     // let calWeight = 0;
 
@@ -158,7 +158,7 @@ const Quote = (props) => {
                 if (type === 'parcel') {
                    return parcelCalc(length, width, height, weight)
                 } else {
-                    return packageCalc(length, width, height, weight)
+                    return documentCalc(length, width, height, weight)
                 }
             }
 
@@ -229,10 +229,11 @@ const Quote = (props) => {
     }
 
     return (
-        <Segment textAlign="left" loading={loading} style={{ padding: 20 }}>
+        <Segment textAlign="left" loading={loading} style={{ padding: 20, backgroundColor }}>
             <Form>
                 <Form.Field>
-                    <Form.Dropdown
+                    <label>Type</label>
+                    {/* <Form.Dropdown
                         label="Type"
                         fluid
                         search
@@ -244,69 +245,45 @@ const Quote = (props) => {
                         onChange={(e, data) => addData(data)}
                         placeholder={"Parcel or package"}
                         error={errors.type}
-                    />
+                    /> */}
+                      <Button.Group fluid>
+                        {typeOptions.map(type => <Button color={type.value === data.type? "black" :  ""}  name="type" onClick={(e,) => addData({ name: "type", value: type.value})} key={type.key} active={type.value === data.type}>{type.text}</Button>)}
+                    </Button.Group>
                 </Form.Field>
-                <Form.Field>
-                    <Form.Dropdown
-                        label="Collect From"
-                        fluid
-                        search
-                        selection
-                        options={fromOption}
-                        placeholder="Collect From"
-                        defaultValue={data.from}
-                        name="from"
-                        onChange={(e, data) => addData(data)}
-                        placeholder={"Add pakage or parcel pick up location"}
-                        error={errors.from}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>Deliver To</label> <small style={{ color: "red"}}>We do not deliver to Borno, Maiduguri</small>
-                    <Form.Dropdown
-                        fluid
-                        search
-                        selection
-                        options={deliveryOptions}
-                        placeholder="Deliver To"
-                        defaultValue={data.to}
-                        name="to"
-                        onChange={(e, data) => addData(data)}
-                        placeholder={"Add pakage or parcel destination"}
-                        error={errors.to}
-                    />
-                </Form.Field>
-                
-                {/* {(data.to === 'nigeria') && (
-                <Form.Group inline>
-                    <label>Where In Nigeria</label>
-                    <Form.Field
-                        control={Radio}
-                        label='Abuja'
-                        value='abuja'
-                        checked={data.where === 'abuja'}
-                        name="where"
-                        onChange={(e, data) => addData(data)}
-                    />
-                    <Form.Field
-                        control={Radio}
-                        label='Lagos'
-                        value='lagos'
-                        checked={data.where === '2'}
-                        checked={data.where === 'lagos'}
-                        name="where"
-                        onChange={(e, data) => addData(data)}
-                    />
-                    <Form.Field
-                        control={Radio}
-                        label='Others'
-                        value='others'
-                        checked={data.where === '3'}
-                        checked={data.where === 'others'}
-                        name="where"
-                        onChange={(e, data) => addData(data)}
-                    />
-                </Form.Group>)} */}
+                <Form.Group widths='equal'>
+                    <Form.Field>
+                        <Form.Dropdown
+                            label="Collect From"
+                            fluid
+                            search
+                            selection
+                            options={fromOption}
+                            placeholder="Collect From"
+                            defaultValue={data.from}
+                            name="from"
+                            onChange={(e, data) => addData(data)}
+                            placeholder={"Add pakage or parcel pick up location"}
+                            error={errors.from}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <Form.Dropdown
+                            fluid
+                            search
+                            label={"Deliver To"}
+                            selection
+                            options={deliveryOptions}
+                            placeholder="Deliver To"
+                            defaultValue={data.to}
+                            name="to"
+                            onChange={(e, data) => addData(data)}
+                            placeholder={"Add pakage or parcel destination"}
+                            error={errors.to}
+                        />
+                        <small style={{ color: "black"}}>We do not deliver to Borno, Maiduguri</small>
+                    </Form.Field>
+                </Form.Group>
+
                 <Form.Field>
                     <Form.Input 
                         label="Email"
@@ -402,7 +379,7 @@ const Quote = (props) => {
 
 
                     <List.Item>
-                        <Label onClick={() => addPackage()} color="green" as="a" ><Icon name="add circle" /> Add Package</Label>
+                                    <Label onClick={() => addPackage()} color="green" as="a" ><Icon name="add circle" /> Add {data.type}</Label>
                         {/* <List.Icon onClick={() => addPackage()} name="add circle" color="green" size='large' verticalAlign='middle' />
                         <List.Content>
                         </List.Content> */}
@@ -423,6 +400,10 @@ const Quote = (props) => {
             </Form>
         </Segment>
     )
+}
+
+Quote.defaultProps = {
+    backgroundColor:  "white"
 }
 
 export default Quote

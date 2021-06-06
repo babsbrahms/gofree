@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Segment, Card, Button, Image, Step, Breadcrumb, Icon, Divider, List, Input, Popup, Label } from "semantic-ui-react";
 import { Link } from "react-router-dom";
-import { fetchOrderById } from "../fbase";
+import { currentUser, fetchOrderById } from "../fbase";
 import { orderTite, orderIcon } from "../../utils/resources"
 import Quote from "../container/Quote"
 import air from "../../utils/images/air-freight-transport-2.jpg"
@@ -15,52 +15,38 @@ import ups from "../../utils/images/ups.svg";
 import fedex from "../../utils/images/fedex.svg";
 import "../css/style.css"
 
-const adsWords = [
-    {
-        lead: "Get your parcels and packages",
-        small: "delivered from UK to Nigeria"
-    },
-    {
-        lead: "Get Your Parcel Delivered",
-        small: "With A trusted International Courier Service."
-    },
-    {
-        lead: "We connect the world with ease",
-        small: "add small word"
-    },
-    {
-        lead: "add lead word 2",
-        small: "add small word"
-    },
-    {
-        lead: "add lead word 3",
-        small: "add small word"
-    }
+const bgs = [
+    air,
+    sea,
+    road
 ]
 
 
 const Home = () => {
     const [current, setCurrent] = useState(0);
     let quoteRef = useRef(null)
+    let timer = useRef(null)
     let [showQuote, setShowQuote] = useState(false)
     let [order, setOrder] = useState({})
     let [loading, setLoading] = useState(false);
     let [trackId, setTrackId] = useState("")
 
     useEffect(() => {
-        // timer.current = setInterval(() => {
-        //     console.log(current);
-        //     if (current === (adsWords.length - 1)) {
-        //         setCurrent(0)
-        //     } else {
-        //         setCurrent(current + 1)
-        //     }
-        // }, 5000);
+        timer.current = setInterval(() => {
+            console.log(current);
+            if (current === (bgs.length - 1)) {
+                setCurrent(0);
+                document.getElementById("gofree-home-showcase").style.backgroundImage = `url(${bgs[current]})`
+            } else {
+                setCurrent(current + 1)
+                document.getElementById("gofree-home-showcase").style.backgroundImage = `url(${bgs[current]})`
+            }
+        }, 5000);
 
-        // return() => {
-        //     clearInterval(timer.current)
+        return() => {
+            clearInterval(timer.current)
             
-        // }
+        }
     })
 
     const getOrder = () => {
@@ -98,30 +84,15 @@ const Home = () => {
                 {/* <img width="100%" height="auto" src={wallpaper} style={{backgroundColor: "#fff", borderRadius: 5, marginBottom: 12, borderBottomWidth: 5, borderBottomColor: "#f03c96", borderBottomStyle: "solid" }} /> */}
                 <Segment id="gofree-home-showcase">
  
-                    {(!!adsWords[current].lead) && (<h2 style={{ marginTop: 10, color: "black", opacity: 0.8, padding: 5, borderRadius: 5, fontSize: 40, backgroundColor: "white" }}>
-                        {adsWords[current].lead}
-                    </h2>)}
-                    {(!!adsWords[current].small) && (<h2 style={{ marginTop: 10, color: "black", opacity: 0.8, padding: 5, borderRadius: 5, fontSize: 40,  backgroundColor: "white"}}>
-                        {adsWords[current].small}
-                    </h2>)}
+                    <h2 style={{ marginTop: 10, color: "black", opacity: 0.8, padding: 5, borderRadius: 5, fontSize: 40, textAlign: "center" }}>
+                        Worldwide cargo at your convenience.
+                    </h2>
 
-                    <div style={{ paddingTop: 20}}>
-                        <Button color="blue" onClick={() => navToQuote()}>Get Quote</Button>
-                    </div>
+                    <Quote backgroundColor="rgba(255, 255, 255, 0.5)" />
                     
 
                 </Segment>
                 <Segment  loading={loading} textAlign="center" color="pink" raised stacked style={{ paddingBottom: 30, backgroundColor: "#fff",borderRadius: 5, marginBottom: 70, padding: 10, marginTop: 70 }}>
-
-                    <h2 ref={quoteRef}>GET QUOTE</h2>
-                    {(!showQuote) && (<Button color="black" circular onClick={() => setShowQuote(true)}>Click Here To Get Quote</Button>)}
-                    {(showQuote) && (<div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end" }}>
-                        <Icon circular inverted color="red" name="close" link onClick={() => setShowQuote(false)} />
-                    </div>)}
-                    {(showQuote) && (<Quote />)}
-
-
-                    <Divider horizontal>Or</Divider>
 
                     <Input 
                         action={{
