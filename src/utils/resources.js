@@ -110,3 +110,38 @@ export const nigeriaStates = [
     'Yobe',
     'Zamfara'
 ];
+
+export let deliveryOptions =  nigeriaStates.map(x => ({ key: x, text: x, value: x, rate: x=== 'Lagos'? 4.5 : 5.5 }))
+
+export let calcUnitPrice = (length, width, height, weight, type, rate) => {
+
+    const parcelCalc = (length, width, height, weight) => {
+        let vol = (length* width * height) / 6000;
+
+        if (weight > vol) {
+            return weight * rate
+        } else {
+            let calcDetail = vol - weight;
+            return (weight + (calcDetail * 0.5)) * rate
+        }
+
+    }
+
+    const documentCalc = (length, width, height, weight) => {
+        let vol = (length* width * height) / 5000;
+
+        if (weight > vol) {
+            return weight * rate
+        } else {
+            let calcDetail = vol - weight;
+            return (weight + (calcDetail * 0.5)) * rate
+        }
+
+    }
+
+    if (type === 'parcel') {
+       return parcelCalc(length, width, height, weight)
+    } else {
+        return documentCalc(length, width, height, weight)
+    }
+}

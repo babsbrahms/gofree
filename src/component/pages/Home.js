@@ -88,7 +88,7 @@ const Home = () => {
                         Worldwide cargo at your convenience.
                     </h2>
 
-                    <Quote backgroundColor="rgba(255, 255, 255, 0.5)" />
+                    <Quote backgroundColor="rgba(255, 255, 255, 0.75)" />
                     
 
                 </Segment>

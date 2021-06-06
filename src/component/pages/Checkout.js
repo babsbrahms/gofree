@@ -5,7 +5,8 @@ import { currentUser, updateData, fetchUserByEmail, fetchOrderById, serverTimest
 import { getUrlParams, orderTite, orderIcon } from "../../utils/resources"
 import "../css/style.css"
 import styles from "../../styles"
-import style from "../../styles"
+import style from "../../styles";
+import { calcUnitPrice, deliveryOptions } from "../../utils/resources"
 
 
 export default class Checkout extends Component {
@@ -20,7 +21,11 @@ export default class Checkout extends Component {
         data: {},
         errors: {},
         order: { },
-        trackId: ""
+        trackId: "",
+        pickup: {
+            type: "",
+            address: ""
+        }
     }
 
     componentDidMount() {
@@ -144,18 +149,35 @@ export default class Checkout extends Component {
     }
 
     setUpInvoice = () => {
-        const { order, user } = this.state;
+        const { order, user, pickup } = this.state;
 
         let date = serverTimestamp();
+
+        let stateRate = deliveryOptions.find((x) => x.value === order.to)
+        let calcPackage = order.packages.map((px) => ({
+            ...px,
+            price: calcUnitPrice(px.length, px.width, px.height, px.weight, order.type, pickup.type === "address"? (stateRate.rate + 1) : stateRate.rate)
+        }));
+        let totaQty = order.packages.reduce((acc, curr) => acc + curr.weight, 0)
+        let deliveryFee = (totaQty >= 50)? 0 : 15;
+        let totalPrice = calcPackage.reduce((prev, curr) => prev + curr.price, 0) + 20 + deliveryFee;
 
         this.setState({ loadingOrder: true }, () => {
             updateData("orders", order.id, {
                 ...order,
+                packages: calcPackage,
+                price: totalPrice,
+                delivery: deliveryFee,
+                handling: 20,
                 updatedAt : {
                     timestamp: new Date().getTime(),
                     month: new Date().getMonth(),
                     year: new Date().getFullYear(),
                     day: new Date().getDate()
+                },
+                pickup: {
+                    type: pickup.type,
+                    address: pickup.address
                 },
                 address: user.address,
                 paid: false,
@@ -177,7 +199,7 @@ export default class Checkout extends Component {
     }
 
     render() {
-        const { activeItem, loadingAccount, user, errors, loadingOrder, data, order } = this.state;
+        const { activeItem, loadingAccount, user, errors, loadingOrder, data, order, pickup } = this.state;
 
         return (
             <div id="gofree-bg">
@@ -229,7 +251,7 @@ export default class Checkout extends Component {
                                         placeholder={"add your email"}
                                         error={errors.email}
                                     />
-
+                                    <h3>Delivery address</h3>
                                     <Form.Input 
                                         required
                                         label="Address"
@@ -353,8 +375,36 @@ export default class Checkout extends Component {
                                     </List.Item>
                                     <Divider />
                                     <List.Description>
-                                        {(order.status === "order") && (
-                                            <Button circular color="black" onClick={() => this.setUpInvoice()}>
+                                        <Form>
+                                            <Form.Group inline>
+                                                <label>Pickup {order.type} from</label>
+                                                <Form.Radio
+                                                    label='our office'
+                                                    value={pickup.type}
+                                                    checked={pickup.type === 'office'}
+                                                    onChange={() => this.setState({ pickup: { ...this.state.pickup, type: "office", address: "No: 724, Green Lane Dagenham, Essex" } })}
+                                                />
+                                                <Form.Radio
+                                                    label='pickup address'
+                                                    value={pickup.type}
+                                                    checked={pickup.type === 'address'}
+                                                    onChange={() => this.setState({ pickup: { ...this.state.pickup, type: "address" } })}
+                                                />
+                                            </Form.Group>
+                                            {(pickup.type === "address") && (<Form.Field>
+                                                <Form.Input 
+                                                    label="pickup addresss" 
+                                                    placeholder="Enter pickup address" 
+                                                    onChange={(e, data) => this.setState({ pickup: { ...this.state.pickup, type: "address", address: data.value  } })}
+                                                    defaultValue={pickup.address}
+                                                />
+                                                <small style={{ color: "black", marginBottom: 15, display: "block" }}><Icon name="asterisk" /> Address pickup attracts additional 1 pound per kg</small>
+                                            </Form.Field>)}
+                                        </Form>
+                                        
+
+                                        {(order.status === "order") &&  (
+                                            <Button disabled={!pickup.type || !pickup.address} circular color="black" onClick={() => this.setUpInvoice()}>
                                                 Pay {Number(order.price).toFixed(2)} {order.currency}
                                             </Button>
                                         )}

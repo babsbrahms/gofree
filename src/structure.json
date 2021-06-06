@@ -40,6 +40,10 @@
             "state": "",
             "city": ""
         },
+        "pickup": {
+            "type": "office | address",
+            "address": ""
+        },
         "payment": {
 
         },

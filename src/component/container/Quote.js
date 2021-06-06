@@ -2,13 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button, Form, Input, Icon, List, Label, Segment } from "semantic-ui-react";
 import validator from "validator";
 import { addData as AddOrder, currentUser, serverTimestamp, fetchUserByEmail } from "../fbase";
-import { nigeriaStates } from "../../utils/resources"
+import { calcUnitPrice, deliveryOptions } from "../../utils/resources"
 
 const fromOption = [
     { key: 'UK', text: 'UK', value: 'uk' },
 ]
 
-const deliveryOptions =  nigeriaStates.map(x => ({ key: x, text: x, value: x, rate: x=== 'Lagos'? 4.5 : 5.5 }))
 
 // [
 //     { key: 'Nigeria-abuja', text: 'Nigeria-abuja', value: 'nigeria-abuja', rate: 5 },
@@ -98,74 +97,12 @@ const Quote = ({ backgroundColor }) => {
         let errors = validate(data, packages)
         console.log(errors);
         if (Object.keys(errors).length === 0) {
+            
+
             let stateRate = deliveryOptions.find((x) => x.value === data.to)
-            let calcUnitPrice = (length, width, height, weight, type) => {
-
-                const parcelCalc = (length, width, height, weight) => {
-                    let vol = (length* width * height) / 6000;
-
-                    // let calcDetail = vol - weight;
-
-                    // if (calcDetail > weight) {
-                    //     return weight + (calcDetail * 0.5)
-                    // } else {
-                    //     return weight
-                    // }
-
-                    if (weight > vol) {
-                        return weight * stateRate.rate
-                    } else {
-                        let calcDetail = vol - weight;
-                        return (weight + (calcDetail * 0.5)) * stateRate.rate
-                    }
-
-                }
-
-                const documentCalc = (length, width, height, weight) => {
-                    let vol = (length* width * height) / 5000;
-
-                    // let calWeight = 0;
-
-                    // if (weight <= 50) {
-                    //     calWeight = weight + 2
-                    // } else if (weight > 50 && weight <= 60) {
-                    //     calWeight = weight + 3
-                    // } else if (weight > 60 && weight <= 100) {
-                    //     calWeight = weight + 5
-                    // } else if (weight > 100 && weight <= 200) {
-                    //     calWeight = weight + 10
-                    // } else if (weight > 200) {
-                    //     calWeight = weight + 20
-                    // }
-
-                    // let calcDetail = vol - calWeight;
-
-                    // if (calcDetail > calWeight) {
-                    //     return calWeight + (calcDetail * 0.5)
-                    // } else {
-                    //     return calWeight
-                    // }
-
-                    if (weight > vol) {
-                        return weight * stateRate.rate
-                    } else {
-                        let calcDetail = vol - weight;
-                        return (weight + (calcDetail * 0.5)) * stateRate.rate
-                    }
-
-                }
-
-                if (type === 'parcel') {
-                   return parcelCalc(length, width, height, weight)
-                } else {
-                    return documentCalc(length, width, height, weight)
-                }
-            }
-
-
             let calcPackage = packages.map((px) => ({
                 ...px,
-                price: calcUnitPrice(px.length, px.width, px.height, px.weight, data.type)
+                price: calcUnitPrice(px.length, px.width, px.height, px.weight, data.type, stateRate.rate)
             }));
             let totaQty = packages.reduce((acc, curr) => acc + curr.weight, 0)
             let deliveryFee = (totaQty >= 50)? 0 : 15;
@@ -253,7 +190,7 @@ const Quote = ({ backgroundColor }) => {
                 <Form.Group widths='equal'>
                     <Form.Field>
                         <Form.Dropdown
-                            label="Collect From"
+                            label="Sending From"
                             fluid
                             search
                             selection
@@ -379,7 +316,7 @@ const Quote = ({ backgroundColor }) => {
 
 
                     <List.Item>
-                                    <Label onClick={() => addPackage()} color="green" as="a" ><Icon name="add circle" /> Add {data.type}</Label>
+                        <Label onClick={() => addPackage()} color="green" as="a" ><Icon name="add circle" /> Add {data.type}</Label>
                         {/* <List.Icon onClick={() => addPackage()} name="add circle" color="green" size='large' verticalAlign='middle' />
                         <List.Content>
                         </List.Content> */}
