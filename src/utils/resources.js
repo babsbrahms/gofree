@@ -111,6 +111,58 @@ export const nigeriaStates = [
     'Zamfara'
 ];
 
+ export const ukStates = [
+    'Avon',
+    'Bedfordshire',
+    'Berkshire',
+    'Buckinghamshire',
+    'Cambridgeshire',
+    'Cheshire',
+    'Cleveland',
+    'Cornwall',
+    'Cumbria',
+    'Derbyshire',
+    'Devon',
+    'Dorset',
+    'Durham',
+    'East Sussex',
+    'Essex',
+    'Gloucestershire',
+    'Hampshire',
+    'Herefordshire',
+    'Hertfordshire',
+    'Isle of Wight',
+    'Kent',
+    'Lancashire',
+    'Leicestershire',
+    'Lincolnshire',
+    'London',
+    'Merseyside',
+    'Middlesex',
+    'Norfolk',
+    'Northamptonshire',
+    'Northumberland',
+    'North Humberside',
+    'North Yorkshire',
+    'Nottinghamshire',
+    'Oxfordshire',
+    'Rutland',
+    'Shropshire',
+    'Somerset',
+    'South Humberside',
+    'South Yorkshire',
+    'Staffordshire',
+    'Suffolk',
+    'Surrey',
+    'Tyne and Wear',
+    'Warwickshire',
+    'West Midlands',
+    'West Sussex',
+    'West Yorkshire',
+    'Wiltshire',
+    'Worcestershire'
+]
+
 export let deliveryOptions =  nigeriaStates.map(x => ({ key: x, text: x, value: x, rate: x=== 'Lagos'? 4.5 : 5.5 }))
 
 export let calcUnitPrice = (length, width, height, weight, type, rate) => {

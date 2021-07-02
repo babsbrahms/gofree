@@ -6,7 +6,7 @@ import { getUrlParams, orderTite, orderIcon } from "../../utils/resources"
 import "../css/style.css"
 import styles from "../../styles"
 import style from "../../styles";
-import { calcUnitPrice, deliveryOptions } from "../../utils/resources"
+import { calcUnitPrice, deliveryOptions, nigeriaStates, ukStates } from "../../utils/resources"
 
 
 export default class Checkout extends Component {
@@ -18,13 +18,21 @@ export default class Checkout extends Component {
         user: {
 
         },
-        data: {},
+        data: {
+            address: "",
+            city: "",
+            state: "",
+            country: "" 
+        },
         errors: {},
         order: { },
         trackId: "",
         pickup: {
             type: "",
-            address: ""
+            address: "",
+            city: "",
+            state: "",
+            country: ""
         }
     }
 
@@ -101,6 +109,32 @@ export default class Checkout extends Component {
         data: {
             ...this.state.data,
             [data.name]: data.value
+        }
+    })
+
+    addPickupAddress = (name, value) => this.setState({ pickup: { ...this.state.pickup, [name]: value  } })
+
+    changePickupType = (type) => this.setState({ pickup: { ...this.state.pickup, type } }, () => {
+        if (type === "office") {
+            this.setState({
+                pickup: { 
+                    ...this.state.pickup,
+                    address: "No: 724, Green Lane Dagenham, Essex.",
+                    city: "Dagenham,",
+                    state: "Essex",
+                    country: "uk"
+                }
+            })
+        } else {
+            this.setState({
+                pickup: { 
+                    ...this.state.pickup,
+                    address: "",
+                    city: "",
+                    state: "",
+                    country: "uk"
+                }
+            })
         }
     })
 
@@ -218,40 +252,119 @@ export default class Checkout extends Component {
                             </Header>
                         </div>
                     )}
+
+                <div id="gofree-grid">
                     {(data.id) && (<Segment style={{ backgroundColor: loadingAccount? "#ffffff" : "transparent" }} loading={loadingAccount}>
                         <Card fluid color="pink">
                             <Card.Content>
                                 <div style={styles.betweenStart}>
-                                    <Card.Header>
-                                        ACCOUNT DETAILS
+                                    <Card.Header as="h3">
+                                        COLLECTION ADDRESS
                                     </Card.Header>
+                                </div>
+                                <Form>
+                                    <Form.Group inline>
+                                        <Form.Radio
+                                            label='our office (Free)'
+                                            value={pickup.type}
+                                            checked={pickup.type === 'office'}
+                                            onChange={() => this.changePickupType("office")}
+                                        />
+                                        <Form.Radio
+                                            label='3 mile from our office (Free)'
+                                            value={pickup.type}
+                                            checked={pickup.type === '3miles'}
+                                            onChange={() => this.changePickupType("3miles")}
+                                        />
+                                        <Form.Radio
+                                            label='pickup address (Paid)'
+                                            value={pickup.type}
+                                            checked={pickup.type === 'address'}
+                                            onChange={() => this.changePickupType("address")}
+                                        />
+                                    </Form.Group>
+                                    {(pickup.type === "address") && (<Form.Field>
+                                        <small style={{ color: "black", marginBottom: 15, display: "block" }}><Icon name="asterisk" /> Address pickup attracts additional 1 pound per kg</small>
+                                    </Form.Field>)}
+                                    {(pickup.type === "office") && (<Form.Field>
+                                        <small style={{ color: "black", marginBottom: 15, display: "block" }}><Icon name="asterisk" /> Bring your document/parcel to our office address listed below.<Icon name="hand point down outline" /> </small>
+                                    </Form.Field>)}
+                                </Form>
+                            </Card.Content>
+                            <Card.Content>
+                                {(!pickup.type) && (<h4>
+                                    Select a collection type <Icon name="hand point up outline" />
+                                </h4>)}
 
+                                {(pickup.type === "office") && (
+                                    <h4>
+                                        No: 724, Green Lane Dagenham, Essex.
+                                    </h4>
+                                )}
+
+                                {(pickup.type !== "office") && (<Form> 
+                                    <Form.Input 
+                                        required
+                                        label="Address"
+                                        name="address" 
+                                        value={pickup.address || ""}
+                                        onChange={(e, data) => this.addPickupAddress(data.name, data.value)} 
+                                        placeholder={"add collection address"}
+                                        error={errors.address}
+                                    />
+
+                                    <Form.Input 
+                                        required
+                                        label="City"
+                                        name="city" 
+                                        value={pickup.city || ""}
+                                        onChange={(e, data) => this.addPickupAddress(data.name, data.value)} 
+                                        placeholder={"add collection city"}
+                                        error={errors.city}
+                                    />
+
+
+                                    <Form.Select
+                                        options={ukStates.map((x) => ({ key: x, value: x, text: x }))} 
+                                        search
+                                        required
+                                        label="State"
+                                        name="state" 
+                                        value={pickup.state || ""}
+                                        onChange={(e, data) => this.addPickupAddress(data.name, data.value)} 
+                                        placeholder={"add state state"}
+                                        error={errors.state}
+                                    />
+
+
+                                    <Form.Select 
+                                        options={[{ key: "uk", value: "uk", text: "uk" }]}
+                                        required
+                                        label="Country"
+                                        name="country" 
+                                        value={pickup.country || ""}
+                                        onChange={(e, data) => this.addPickupAddress(data.name, data.value)} 
+                                        placeholder={"add collection country"}
+                                        error={errors.country}
+                                    />
+                                </Form>)}
+                            </Card.Content>
+
+                        </Card>
+                    </Segment>)}
+
+
+                    {(data.id) && (<Segment style={{ backgroundColor: loadingAccount? "#ffffff" : "transparent" }} loading={loadingAccount}>
+                        <Card fluid color="pink">
+                            <Card.Content>
+                                <div style={styles.betweenStart}>
+                                    <Card.Header as="h3">
+                                    DELIVERY ADDRESS
+                                    </Card.Header>
                                 </div>
                             </Card.Content>
                             <Card.Content>
                                 <Form> 
-                                    <Form.Input 
-                                        required
-                                        label="Name"
-                                        name="name" 
-                                        defaultValue={(data.name)? data.name : ""}
-                                        onChange={(e, data) => this.addUserData(data)} 
-                                        placeholder={"add your name"}
-                                        error={errors.name}
-                                    />
-
-                                    <Form.Input 
-                                        required
-                                        label="Email"
-                                        name="email" 
-                                        type="email"
-                                        disabled
-                                        defaultValue={(data.email)? data.email : ""}
-                                        onChange={(e, data) => this.addUserData(data)} 
-                                        placeholder={"add your email"}
-                                        error={errors.email}
-                                    />
-                                    <h3>Delivery address</h3>
                                     <Form.Input 
                                         required
                                         label="Address"
@@ -273,7 +386,9 @@ export default class Checkout extends Component {
                                     />
 
 
-                                    <Form.Input 
+                                    <Form.Select 
+                                        options={nigeriaStates.map((x) => ({ key: x, value: x, text: x }))} 
+                                        search
                                         required
                                         label="State"
                                         name="state" 
@@ -284,7 +399,8 @@ export default class Checkout extends Component {
                                     />
 
 
-                                    <Form.Input 
+                                    <Form.Select
+                                        options={[{ key: "nigeria", value: "nigeria", text: "nigeria" }]} 
                                         required
                                         label="Country"
                                         name="country" 
@@ -293,16 +409,15 @@ export default class Checkout extends Component {
                                         placeholder={"add your country"}
                                         error={errors.country}
                                     />
-
-                                    <Form.Button floated="right" onClick={() => this.save()} color='linkedin'>
-                                        Update
-                                    </Form.Button>
                                 </Form>
                             </Card.Content>
+
                         </Card>
                     </Segment>)}
-                    
-                    {(!!order.id) && (user.address && user.address.address) && (<Segment loading={loadingOrder}>
+                    </div>
+
+                    {(!!order.id) && (user.address && user.address.address) && (
+                    <Segment loading={loadingOrder}>
                         <List divided relaxed>
                             <List.Item>
 
@@ -375,34 +490,6 @@ export default class Checkout extends Component {
                                     </List.Item>
                                     <Divider />
                                     <List.Description>
-                                        <Form>
-                                            <Form.Group inline>
-                                                <label>Pickup {order.type} from</label>
-                                                <Form.Radio
-                                                    label='our office'
-                                                    value={pickup.type}
-                                                    checked={pickup.type === 'office'}
-                                                    onChange={() => this.setState({ pickup: { ...this.state.pickup, type: "office", address: "No: 724, Green Lane Dagenham, Essex" } })}
-                                                />
-                                                <Form.Radio
-                                                    label='pickup address'
-                                                    value={pickup.type}
-                                                    checked={pickup.type === 'address'}
-                                                    onChange={() => this.setState({ pickup: { ...this.state.pickup, type: "address" } })}
-                                                />
-                                            </Form.Group>
-                                            {(pickup.type === "address") && (<Form.Field>
-                                                <Form.Input 
-                                                    label="pickup addresss" 
-                                                    placeholder="Enter pickup address" 
-                                                    onChange={(e, data) => this.setState({ pickup: { ...this.state.pickup, type: "address", address: data.value  } })}
-                                                    defaultValue={pickup.address}
-                                                />
-                                                <small style={{ color: "black", marginBottom: 15, display: "block" }}><Icon name="asterisk" /> Address pickup attracts additional 1 pound per kg</small>
-                                            </Form.Field>)}
-                                        </Form>
-                                        
-
                                         {(order.status === "order") &&  (
                                             <Button disabled={!pickup.type || !pickup.address} circular color="black" onClick={() => this.setUpInvoice()}>
                                                 Pay {Number(order.price).toFixed(2)} {order.currency}
@@ -417,8 +504,9 @@ export default class Checkout extends Component {
                             </List.Item>
                         </List>
                     </Segment>)}
-                
+                    
                 </Segment>
+                
             </div>
         </div>
         )

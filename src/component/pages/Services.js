@@ -40,8 +40,11 @@ const Services = () => {
                 <p style={{ fontSize: "22px" }}>
                 We serve multicultural clients around the world. Hence we use different means of transportation to meet our client's needs.
                 </p>
+                <br />
+                <br />
+                <br />
                 <div id="gofree-content">
-                    <Menu attached='top' tabular>
+                    <Menu attached='top' size={"massive"} tabular>
                         <Menu.Item
                             name='air'
                             icon="plane"

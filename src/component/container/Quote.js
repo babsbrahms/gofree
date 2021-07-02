@@ -190,7 +190,7 @@ const Quote = ({ backgroundColor }) => {
                 <Form.Group widths='equal'>
                     <Form.Field>
                         <Form.Dropdown
-                            label="Sending From"
+                            label="Sending From (UK)"
                             fluid
                             search
                             selection
@@ -207,7 +207,7 @@ const Quote = ({ backgroundColor }) => {
                         <Form.Dropdown
                             fluid
                             search
-                            label={"Deliver To"}
+                            label={"Deliver To (Nigeria)"}
                             selection
                             options={deliveryOptions}
                             placeholder="Deliver To"
