@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { Icon, Segment, Card, Form, Button, Popup, List, Label, Header, Divider } from 'semantic-ui-react';
-import validator from "validator"
+import { Icon, Segment, Card, Form, Button, Popup, List, Label, Header, Divider, Modal } from 'semantic-ui-react';
+import Payment from "../container/Payment"
 import { currentUser, updateData, fetchUserByEmail, fetchOrderById, serverTimestamp, createProfileName } from "../fbase";
 import { getUrlParams, orderTite, orderIcon } from "../../utils/resources"
 import "../css/style.css"
@@ -38,7 +38,8 @@ export default class Checkout extends Component {
             state: "",
             country: ""
         },
-        paymentMethod: ""
+        paymentMethod: "",
+        openPayment: false
     }
 
     componentDidMount() {
@@ -261,6 +262,22 @@ export default class Checkout extends Component {
     }
 
 
+    initCardPayment = () => {
+        const { address, pickup, order } = this.state;
+        this.setState({ errors: {}, loadingAccount: true }, () => {
+            let errors = this.validate(address, pickup)
+
+            if (Object.keys(errors).length === 0) {
+                let date = serverTimestamp();
+
+                this.setState({ openPayment: true })
+            } else {
+                this.setState({ errors, loadingAccount: false })
+            }
+        })
+    }
+
+
     saveViaCard = () => {
         const { address, pickup, order } = this.state;
         this.setState({ errors: {}, loadingAccount: true }, () => {
@@ -308,12 +325,9 @@ export default class Checkout extends Component {
         })
     }
 
-    openPaymentModal = () => {
-
-    }
-
     render() {
-        const { activeItem, loadingAccount, user, errors, loadingOrder, data, order, pickup, address, paymentMethod } = this.state;
+        const { activeItem, loadingAccount, user, errors, loadingOrder, data, order, 
+            pickup, address, paymentMethod, openPayment } = this.state;
 
         return (
             <div id="gofree-bg">
@@ -614,11 +628,31 @@ export default class Checkout extends Component {
                                                 </Button>)}
 
                                                 {(paymentMethod === "card") && (
-                                                <Button circular color="black" onClick={() => this.openPaymentModal()}>
+                                                <Button circular color="black" onClick={() => this.initCardPayment()}>
                                                     Pay {Number(order.price).toFixed(2)} {order.currency}
                                                 </Button>)}
                                             </>
                                         )}
+                                        <Modal
+                                        onClose={() => this.setState({ openPayment: false })}
+                                        onOpen={() => this.setState({ openPayment: true })}
+                                        open={openPayment}
+                                        // trigger={<Button>Show Modal</Button>}
+                                        >
+                                        <Modal.Header>Select a Photo</Modal.Header>
+                                        <Payment    
+                                            amount={order.price} 
+                                            userId={user.uid} 
+                                            orderId={order.id}
+                                            success={() => this.saveViaCard()} 
+                                        />
+                                        <Modal.Actions>
+                                            <Button color='black' onClick={() =>  this.setState({ openPayment: false }) }>
+                                                Close
+                                            </Button>
+                                        </Modal.Actions>
+                                        </Modal>
+
 
                                         {(order.status !== "order") && (
                                             <h3>Your order has been received</h3>
