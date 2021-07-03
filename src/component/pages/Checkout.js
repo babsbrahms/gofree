@@ -137,7 +137,8 @@ export default class Checkout extends Component {
                     country: "uk"
                 }
             })
-        }
+        };
+        this.setUpInvoice()
     })
 
     deliveryType = (billing) => {
@@ -170,53 +171,8 @@ export default class Checkout extends Component {
         })
     }
 
-    validate = (address, pickup) => {
-        let err = {}
-            // if (!data.name) err.name = "Name is required";
-            // if (!validator.isEmail(data.email || "")) err.email = "Enter a valid email"
-
-                if (!address.address) err.address = "Address is required";
-                if (!address.city) err.city = "City is required";
-                if (!address.state) err.state = "State is required";
-                if (!address.country) err.country = "Country is required";
-
-
-                if (!pickup.address) err.p_address = "Address is required";
-                if (!pickup.city) err.p_city = "City is required";
-                if (!pickup.state) err.p_state = "State is required";
-                if (!pickup.country) err.p_country = "Country is required";
-
-        return err
-    }
-
-    save = () => {
-        const { address, pickup, data } = this.state;
-        this.setState({ errors: {}, loadingAccount: true }, () => {
-            let errors = this.validate(address, pickup)
-
-            if (Object.keys(errors).length === 0) {
-                let user = currentUser();
-
-                if (user && user.uid) {
-                    updateData("users", user.uid, {
-                        ...data
-                    }, () => {
-                        this.setState({ loadingAccount: false })
-                    }, () => {
-                        this.setState({ loadingAccount: false })
-                    })
-                }
-                
-            } else {
-                this.setState({ errors, loadingAccount: false })
-            }
-        })
-    }
-
     setUpInvoice = () => {
         const { order, user, pickup, address } = this.state;
-
-        let date = serverTimestamp();
 
         let stateRate = deliveryOptions.find((x) => x.value === order.to)
         let calcPackage = order.packages.map((px) => ({
@@ -227,38 +183,134 @@ export default class Checkout extends Component {
         let deliveryFee = (totaQty >= 50)? 0 : 15;
         let totalPrice = calcPackage.reduce((prev, curr) => prev + curr.price, 0) + 20 + deliveryFee;
 
-        this.setState({ loadingOrder: true }, () => {
-            updateData("orders", order.id, {
-                ...order,
+        this.setState({ 
+            order: {
+                ...this.state.order,
                 packages: calcPackage,
                 price: totalPrice,
                 delivery: deliveryFee,
                 handling: 20,
-                updatedAt : {
-                    timestamp: new Date().getTime(),
-                    month: new Date().getMonth(),
-                    year: new Date().getFullYear(),
-                    day: new Date().getDate()
-                },
-                pickup: pickup,
-                address: address,
-                paid: false,
-                ready : true,
-                status: "invoice-prep",
-                date: {
-                    ...order.date,
-                    "invoice-prep": date
-                }
-            }, () => {
-                this.setState({ loadingOrder: false })
-                alert("We will send an invoice to your email");
-                window.location.reload(true);
-            }, (err) => {
-                this.setState({ loadingOrder: false })
-                alert(err.message);
-            })
-        })
+            }
+         })
     } 
+
+    validate = (address, pickup) => {
+        let err = {}
+            // if (!data.name) err.name = "Name is required";
+            // if (!validator.isEmail(data.email || "")) err.email = "Enter a valid email"
+
+                if (!address.address) err.address = "Address is required";
+                if (!address.city) err.city = "City is required";
+                if (!address.state) err.state = "State is required";
+                if (!address.country) err.country = "Country is required";
+
+                if (!pickup.type) err.p_type = "Collection type is required";
+                if (!pickup.address) err.p_address = "Address is required";
+                if (!pickup.city) err.p_city = "City is required";
+                if (!pickup.state) err.p_state = "State is required";
+                if (!pickup.country) err.p_country = "Country is required";
+
+        return err
+    }
+
+    saveViaLink = () => {
+        const { address, pickup, order } = this.state;
+        this.setState({ errors: {}, loadingAccount: true }, () => {
+            let errors = this.validate(address, pickup)
+
+            if (Object.keys(errors).length === 0) {
+                let date = serverTimestamp();
+
+                this.setState({ loadingOrder: true }, () => {
+                    updateData("orders", order.id, {
+                        ...order,
+                        // packages: order.packages,
+                        // price: order.totalPrice,
+                        // delivery: order.delivery,
+                        // handling: 20,
+                        updatedAt : {
+                            timestamp: new Date().getTime(),
+                            month: new Date().getMonth(),
+                            year: new Date().getFullYear(),
+                            day: new Date().getDate()
+                        },
+                        pickup: pickup,
+                        address: address,
+                        paid: false,
+                        ready : true,
+                        status: "invoice-prep",
+                        date: {
+                            ...order.date,
+                            "invoice-prep": date
+                        },
+                        paymentMethod: "payment link"
+                    }, () => {
+                        this.setState({ loadingOrder: false })
+                        alert("Payment will be sent to your email");
+                        window.location.reload(true);
+                    }, (err) => {
+                        this.setState({ loadingOrder: false })
+                        alert(err.message);
+                    })
+                })
+                
+            } else {
+                this.setState({ errors, loadingAccount: false })
+            }
+        })
+    }
+
+
+    saveViaCard = () => {
+        const { address, pickup, order } = this.state;
+        this.setState({ errors: {}, loadingAccount: true }, () => {
+            let errors = this.validate(address, pickup)
+
+            if (Object.keys(errors).length === 0) {
+                let date = serverTimestamp();
+
+                this.setState({ loadingOrder: true }, () => {
+                    updateData("orders", order.id, {
+                        ...order,
+                        // packages: order.packages,
+                        // price: order.totalPrice,
+                        // delivery: order.delivery,
+                        // handling: 20,
+                        updatedAt : {
+                            timestamp: new Date().getTime(),
+                            month: new Date().getMonth(),
+                            year: new Date().getFullYear(),
+                            day: new Date().getDate()
+                        },
+                        pickup: pickup,
+                        address: address,
+                        paid: true,
+                        ready : true,
+                        status: "invoice-prep",
+                        date: {
+                            ...order.date,
+                            "invoice-prep": date
+                        },
+                        paymentMethod: "card"
+                    }, () => {
+                        this.setState({ loadingOrder: false })
+                        alert("Your payment and order has been recieved");
+                        window.location.reload(true);
+                    }, (err) => {
+                        this.setState({ loadingOrder: false })
+                        alert(err.message);
+                    })
+                })
+                
+            } else {
+                this.setState({ errors, loadingAccount: false })
+            }
+        })
+    }
+
+    openPaymentModal = () => {
+
+    }
 
     render() {
         const { activeItem, loadingAccount, user, errors, loadingOrder, data, order, pickup, address, paymentMethod } = this.state;
@@ -291,7 +343,7 @@ export default class Checkout extends Component {
                                     </Card.Header>
                                 </div>
                                 <Form>
-                                    <Form.Group inline>
+                                    <Form.Group inline >
                                         <Form.Radio
                                             label='our office (Free)'
                                             value={pickup.type}
@@ -311,6 +363,10 @@ export default class Checkout extends Component {
                                             onChange={() => this.changePickupType("address")}
                                         />
                                     </Form.Group>
+                                    {(!!errors.p_type) && (
+                                    <Label basic color="red" pointing="above">
+                                        {errors.p_type}
+                                    </Label>)}
                                     {(pickup.type === "address") && (<Form.Field>
                                         <small style={{ color: "black", marginBottom: 15, display: "block" }}><Icon name="asterisk" /> Address pickup attracts additional 1 pound per kg</small>
                                     </Form.Field>)}
@@ -333,7 +389,7 @@ export default class Checkout extends Component {
                                     </h4>
                                 )}
 
-                                {(pickup.type !== "office") && (<Form> 
+                                {(!!pickup.type) && (pickup.type !== "office") && (<Form> 
                                     <Form.Input 
                                         required
                                         label="Address"
@@ -551,13 +607,21 @@ export default class Checkout extends Component {
                                     <br />
                                     <List.Description>
                                         {(order.status === "order") &&  (
-                                            <Button disabled={paymentMethod === ''} circular color="black" onClick={() => this.setUpInvoice()}>
-                                                Pay {Number(order.price).toFixed(2)} {order.currency}
-                                            </Button>
+                                            <>
+                                                {(paymentMethod === "paymentLink") && (
+                                                <Button circular color="black" onClick={() => this.saveViaLink()}>
+                                                    Pay {Number(order.price).toFixed(2)} {order.currency}
+                                                </Button>)}
+
+                                                {(paymentMethod === "card") && (
+                                                <Button circular color="black" onClick={() => this.openPaymentModal()}>
+                                                    Pay {Number(order.price).toFixed(2)} {order.currency}
+                                                </Button>)}
+                                            </>
                                         )}
 
                                         {(order.status !== "order") && (
-                                            <h3>This order invoice will be sent to your email.</h3>
+                                            <h3>Your order has been received</h3>
                                         )}
                                     </List.Description>
                                 </List.Content>
