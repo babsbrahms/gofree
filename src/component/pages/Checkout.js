@@ -19,21 +19,26 @@ export default class Checkout extends Component {
 
         },
         data: {
+
+        },
+        errors: {},
+        order: { },
+        trackId: "",
+        address: {
+            billing: false,
             address: "",
             city: "",
             state: "",
             country: "" 
         },
-        errors: {},
-        order: { },
-        trackId: "",
         pickup: {
             type: "",
             address: "",
             city: "",
             state: "",
             country: ""
-        }
+        },
+        paymentMethod: ""
     }
 
     componentDidMount() {
@@ -96,21 +101,18 @@ export default class Checkout extends Component {
     handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
     addAddress = (data) => this.setState({ 
-        data: {
-            ...this.state.data,
-            address: {
-                ...this.state.data.address,
-                [data.name]: data.value
-            }
-        }
-    })
-
-    addUserData = (data) => this.setState({ 
-        data: {
-            ...this.state.data,
+        address: {
+            ...this.state.address,
             [data.name]: data.value
         }
     })
+
+    // addUserData = (data) => this.setState({ 
+    //     data: {
+    //         ...this.state.data,
+    //         [data.name]: data.value
+    //     }
+    // })
 
     addPickupAddress = (name, value) => this.setState({ pickup: { ...this.state.pickup, [name]: value  } })
 
@@ -138,30 +140,59 @@ export default class Checkout extends Component {
         }
     })
 
-    validate = (data) => {
-        let err = {}
-            if (!data.name) err.name = "Name is required";
-            if (!validator.isEmail(data.email || "")) err.email = "Enter a valid email"
-
-            if (data.address) {
-                if (!data.address.address) err.address = "Address is required";
-                if (!data.address.city) err.city = "City is required";
-                if (!data.address.state) err.state = "State is required";
-                if (!data.address.country) err.country = "Country is required";
+    deliveryType = (billing) => {
+        console.log(billing);
+        this.setState((state, props) => {
+            if (billing) {
+                return {
+                    address: { 
+                        ...state.address,
+                        billing: true,
+                        ...state.data.address
+                            // address: "No: 724, Green Lane Dagenham, Essex.",
+                            // city: "Dagenham,",
+                            // state: "Essex",
+                            // country: "uk"
+                    }
+                }
             } else {
-                err.address = "Address is required";
-                err.city = "City is required";
-                err.state = "State is required";
-                err.country = "Country is required";
+                return {
+                    address: { 
+                        ...state.address,
+                        billing: false,
+                        address: "",
+                        city: "",
+                        state: "",
+                        country: ""
+                    }
+                }
             }
+        })
+    }
+
+    validate = (address, pickup) => {
+        let err = {}
+            // if (!data.name) err.name = "Name is required";
+            // if (!validator.isEmail(data.email || "")) err.email = "Enter a valid email"
+
+                if (!address.address) err.address = "Address is required";
+                if (!address.city) err.city = "City is required";
+                if (!address.state) err.state = "State is required";
+                if (!address.country) err.country = "Country is required";
+
+
+                if (!pickup.address) err.p_address = "Address is required";
+                if (!pickup.city) err.p_city = "City is required";
+                if (!pickup.state) err.p_state = "State is required";
+                if (!pickup.country) err.p_country = "Country is required";
 
         return err
     }
 
     save = () => {
-        const { data } = this.state;
+        const { address, pickup, data } = this.state;
         this.setState({ errors: {}, loadingAccount: true }, () => {
-            let errors = this.validate(data)
+            let errors = this.validate(address, pickup)
 
             if (Object.keys(errors).length === 0) {
                 let user = currentUser();
@@ -183,7 +214,7 @@ export default class Checkout extends Component {
     }
 
     setUpInvoice = () => {
-        const { order, user, pickup } = this.state;
+        const { order, user, pickup, address } = this.state;
 
         let date = serverTimestamp();
 
@@ -209,11 +240,8 @@ export default class Checkout extends Component {
                     year: new Date().getFullYear(),
                     day: new Date().getDate()
                 },
-                pickup: {
-                    type: pickup.type,
-                    address: pickup.address
-                },
-                address: user.address,
+                pickup: pickup,
+                address: address,
                 paid: false,
                 ready : true,
                 status: "invoice-prep",
@@ -230,10 +258,10 @@ export default class Checkout extends Component {
                 alert(err.message);
             })
         })
-    }
+    } 
 
     render() {
-        const { activeItem, loadingAccount, user, errors, loadingOrder, data, order, pickup } = this.state;
+        const { activeItem, loadingAccount, user, errors, loadingOrder, data, order, pickup, address, paymentMethod } = this.state;
 
         return (
             <div id="gofree-bg">
@@ -248,7 +276,7 @@ export default class Checkout extends Component {
                         <div style={style.center}>
                             <Header textAlign icon>
                                 <Icon circular name="shopping cart" />
-                                Your order is empty!
+                              {(!loadingAccount || !loadingOrder) && <p> Your order is empty!</p>} 
                             </Header>
                         </div>
                     )}
@@ -286,6 +314,9 @@ export default class Checkout extends Component {
                                     {(pickup.type === "address") && (<Form.Field>
                                         <small style={{ color: "black", marginBottom: 15, display: "block" }}><Icon name="asterisk" /> Address pickup attracts additional 1 pound per kg</small>
                                     </Form.Field>)}
+                                    {(pickup.type === "3miles") && (<Form.Field>
+                                        <small style={{ color: "black", marginBottom: 15, display: "block" }}><Icon name="asterisk" /> Free collection for addresses within 3 miles radius of our office.</small>
+                                    </Form.Field>)}
                                     {(pickup.type === "office") && (<Form.Field>
                                         <small style={{ color: "black", marginBottom: 15, display: "block" }}><Icon name="asterisk" /> Bring your document/parcel to our office address listed below.<Icon name="hand point down outline" /> </small>
                                     </Form.Field>)}
@@ -298,7 +329,7 @@ export default class Checkout extends Component {
 
                                 {(pickup.type === "office") && (
                                     <h4>
-                                        No: 724, Green Lane Dagenham, Essex.
+                                        No: 724, Green Lane Dagenham, Essex. 
                                     </h4>
                                 )}
 
@@ -310,7 +341,7 @@ export default class Checkout extends Component {
                                         value={pickup.address || ""}
                                         onChange={(e, data) => this.addPickupAddress(data.name, data.value)} 
                                         placeholder={"add collection address"}
-                                        error={errors.address}
+                                        error={errors.p_address}
                                     />
 
                                     <Form.Input 
@@ -320,7 +351,7 @@ export default class Checkout extends Component {
                                         value={pickup.city || ""}
                                         onChange={(e, data) => this.addPickupAddress(data.name, data.value)} 
                                         placeholder={"add collection city"}
-                                        error={errors.city}
+                                        error={errors.p_city}
                                     />
 
 
@@ -333,7 +364,7 @@ export default class Checkout extends Component {
                                         value={pickup.state || ""}
                                         onChange={(e, data) => this.addPickupAddress(data.name, data.value)} 
                                         placeholder={"add state state"}
-                                        error={errors.state}
+                                        error={errors.p_state}
                                     />
 
 
@@ -345,7 +376,7 @@ export default class Checkout extends Component {
                                         value={pickup.country || ""}
                                         onChange={(e, data) => this.addPickupAddress(data.name, data.value)} 
                                         placeholder={"add collection country"}
-                                        error={errors.country}
+                                        error={errors.p_country}
                                     />
                                 </Form>)}
                             </Card.Content>
@@ -362,6 +393,16 @@ export default class Checkout extends Component {
                                     DELIVERY ADDRESS
                                     </Card.Header>
                                 </div>
+                                {(!!data.address && !!data.address.country) && (data.address.country.toLowerCase() === "nigeria") && (<Form>
+                                    <Form.Group inline>
+                                        <Form.Checkbox
+                                            label='Use my billing address'
+                                            value={address.billing}
+                                            checked={address.billing}
+                                            onChange={(e, data) => this.deliveryType(!data.value)}
+                                        />
+                                    </Form.Group>
+                                </Form>)}
                             </Card.Content>
                             <Card.Content>
                                 <Form> 
@@ -369,7 +410,7 @@ export default class Checkout extends Component {
                                         required
                                         label="Address"
                                         name="address" 
-                                        defaultValue={(data.address && data.address.address)? data.address.address : ""}
+                                        value={address.address || ""}
                                         onChange={(e, data) => this.addAddress(data)} 
                                         placeholder={"add your address"}
                                         error={errors.address}
@@ -379,7 +420,7 @@ export default class Checkout extends Component {
                                         required
                                         label="City"
                                         name="city" 
-                                        defaultValue={(data.address && data.address.address)? data.address.city : ""}
+                                        value={address.city || ""}
                                         onChange={(e, data) => this.addAddress(data)} 
                                         placeholder={"add your city"}
                                         error={errors.city}
@@ -392,7 +433,7 @@ export default class Checkout extends Component {
                                         required
                                         label="State"
                                         name="state" 
-                                        defaultValue={(data.address && data.address.address)? data.address.state : ""}
+                                        value={address.state || ""}
                                         onChange={(e, data) => this.addAddress(data)} 
                                         placeholder={"add your state"}
                                         error={errors.state}
@@ -404,7 +445,7 @@ export default class Checkout extends Component {
                                         required
                                         label="Country"
                                         name="country" 
-                                        defaultValue={(data.address && data.address.address)? data.address.country : ""}
+                                        value={address.country || ""}
                                         onChange={(e, data) => this.addAddress(data)} 
                                         placeholder={"add your country"}
                                         error={errors.country}
@@ -489,9 +530,28 @@ export default class Checkout extends Component {
                                         </List.Content>
                                     </List.Item>
                                     <Divider />
+                                    {/* <h3>Payment Method</h3> */}
+                                    <Form.Group inline>
+                                        <label style={{ fontSize: 20, fontWeight: "500" }}>Payment Method</label>
+                                        <Form.Radio
+                                            label='Payment Link'
+                                            value={paymentMethod}
+                                            checked={paymentMethod === "paymentLink"}
+                                            onChange={() => this.setState({ paymentMethod: "paymentLink"})}
+                                        />
+                                        <Form.Radio
+                                            label='Card'
+                                            value={paymentMethod}
+                                            checked={paymentMethod === "card"}
+                                            onChange={() => this.setState({ paymentMethod: "card"})}
+                                        />
+
+                                    </Form.Group>
+                                    <br />
+                                    <br />
                                     <List.Description>
                                         {(order.status === "order") &&  (
-                                            <Button disabled={!pickup.type || !pickup.address} circular color="black" onClick={() => this.setUpInvoice()}>
+                                            <Button disabled={paymentMethod === ''} circular color="black" onClick={() => this.setUpInvoice()}>
                                                 Pay {Number(order.price).toFixed(2)} {order.currency}
                                             </Button>
                                         )}

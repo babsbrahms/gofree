@@ -276,6 +276,8 @@ export default class Account extends Component {
                                             error={errors.email}
                                         />
 
+                                        <h3>Billing Address</h3>
+
                                         <Form.Input 
                                             required
                                             label="Address"
