@@ -8,32 +8,38 @@ const Footer = () => {
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center'}}>
             <List inverted >
                 <List.Item>
-                    <List.Icon name='marker' />
+                    <List.Icon inverted name='marker' />
                     <List.Content>
                         <a>No: 724, Green Lane Dagenham, Essex.</a>
                     </List.Content>
                 </List.Item>
                 <List.Item>
-                    <List.Icon name='text telephone' />
+                    <List.Icon inverted name='mail' />
+                    <List.Content>
+                        <a>Postcode/Zip: RM8 1YX</a>
+                    </List.Content>
+                </List.Item>
+                <List.Item>
+                    <List.Icon inverted name='text telephone' />
                     <List.Content>
                         <a href={"tel:02085861814"}>02085861814</a>
                     </List.Content>
                 </List.Item>
                 <List.Item>
-                    <List.Icon name='phone' />
+                    <List.Icon inverted name='phone' />
                     <List.Content>
                         <a href={"tel:07940491560"}>07940491560</a>
                     </List.Content>
                 </List.Item>
 
                 <List.Item>
-                    <List.Icon name='mail' />
+                    <List.Icon inverted name='mail' />
                     <List.Content>
                         <a href='mailto:info@gofreeltd.com'>info@gofreeltd.com</a>
                     </List.Content>
                 </List.Item>
                 <List.Item>
-                    <List.Icon name="copyright" />
+                    <List.Icon inverted name="copyright" />
                     <List.Content>
                         <a>Company Reg-06472864</a>
                     </List.Content>

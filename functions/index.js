@@ -15,7 +15,8 @@ export const create_checkout_id = functions.https.onCall((data, context) => {
         "checkout_reference": data.orderId,
         "amount": data.amount,
         "currency": "GBP",
-        "merchant_code": "string",
+        // "merchant_code": "string",
+        "pay_to_email": "",
         "description": `GoFree courier service`,
         "return_url": "",
         "customer_id": data.userId
@@ -24,6 +25,22 @@ export const create_checkout_id = functions.https.onCall((data, context) => {
             "Content-Type": "application/json",
             "Authorization":  `Bearer <<valid_access_token>>`
         }
+    }).then((res) => {
+        return res.data
+    }).catch(err => {
+        return functions.https.HttpsError("not-found", error.response.data.message)
+    })
+})
+
+
+
+export const verify_checkout = functions.https.onCall((data, context) => {
+    axios.get(`https://api.sumup.com/v0.1/checkouts/${checkoutId}`,{
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization":  `Bearer <<valid_access_token>>`
+        }
+        
     }).then((res) => {
         return res.data
     }).catch(err => {

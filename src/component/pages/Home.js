@@ -14,7 +14,7 @@ import parcelforce from "../../utils/images/parcelforce.svg";
 import ups from "../../utils/images/ups.svg";
 import fedex from "../../utils/images/fedex.svg";
 import "../css/style.css"
-import { AddressFromZipcode } from "../container/AddressFromZipcode"
+
 
 const bgs = [
     air,
@@ -93,7 +93,6 @@ const Home = () => {
                     
 
                 </Segment>
-                <AddressFromZipcode />
                 <Segment  loading={loading} textAlign="center" color="pink" raised stacked style={{ paddingBottom: 30, backgroundColor: "#fff",borderRadius: 5, marginBottom: 70, padding: 10, marginTop: 70 }}>
 
                     <Input 

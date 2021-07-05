@@ -2,11 +2,11 @@ import React, { Component } from 'react'
 import { Icon, Segment, Card, Form, Button, Popup, List, Label, Header, Divider, Modal } from 'semantic-ui-react';
 import Payment from "../container/Payment"
 import { currentUser, updateData, fetchUserByEmail, fetchOrderById, serverTimestamp, createProfileName } from "../fbase";
-import { getUrlParams, orderTite, orderIcon } from "../../utils/resources"
+import { getUrlParams, orderTite, orderIcon, calcUnitPrice, deliveryOptions, nigeriaStates, ukStates } from "../../utils/resources"
 import "../css/style.css"
 import styles from "../../styles"
-import style from "../../styles";
-import { calcUnitPrice, deliveryOptions, nigeriaStates, ukStates } from "../../utils/resources"
+import ErrorBoundary from "../container/ErrorBoundary";
+import { AddressFromZipcode } from '../container/AddressFromZipcode';
 
 
 export default class Checkout extends Component {
@@ -29,14 +29,15 @@ export default class Checkout extends Component {
             address: "",
             city: "",
             state: "",
-            country: "" 
+            country: "",
+            postcode: ""
         },
         pickup: {
             type: "",
             address: "",
-            city: "",
-            state: "",
-            country: ""
+            town: "",
+            postcode: "",
+            county: ""
         },
         paymentMethod: "",
         openPayment: false
@@ -123,9 +124,9 @@ export default class Checkout extends Component {
                 pickup: { 
                     ...this.state.pickup,
                     address: "No: 724, Green Lane Dagenham, Essex.",
-                    city: "Dagenham,",
-                    state: "Essex",
-                    country: "uk"
+                    town: "Dagenham",
+                    county: "greater london",
+                    postcode: "RM8 1YX"
                 }
             })
         } else {
@@ -133,9 +134,9 @@ export default class Checkout extends Component {
                 pickup: { 
                     ...this.state.pickup,
                     address: "",
-                    city: "",
-                    state: "",
-                    country: "uk"
+                    town: "",
+                    postcode: "",
+                    county: ""
                 }
             })
         };
@@ -151,10 +152,6 @@ export default class Checkout extends Component {
                         ...state.address,
                         billing: true,
                         ...state.data.address
-                            // address: "No: 724, Green Lane Dagenham, Essex.",
-                            // city: "Dagenham,",
-                            // state: "Essex",
-                            // country: "uk"
                     }
                 }
             } else {
@@ -165,7 +162,7 @@ export default class Checkout extends Component {
                         address: "",
                         city: "",
                         state: "",
-                        country: ""
+                        county: ""
                     }
                 }
             }
@@ -207,9 +204,9 @@ export default class Checkout extends Component {
 
                 if (!pickup.type) err.p_type = "Collection type is required";
                 if (!pickup.address) err.p_address = "Address is required";
-                if (!pickup.city) err.p_city = "City is required";
-                if (!pickup.state) err.p_state = "State is required";
-                if (!pickup.country) err.p_country = "Country is required";
+                if (!pickup.postcode) err.p_postcode = "Postcode is required";
+                if (!pickup.town) err.p_town = "Town is required";
+                if (!pickup.county) err.p_county = "County is required";
 
         return err
     }
@@ -256,29 +253,29 @@ export default class Checkout extends Component {
                 })
                 
             } else {
-                this.setState({ errors, loadingAccount: false })
+                this.setState({ errors, loadingAccount: false });
+                window.scrollTo({ x: 0, y: 0})
+
             }
         })
     }
 
 
     initCardPayment = () => {
-        const { address, pickup, order } = this.state;
-        this.setState({ errors: {}, loadingAccount: true }, () => {
-            let errors = this.validate(address, pickup)
+        const { address, pickup } = this.state;
+        let errors = this.validate(address, pickup)
 
-            if (Object.keys(errors).length === 0) {
-                let date = serverTimestamp();
+        if (Object.keys(errors).length === 0) {
+            this.setState({ paymentMethod: "card"})
+        } else {
+            this.setState({ errors });
+            window.scrollTo({ x: 0, y: 0})
 
-                this.setState({ openPayment: true })
-            } else {
-                this.setState({ errors, loadingAccount: false })
-            }
-        })
+        }
     }
 
 
-    saveViaCard = () => {
+    saveViaCard = (checkoutId) => {
         const { address, pickup, order } = this.state;
         this.setState({ errors: {}, loadingAccount: true }, () => {
             let errors = this.validate(address, pickup)
@@ -308,7 +305,8 @@ export default class Checkout extends Component {
                             ...order.date,
                             "invoice-prep": date
                         },
-                        paymentMethod: "card"
+                        paymentMethod: "card",
+                        checkoutId
                     }, () => {
                         this.setState({ loadingOrder: false })
                         alert("Your payment and order has been recieved");
@@ -322,6 +320,12 @@ export default class Checkout extends Component {
             } else {
                 this.setState({ errors, loadingAccount: false })
             }
+        })
+    }
+
+    handleCardFailure = (err) => {
+        this.setState({ paymentMethod: ""}, () => {
+            alert(err)
         })
     }
 
@@ -339,7 +343,7 @@ export default class Checkout extends Component {
 
                 <Segment id="gofree-content" loading={loadingAccount || loadingOrder} >
                     {(!order.id) && (
-                        <div style={style.center}>
+                        <div style={styles.center}>
                             <Header textAlign icon>
                                 <Icon circular name="shopping cart" />
                               {(!loadingAccount || !loadingOrder) && <p> Your order is empty!</p>} 
@@ -390,6 +394,7 @@ export default class Checkout extends Component {
                                     {(pickup.type === "office") && (<Form.Field>
                                         <small style={{ color: "black", marginBottom: 15, display: "block" }}><Icon name="asterisk" /> Bring your document/parcel to our office address listed below.<Icon name="hand point down outline" /> </small>
                                     </Form.Field>)}
+                                    {(!!pickup.type) && (pickup.type !== "office") && (<AddressFromZipcode addAddress={(add) => this.setState({pickup: {...this.state.pickup, ...add} })} />)}
                                 </Form>
                             </Card.Content>
                             <Card.Content>
@@ -414,39 +419,38 @@ export default class Checkout extends Component {
                                         error={errors.p_address}
                                     />
 
-                                    <Form.Input 
-                                        required
-                                        label="City"
-                                        name="city" 
-                                        value={pickup.city || ""}
-                                        onChange={(e, data) => this.addPickupAddress(data.name, data.value)} 
-                                        placeholder={"add collection city"}
-                                        error={errors.p_city}
-                                    />
 
-
-                                    <Form.Select
-                                        options={ukStates.map((x) => ({ key: x, value: x, text: x }))} 
+                                    <Form.Input
+                                        // options={ukStates.map((x) => ({ key: x, value: x, text: x }))} 
                                         search
                                         required
-                                        label="State"
-                                        name="state" 
-                                        value={pickup.state || ""}
+                                        label="Town"
+                                        name="town" 
+                                        value={pickup.town || ""}
                                         onChange={(e, data) => this.addPickupAddress(data.name, data.value)} 
-                                        placeholder={"add state state"}
-                                        error={errors.p_state}
+                                        placeholder={"add collection town"}
+                                        error={errors.p_town}
                                     />
 
 
-                                    <Form.Select 
-                                        options={[{ key: "uk", value: "uk", text: "uk" }]}
+                                    <Form.Input
                                         required
-                                        label="Country"
-                                        name="country" 
-                                        value={pickup.country || ""}
+                                        label="County"
+                                        name="county" 
+                                        value={pickup.county || ""}
                                         onChange={(e, data) => this.addPickupAddress(data.name, data.value)} 
                                         placeholder={"add collection country"}
-                                        error={errors.p_country}
+                                        error={errors.p_county}
+                                    />
+
+                                    <Form.Input 
+                                        required
+                                        label="Postcode"
+                                        name="postcode" 
+                                        value={pickup.postcode || ""}
+                                        onChange={(e, data) => this.addPickupAddress(data.name, data.value)} 
+                                        placeholder={"add collection postcode"}
+                                        error={errors.p_postcode}
                                     />
                                 </Form>)}
                             </Card.Content>
@@ -519,6 +523,15 @@ export default class Checkout extends Component {
                                         onChange={(e, data) => this.addAddress(data)} 
                                         placeholder={"add your country"}
                                         error={errors.country}
+                                    />
+
+                                    <Form.Input
+                                        label="postcode"
+                                        name="postcode" 
+                                        value={address.postcode || ""}
+                                        onChange={(e, data) => this.addAddress(data)} 
+                                        placeholder={"add your postcode"}
+                                        error={errors.postcode}
                                     />
                                 </Form>
                             </Card.Content>
@@ -613,7 +626,7 @@ export default class Checkout extends Component {
                                             label='Card'
                                             value={paymentMethod}
                                             checked={paymentMethod === "card"}
-                                            onChange={() => this.setState({ paymentMethod: "card"})}
+                                            onChange={() =>  this.initCardPayment()}
                                         />
 
                                     </Form.Group>
@@ -628,30 +641,22 @@ export default class Checkout extends Component {
                                                 </Button>)}
 
                                                 {(paymentMethod === "card") && (
-                                                <Button circular color="black" onClick={() => this.initCardPayment()}>
-                                                    Pay {Number(order.price).toFixed(2)} {order.currency}
-                                                </Button>)}
+                                                    <ErrorBoundary>
+                                                        <Payment    
+                                                            amount={order.price} 
+                                                            userId={user.uid} 
+                                                            orderId={order.id}
+                                                            success={(checkoutId) => this.saveViaCard(checkoutId)} 
+                                                            failure={(err) => this.handleCardFailure(err)}
+                                                        />
+                                                    </ErrorBoundary>
+                                                )}
                                             </>
                                         )}
-                                        <Modal
-                                        onClose={() => this.setState({ openPayment: false })}
-                                        onOpen={() => this.setState({ openPayment: true })}
-                                        open={openPayment}
-                                        // trigger={<Button>Show Modal</Button>}
-                                        >
-                                        <Modal.Header>Select a Photo</Modal.Header>
-                                        <Payment    
-                                            amount={order.price} 
-                                            userId={user.uid} 
-                                            orderId={order.id}
-                                            success={() => this.saveViaCard()} 
-                                        />
-                                        <Modal.Actions>
-                                            <Button color='black' onClick={() =>  this.setState({ openPayment: false }) }>
-                                                Close
-                                            </Button>
-                                        </Modal.Actions>
-                                        </Modal>
+
+
+
+    
 
 
                                         {(order.status !== "order") && (
